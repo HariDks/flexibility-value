@@ -1,0 +1,891 @@
+<title>What Is Flexibility Worth?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
+<style>
+  :root {
+    color-scheme: light;
+    --plane:        #eef1f3;
+    --surface:      #fdfdfe;
+    --surface-sunk: #f4f6f8;
+    --ink:          #0b0d0f;
+    --ink-2:        #4c5257;
+    --ink-muted:    #7d8288;
+    --rule:         #dde2e6;
+    --rule-soft:    #e8ecef;
+    --battery:      #2a78d6;
+    --battery-wash: rgba(42,120,214,0.13);
+    --factory:      #eb6834;
+    --factory-wash: rgba(235,104,52,0.13);
+    --price-fill:   rgba(11,13,15,0.07);
+    --price-line:   #6b7076;
+    --fee:          #a9b0b6;
+    --focus:        #2a78d6;
+    --shadow:       0 1px 2px rgba(11,13,15,0.05), 0 8px 24px rgba(11,13,15,0.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --plane:        #0e1012;
+      --surface:      #191c1f;
+      --surface-sunk: #141719;
+      --ink:          #f2f4f5;
+      --ink-2:        #b6bcc1;
+      --ink-muted:    #868c92;
+      --rule:         #2c3134;
+      --rule-soft:    #23272a;
+      --battery:      #3987e5;
+      --battery-wash: rgba(57,135,229,0.18);
+      --factory:      #d95926;
+      --factory-wash: rgba(217,89,38,0.18);
+      --price-fill:   rgba(242,244,245,0.07);
+      --price-line:   #8c9298;
+      --fee:          #5c6368;
+      --focus:        #3987e5;
+      --shadow:       0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --plane:        #0e1012;
+    --surface:      #191c1f;
+    --surface-sunk: #141719;
+    --ink:          #f2f4f5;
+    --ink-2:        #b6bcc1;
+    --ink-muted:    #868c92;
+    --rule:         #2c3134;
+    --rule-soft:    #23272a;
+    --battery:      #3987e5;
+    --battery-wash: rgba(57,135,229,0.18);
+    --factory:      #d95926;
+    --factory-wash: rgba(217,89,38,0.18);
+    --price-fill:   rgba(242,244,245,0.07);
+    --price-line:   #8c9298;
+    --fee:          #5c6368;
+    --focus:        #3987e5;
+    --shadow:       0 1px 2px rgba(0,0,0,0.4), 0 8px 24px rgba(0,0,0,0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    background: var(--plane);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 56px 24px 96px;
+    display: flex;
+    flex-direction: column;
+    gap: 36px;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  h1 {
+    font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -0.025em;
+    margin: 10px 0 0;
+    text-wrap: balance;
+  }
+
+  .standfirst {
+    margin: 16px 0 0;
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-2);
+    max-width: 60ch;
+  }
+
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 6px;
+    box-shadow: var(--shadow);
+    padding: 26px 26px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .panel-head { display: flex; flex-direction: column; gap: 5px; }
+  .panel-title { font-size: 16px; font-weight: 600; letter-spacing: -0.01em; }
+  .panel-note { font-size: 13.5px; color: var(--ink-2); max-width: 62ch; }
+
+  .chart-scroll { overflow-x: auto; }
+  svg { display: block; width: 100%; height: auto; min-width: 480px; }
+
+  .grid-line   { stroke: var(--rule-soft); stroke-width: 1; }
+  .zero-line   { stroke: var(--rule); stroke-width: 1.5; stroke-dasharray: 3 3; }
+  .axis-line   { stroke: var(--rule); stroke-width: 1; }
+  .tick {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px;
+    fill: var(--ink-muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .strip-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    fill: var(--ink-muted);
+  }
+
+  .price-area { fill: var(--price-fill); }
+  .price-line { fill: none; stroke: var(--price-line); stroke-width: 2; stroke-linejoin: round; }
+  .charge-bar { fill: var(--battery); }
+
+  .handle-hit { fill: transparent; cursor: ns-resize; outline: none; }
+  .handle-bar {
+    stroke: var(--ink);
+    stroke-width: 3.5;
+    stroke-linecap: round;
+    pointer-events: none;
+    transition: stroke 120ms ease;
+  }
+  .handle-hit:hover + .handle-bar,
+  .handle-hit:focus-visible + .handle-bar,
+  .handle-hit.dragging + .handle-bar { stroke: var(--battery); }
+  .handle-hit:focus-visible + .handle-bar { stroke-width: 5; }
+  .handle-val {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11.5px;
+    font-weight: 500;
+    fill: var(--ink);
+    pointer-events: none;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .controls {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 22px 28px;
+    padding-top: 4px;
+    border-top: 1px solid var(--rule-soft);
+  }
+  .control { display: flex; flex-direction: column; gap: 7px; }
+  .control-head {
+    display: flex; justify-content: space-between; align-items: baseline; gap: 12px;
+  }
+  .control-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.12em; text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+  .control-val {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 13px; font-weight: 600; color: var(--ink);
+    font-variant-numeric: tabular-nums;
+  }
+  .control-hint { font-size: 12.5px; color: var(--ink-muted); line-height: 1.45; }
+
+  input[type="range"] {
+    -webkit-appearance: none; appearance: none;
+    width: 100%; height: 22px; background: transparent; cursor: pointer; margin: 0;
+  }
+  input[type="range"]::-webkit-slider-runnable-track {
+    height: 3px; background: var(--rule); border-radius: 2px;
+  }
+  input[type="range"]::-moz-range-track {
+    height: 3px; background: var(--rule); border-radius: 2px;
+  }
+  input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none;
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--battery); border: 2px solid var(--surface);
+    margin-top: -6px;
+  }
+  input[type="range"]::-moz-range-thumb {
+    width: 15px; height: 15px; border-radius: 50%;
+    background: var(--battery); border: 2px solid var(--surface);
+  }
+  input[type="range"]:focus-visible { outline: 2px solid var(--focus); outline-offset: 3px; border-radius: 3px; }
+
+  .presets { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+  .preset-btn {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; font-weight: 500; letter-spacing: 0.05em;
+    padding: 7px 12px;
+    background: var(--surface-sunk);
+    color: var(--ink-2);
+    border: 1px solid var(--rule);
+    border-radius: 4px; cursor: pointer;
+    transition: background 120ms ease, color 120ms ease, border-color 120ms ease;
+  }
+  .preset-btn:hover { color: var(--ink); border-color: var(--ink-muted); }
+  .preset-btn[aria-pressed="true"] {
+    background: var(--battery); border-color: var(--battery); color: #fff;
+  }
+  .preset-btn:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+  .verdict { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 2px; }
+  .stat {
+    background: var(--surface-sunk);
+    padding: 18px 20px;
+    display: flex; flex-direction: column; gap: 3px;
+  }
+  .stat:first-child { border-radius: 5px 0 0 5px; }
+  .stat:last-child  { border-radius: 0 5px 5px 0; }
+  .stat-label {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.11em; text-transform: uppercase; color: var(--ink-muted);
+  }
+  .stat-val {
+    font-size: 34px; font-weight: 600; letter-spacing: -0.03em; line-height: 1.05;
+    color: var(--ink);
+  }
+  .stat-val.accent { color: var(--battery); }
+  .stat-sub { font-size: 12.5px; color: var(--ink-2); }
+
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  .legend-item {
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 11px; color: var(--ink-2);
+  }
+  .swatch { width: 11px; height: 11px; border-radius: 2px; flex: none; }
+
+  table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+  th, td { text-align: right; padding: 9px 10px; border-bottom: 1px solid var(--rule-soft); }
+  th:first-child, td:first-child { text-align: left; }
+  thead th {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--ink-muted); border-bottom: 1px solid var(--rule);
+  }
+  tbody td { font-variant-numeric: tabular-nums; color: var(--ink-2); }
+  tbody td:first-child { color: var(--ink); }
+  tbody tr:last-child td { border-bottom: none; font-weight: 600; color: var(--ink); }
+
+  .readout {
+    font-size: 16px; line-height: 1.65; color: var(--ink);
+    max-width: 66ch; margin: 0;
+  }
+  .readout b { font-weight: 600; }
+  .readout .num {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-weight: 600; font-variant-numeric: tabular-nums;
+  }
+
+  .notes {
+    border-top: 1px solid var(--rule);
+    padding-top: 22px;
+    display: flex; flex-direction: column; gap: 12px;
+    font-size: 13.5px; line-height: 1.6; color: var(--ink-2);
+    max-width: 68ch;
+  }
+  .notes h2 {
+    font-family: "IBM Plex Mono", ui-monospace, monospace;
+    font-size: 10.5px; font-weight: 500;
+    letter-spacing: 0.13em; text-transform: uppercase;
+    color: var(--ink-muted); margin: 0;
+  }
+  .notes p { margin: 0; }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { transition: none !important; animation: none !important; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header>
+    <div class="eyebrow">Thermal storage · charging economics</div>
+    <h1>What is flexibility worth?</h1>
+    <p class="standfirst">
+      A factory needs heat around the clock. A normal factory buys electricity as it burns it,
+      so it pays whatever the price happens to be. A thermal battery can buy early and hold the
+      heat — so it can wait for the cheap hours. Drag the prices below and watch what that
+      waiting is actually worth.
+    </p>
+  </header>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div class="panel-title">One day of electricity prices</div>
+      <div class="panel-note">
+        Drag any of the four handles to reshape the day. The strip underneath shows the hours
+        the battery chooses to buy in.
+      </div>
+    </div>
+
+    <div class="chart-scroll">
+      <svg id="day" viewBox="0 0 880 372" role="img"
+           aria-label="A 24-hour electricity price curve with a strip below showing when the thermal battery buys power.">
+      </svg>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background:var(--price-line)"></span>Price of electricity</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--battery)"></span>Battery buys here</span>
+    </div>
+
+    <div class="presets" role="group" aria-label="Example market shapes">
+      <span class="control-label" style="margin-right:4px">Try a shape</span>
+      <button class="preset-btn" type="button" data-preset="mild">Mild swing</button>
+      <button class="preset-btn" type="button" data-preset="solar">Solar crash</button>
+      <button class="preset-btn" type="button" data-preset="extreme">Extreme surplus</button>
+    </div>
+
+    <div class="controls">
+      <div class="control">
+        <div class="control-head">
+          <label class="control-label" for="storage">Battery size</label>
+          <span class="control-val" id="storage-val">12 hours</span>
+        </div>
+        <input type="range" id="storage" min="0" max="18" step="1" value="12"
+               aria-describedby="storage-hint">
+        <div class="control-hint" id="storage-hint">
+          How many hours of the factory's heat it can hold. At zero it has no choice but to buy
+          as it goes — exactly like a normal factory.
+        </div>
+      </div>
+
+      <div class="control">
+        <div class="control-head">
+          <label class="control-label" for="fee">Network fee</label>
+          <span class="control-val" id="fee-val">$40 / MWh</span>
+        </div>
+        <input type="range" id="fee" min="0" max="80" step="5" value="40"
+               aria-describedby="fee-hint">
+        <div class="control-hint" id="fee-hint">
+          Charged per unit delivered no matter when you bought it. Both buyers pay it. Set by
+          regulators, not by the market.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div class="panel-title">What each buyer pays for the same heat</div>
+      <div class="panel-note">
+        Both deliver an identical 240 MWh of heat over the day. The only difference is when they
+        bought the power.
+      </div>
+    </div>
+
+    <div class="chart-scroll">
+      <svg id="bills" viewBox="0 0 880 186" role="img"
+           aria-label="Horizontal bars comparing the delivered cost of power for a normal factory versus a thermal battery, split into energy cost and network fee.">
+      </svg>
+    </div>
+
+    <div class="legend">
+      <span class="legend-item"><span class="swatch" style="background:var(--factory)"></span>Normal factory — buys as it burns</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--battery)"></span>Thermal battery — buys when cheap</span>
+      <span class="legend-item"><span class="swatch" style="background:var(--fee)"></span>Network fee</span>
+    </div>
+
+    <div class="verdict">
+      <div class="stat">
+        <span class="stat-label">Saving on energy</span>
+        <span class="stat-val accent" id="save-energy">—</span>
+        <span class="stat-sub" id="save-energy-sub">the market price alone</span>
+      </div>
+      <div class="stat">
+        <span class="stat-label">Saving after fees</span>
+        <span class="stat-val" id="save-total">—</span>
+        <span class="stat-sub" id="save-total-sub">what actually lands on the bill</span>
+      </div>
+    </div>
+
+    <p class="readout" id="readout"></p>
+  </section>
+
+  <section class="panel">
+    <div class="panel-head">
+      <div class="panel-title">The numbers</div>
+    </div>
+    <div class="chart-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Cost per MWh of heat</th>
+            <th scope="col">Normal factory</th>
+            <th scope="col">Thermal battery</th>
+            <th scope="col">Difference</th>
+          </tr>
+        </thead>
+        <tbody id="tbody"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="notes">
+    <h2>What this leaves out</h2>
+    <p>
+      <b>The battery knows the future here.</b> It picks the cheapest hours as if the whole day
+      were known in advance. A real operator is guessing at breakfast what the afternoon will
+      cost. The real project runs it twice — once knowing, once guessing — and the gap between
+      them is what good forecasting is worth.
+    </p>
+    <p>
+      <b>Real markets have layers.</b> Power is bought a day ahead and trued up in real time, and
+      the network fee here stands in for a stack of charges that differ by country and by
+      customer. This shows the shape of the value, not anyone's actual economics.
+    </p>
+    <p>
+      <b>The day is 24 hours, not a year.</b> A real answer needs all 8,760 hours of published
+      prices, because the cheap hours cluster differently by season — and that clustering is
+      most of the story.
+    </p>
+  </section>
+
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  var HOURS = 24;
+  var DEMAND = 10;        // MWh of heat needed every hour
+  var CHARGE_CAP = 40;    // MW — most the battery can buy in one hour
+  var TOTAL = DEMAND * HOURS;
+  var BLOCKS = 4;
+  var BLOCK_H = HOURS / BLOCKS;
+
+  var PRESETS = {
+    mild:    [30, 45, 25, 70],
+    solar:   [30, 45, 0, 110],
+    extreme: [40, 35, -15, 140]
+  };
+
+  var state = {
+    blocks: PRESETS.solar.slice(),
+    storageHours: 12,
+    fee: 40,
+    preset: "solar"
+  };
+
+  // ---- model -------------------------------------------------------------
+
+  function hourlyPrices(blocks) {
+    var p = [];
+    for (var h = 0; h < HOURS; h++) p.push(blocks[Math.floor(h / BLOCK_H)]);
+    return p;
+  }
+
+  // Greedy: fill each shortfall from the cheapest hour that has already happened.
+  // Energy can only be stored after it is bought, so candidates are limited to
+  // hours at or before the hour that runs short.
+  function schedule(prices, storageMWh) {
+    var charge = new Array(HOURS).fill(0);
+
+    function socProfile() {
+      var soc = 0, end = new Array(HOURS), deficit = -1;
+      for (var h = 0; h < HOURS; h++) {
+        soc += charge[h] - DEMAND;
+        end[h] = soc;
+        if (soc < -1e-9 && deficit === -1) deficit = h;
+      }
+      return { end: end, deficit: deficit };
+    }
+
+    for (var iter = 0; iter < 4000; iter++) {
+      var prof = socProfile();
+      if (prof.deficit === -1) break;
+      var d = prof.deficit;
+      var shortfall = -prof.end[d];
+
+      var best = -1, bestPrice = Infinity, bestRoom = 0;
+      for (var j = 0; j <= d; j++) {
+        var capRoom = CHARGE_CAP - charge[j];
+        if (capRoom <= 1e-9) continue;
+        var stRoom = Infinity;
+        for (var k = j; k <= d; k++) {
+          stRoom = Math.min(stRoom, storageMWh - prof.end[k]);
+        }
+        var room = Math.min(capRoom, stRoom);
+        if (room <= 1e-9) continue;
+        if (prices[j] < bestPrice) { bestPrice = prices[j]; best = j; bestRoom = room; }
+      }
+      if (best === -1) break;
+      charge[best] += Math.min(bestRoom, shortfall);
+    }
+    return charge;
+  }
+
+  function compute() {
+    var prices = hourlyPrices(state.blocks);
+    var charge = schedule(prices, state.storageHours * DEMAND);
+
+    var flatSpend = 0, batSpend = 0;
+    for (var h = 0; h < HOURS; h++) {
+      flatSpend += DEMAND * prices[h];
+      batSpend  += charge[h] * prices[h];
+    }
+    return {
+      prices: prices,
+      charge: charge,
+      flatEnergy: flatSpend / TOTAL,
+      batEnergy:  batSpend / TOTAL,
+      fee: state.fee
+    };
+  }
+
+  // ---- helpers -----------------------------------------------------------
+
+  var SVG = "http://www.w3.org/2000/svg";
+  function el(name, attrs, text) {
+    var n = document.createElementNS(SVG, name);
+    for (var k in attrs) if (attrs[k] !== null && attrs[k] !== undefined) n.setAttribute(k, attrs[k]);
+    if (text !== undefined) n.textContent = text;
+    return n;
+  }
+  function money(v) {
+    var s = Math.abs(v) < 0.005 ? "0" : Math.abs(v).toFixed(Math.abs(v) < 10 ? 2 : 0);
+    return (v < -0.005 ? "−$" : "$") + s;
+  }
+  function pct(v) { return (v < 0 ? "−" : "") + Math.abs(Math.round(v)) + "%"; }
+
+  // ---- price chart -------------------------------------------------------
+
+  var W = 880, H = 372;
+  var M = { top: 18, right: 20, bottom: 30, left: 56 };
+  var PLOT_H = 214;
+  var STRIP_TOP = 258, STRIP_H = 56;
+  var plotW = W - M.left - M.right;
+  var P_MIN = -30, P_MAX = 160;
+
+  function py(v) {
+    var t = (v - P_MIN) / (P_MAX - P_MIN);
+    return M.top + PLOT_H - t * PLOT_H;
+  }
+  function px(h) { return M.left + (h / HOURS) * plotW; }
+
+  var daySvg = document.getElementById("day");
+  var dragging = null;
+
+  function renderDay(model) {
+    while (daySvg.firstChild) daySvg.removeChild(daySvg.firstChild);
+
+    var ticks = [-30, 0, 40, 80, 120, 160];
+    ticks.forEach(function (t) {
+      var y = py(t);
+      daySvg.appendChild(el("line", {
+        x1: M.left, x2: M.left + plotW, y1: y, y2: y,
+        "class": t === 0 ? "zero-line" : "grid-line"
+      }));
+      daySvg.appendChild(el("text", {
+        x: M.left - 10, y: y + 3.5, "class": "tick", "text-anchor": "end"
+      }, t === 0 ? "$0" : "$" + t));
+    });
+
+    // stepped price area + line
+    var dArea = "M " + px(0) + " " + py(Math.max(P_MIN, 0));
+    var dLine = "";
+    for (var b = 0; b < BLOCKS; b++) {
+      var x0 = px(b * BLOCK_H), x1 = px((b + 1) * BLOCK_H), y = py(state.blocks[b]);
+      dArea += " L " + x0 + " " + y + " L " + x1 + " " + y;
+      dLine += (b === 0 ? "M " : " L ") + x0 + " " + y + " L " + x1 + " " + y;
+    }
+    dArea += " L " + px(HOURS) + " " + py(0) + " Z";
+    daySvg.appendChild(el("path", { d: dArea, "class": "price-area" }));
+    daySvg.appendChild(el("path", { d: dLine, "class": "price-line" }));
+
+    // block separators
+    for (var s = 1; s < BLOCKS; s++) {
+      daySvg.appendChild(el("line", {
+        x1: px(s * BLOCK_H), x2: px(s * BLOCK_H),
+        y1: M.top, y2: M.top + PLOT_H, "class": "grid-line"
+      }));
+    }
+
+    // draggable handles
+    for (var i = 0; i < BLOCKS; i++) {
+      (function (idx) {
+        var x0 = px(idx * BLOCK_H), x1 = px((idx + 1) * BLOCK_H);
+        var y = py(state.blocks[idx]);
+        var hit = el("rect", {
+          x: x0, y: M.top, width: x1 - x0, height: PLOT_H,
+          "class": "handle-hit", tabindex: "0", role: "slider",
+          "aria-label": "Price from " + (idx * BLOCK_H) + ":00 to " + ((idx + 1) * BLOCK_H) + ":00",
+          "aria-valuemin": P_MIN, "aria-valuemax": P_MAX,
+          "aria-valuenow": state.blocks[idx],
+          "aria-valuetext": "$" + state.blocks[idx] + " per megawatt hour"
+        });
+        hit.dataset.idx = idx;
+        daySvg.appendChild(hit);
+        daySvg.appendChild(el("line", {
+          x1: x0 + 5, x2: x1 - 5, y1: y, y2: y, "class": "handle-bar"
+        }));
+        daySvg.appendChild(el("text", {
+          x: (x0 + x1) / 2, y: y - 11, "class": "handle-val", "text-anchor": "middle"
+        }, "$" + state.blocks[idx]));
+      })(i);
+    }
+
+    // hour axis
+    daySvg.appendChild(el("line", {
+      x1: M.left, x2: M.left + plotW, y1: M.top + PLOT_H, y2: M.top + PLOT_H, "class": "axis-line"
+    }));
+
+    // charging strip
+    daySvg.appendChild(el("text", {
+      x: M.left - 10, y: STRIP_TOP + 12, "class": "strip-label", "text-anchor": "end"
+    }, "Buys"));
+    daySvg.appendChild(el("line", {
+      x1: M.left, x2: M.left + plotW, y1: STRIP_TOP + STRIP_H, y2: STRIP_TOP + STRIP_H,
+      "class": "axis-line"
+    }));
+
+    var hw = plotW / HOURS;
+    for (var h = 0; h < HOURS; h++) {
+      if (model.charge[h] <= 0.01) continue;
+      var bh = (model.charge[h] / CHARGE_CAP) * STRIP_H;
+      daySvg.appendChild(el("rect", {
+        x: px(h) + 1, y: STRIP_TOP + STRIP_H - bh,
+        width: Math.max(1, hw - 2), height: bh,
+        rx: Math.min(3, bh / 2), "class": "charge-bar"
+      }));
+    }
+
+    [0, 6, 12, 18, 24].forEach(function (h) {
+      daySvg.appendChild(el("text", {
+        x: px(h), y: STRIP_TOP + STRIP_H + 18, "class": "tick",
+        "text-anchor": h === 0 ? "start" : (h === 24 ? "end" : "middle")
+      }, h === 24 ? "24:00" : (h < 10 ? "0" : "") + h + ":00"));
+    });
+  }
+
+  // ---- bills chart -------------------------------------------------------
+
+  var billSvg = document.getElementById("bills");
+  var BW = 880, BM = { top: 26, right: 24, bottom: 26, left: 150 };
+  var barW = BW - BM.left - BM.right;
+
+  function renderBills(model) {
+    while (billSvg.firstChild) billSvg.removeChild(billSvg.firstChild);
+
+    var rows = [
+      { name: "Normal factory", energy: model.flatEnergy, color: "var(--factory)" },
+      { name: "Thermal battery", energy: model.batEnergy, color: "var(--battery)" }
+    ];
+
+    var lo = 0, hi = 0;
+    rows.forEach(function (r) {
+      lo = Math.min(lo, r.energy);
+      hi = Math.max(hi, r.energy + model.fee, r.energy);
+    });
+    hi = Math.max(hi, 20);
+    var pad = (hi - lo) * 0.04;
+    var dLo = lo - pad, dHi = hi + pad;
+    function bx(v) { return BM.left + ((v - dLo) / (dHi - dLo)) * barW; }
+
+    var zx = bx(0);
+    billSvg.appendChild(el("line", {
+      x1: zx, x2: zx, y1: BM.top - 8, y2: 148, "class": "zero-line"
+    }));
+    billSvg.appendChild(el("text", {
+      x: zx, y: 166, "class": "tick", "text-anchor": "middle"
+    }, "$0"));
+
+    var rowH = 38, gap = 26;
+    rows.forEach(function (r, i) {
+      var y = BM.top + i * (rowH + gap);
+
+      billSvg.appendChild(el("text", {
+        x: BM.left - 14, y: y + rowH / 2 + 4.5, "class": "tick", "text-anchor": "end",
+        style: "font-size:12.5px;fill:var(--ink)"
+      }, r.name));
+
+      // energy segment (may run left of zero)
+      var e0 = Math.min(0, r.energy), e1 = Math.max(0, r.energy);
+      var ex = bx(e0), ew = bx(e1) - bx(e0);
+      if (ew > 0.5) {
+        billSvg.appendChild(el("rect", {
+          x: ex, y: y, width: ew, height: rowH, rx: 3, fill: r.color
+        }));
+      }
+
+      // fee segment, stacked on top of energy, 2px surface gap
+      var fx = bx(r.energy) + 2, fw = bx(r.energy + model.fee) - bx(r.energy) - 2;
+      if (fw > 0.5) {
+        billSvg.appendChild(el("rect", {
+          x: fx, y: y, width: fw, height: rowH, rx: 3, fill: "var(--fee)"
+        }));
+      }
+
+      var total = r.energy + model.fee;
+      billSvg.appendChild(el("text", {
+        x: bx(total) + 10, y: y + rowH / 2 + 5, "class": "handle-val", "text-anchor": "start"
+      }, money(total) + " / MWh"));
+    });
+  }
+
+  // ---- text --------------------------------------------------------------
+
+  function renderText(model) {
+    var flatT = model.flatEnergy + model.fee;
+    var batT  = model.batEnergy + model.fee;
+
+    // Measure the saving against the size of the reference bill, so the sign stays
+    // correct when prices — and therefore the bill itself — go negative.
+    var savE = Math.abs(model.flatEnergy) < 0.01
+      ? 0 : ((model.flatEnergy - model.batEnergy) / Math.abs(model.flatEnergy)) * 100;
+    var savT = Math.abs(flatT) < 0.01
+      ? 0 : ((flatT - batT) / Math.abs(flatT)) * 100;
+
+    document.getElementById("save-energy").textContent = pct(savE);
+    document.getElementById("save-total").textContent = pct(savT);
+    document.getElementById("save-energy-sub").textContent =
+      money(model.batEnergy) + " instead of " + money(model.flatEnergy) + " per MWh";
+    document.getElementById("save-total-sub").textContent =
+      money(batT) + " instead of " + money(flatT) + " per MWh";
+
+    var tbody = document.getElementById("tbody");
+    tbody.innerHTML = "";
+    var rows = [
+      ["Energy", model.flatEnergy, model.batEnergy],
+      ["Network fee", model.fee, model.fee],
+      ["Delivered cost", flatT, batT]
+    ];
+    rows.forEach(function (r) {
+      var tr = document.createElement("tr");
+      var diff = r[2] - r[1];
+      [r[0], money(r[1]), money(r[2]),
+       (Math.abs(diff) < 0.005 ? "—" : (diff < 0 ? "−" : "+") + money(Math.abs(diff)).replace("−", ""))
+      ].forEach(function (cell, ci) {
+        var td = document.createElement(ci === 0 ? "th" : "td");
+        if (ci === 0) td.setAttribute("scope", "row");
+        td.textContent = cell;
+        tr.appendChild(td);
+      });
+      tbody.appendChild(tr);
+    });
+
+    var lost = savE - savT;
+    var msg;
+    if (state.storageHours === 0) {
+      msg = "With no storage the battery has no choice about when to buy, so it pays exactly what " +
+            "the normal factory pays. Storage is the whole product — give it some.";
+    } else if (savE < 1) {
+      msg = "When the price barely moves across the day there is nothing to wait for, and " +
+            "flexibility earns almost nothing. Volatility is the raw material.";
+    } else {
+      msg = "Waiting for the cheap hours cuts the cost of energy by <b class=\"num\">" + pct(savE) +
+            "</b>. But the network fee is charged on every unit whatever it cost, so the saving " +
+            "that reaches the bill is only <b class=\"num\">" + pct(savT) + "</b>";
+      msg += lost > 1
+        ? " — the fee swallows <b class=\"num\">" + pct(lost) + "</b> of the advantage."
+        : ".";
+      if (model.fee === 0) {
+        msg = "Waiting for the cheap hours cuts the cost of energy by <b class=\"num\">" + pct(savE) +
+              "</b>, and with no network fee every bit of that reaches the bill. Now raise the fee.";
+      }
+    }
+    document.getElementById("readout").innerHTML = msg;
+  }
+
+  // ---- wiring ------------------------------------------------------------
+
+  function render() {
+    var model = compute();
+    renderDay(model);
+    renderBills(model);
+    renderText(model);
+
+    document.getElementById("storage-val").textContent =
+      state.storageHours === 1 ? "1 hour" : state.storageHours + " hours";
+    document.getElementById("fee-val").textContent = "$" + state.fee + " / MWh";
+
+    document.querySelectorAll(".preset-btn").forEach(function (b) {
+      b.setAttribute("aria-pressed", b.dataset.preset === state.preset ? "true" : "false");
+    });
+  }
+
+  function setBlock(idx, value) {
+    var v = Math.max(P_MIN, Math.min(P_MAX, Math.round(value / 5) * 5));
+    if (v === state.blocks[idx]) return;
+    state.blocks[idx] = v;
+    state.preset = null;
+    render();
+  }
+
+  function priceFromEvent(ev) {
+    var r = daySvg.getBoundingClientRect();
+    var yInSvg = ((ev.clientY - r.top) / r.height) * H;
+    var t = (M.top + PLOT_H - yInSvg) / PLOT_H;
+    return P_MIN + t * (P_MAX - P_MIN);
+  }
+
+  daySvg.addEventListener("pointerdown", function (ev) {
+    var t = ev.target;
+    if (!t.classList || !t.classList.contains("handle-hit")) return;
+    dragging = parseInt(t.dataset.idx, 10);
+    t.classList.add("dragging");
+    daySvg.setPointerCapture(ev.pointerId);
+    ev.preventDefault();
+    setBlock(dragging, priceFromEvent(ev));
+  });
+
+  daySvg.addEventListener("pointermove", function (ev) {
+    if (dragging === null) return;
+    ev.preventDefault();
+    setBlock(dragging, priceFromEvent(ev));
+  });
+
+  function endDrag(ev) {
+    if (dragging === null) return;
+    dragging = null;
+    if (ev.pointerId !== undefined && daySvg.hasPointerCapture(ev.pointerId)) {
+      daySvg.releasePointerCapture(ev.pointerId);
+    }
+  }
+  daySvg.addEventListener("pointerup", endDrag);
+  daySvg.addEventListener("pointercancel", endDrag);
+
+  daySvg.addEventListener("keydown", function (ev) {
+    var t = ev.target;
+    if (!t.classList || !t.classList.contains("handle-hit")) return;
+    var idx = parseInt(t.dataset.idx, 10);
+    var step = ev.shiftKey ? 25 : 5;
+    if (ev.key === "ArrowUp" || ev.key === "ArrowRight") {
+      setBlock(idx, state.blocks[idx] + step);
+    } else if (ev.key === "ArrowDown" || ev.key === "ArrowLeft") {
+      setBlock(idx, state.blocks[idx] - step);
+    } else { return; }
+    ev.preventDefault();
+    var again = daySvg.querySelector('.handle-hit[data-idx="' + idx + '"]');
+    if (again) again.focus();
+  });
+
+  document.getElementById("storage").addEventListener("input", function (e) {
+    state.storageHours = parseInt(e.target.value, 10);
+    render();
+  });
+  document.getElementById("fee").addEventListener("input", function (e) {
+    state.fee = parseInt(e.target.value, 10);
+    render();
+  });
+  document.querySelectorAll(".preset-btn").forEach(function (b) {
+    b.addEventListener("click", function () {
+      state.blocks = PRESETS[b.dataset.preset].slice();
+      state.preset = b.dataset.preset;
+      render();
+    });
+  });
+
+  render();
+})();
+</script>

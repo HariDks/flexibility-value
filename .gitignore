@@ -1,0 +1,18 @@
+# Price files are large and re-downloadable — keep them out of the repo.
+data/raw/*
+data/processed/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+
+# Generated figures
+output/figures/*
+!output/figures/.gitkeep
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store

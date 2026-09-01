@@ -1,0 +1,6 @@
+pandas>=2.0
+matplotlib>=3.7
+requests>=2.31
+
+# US market data (MISO). Added at Step 3.
+gridstatus>=0.29
