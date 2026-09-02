@@ -47,16 +47,25 @@ class Result:
 
 
 def schedule(prices: np.ndarray, demand: float, storage: float,
-             charge_cap: float) -> np.ndarray:
+             charge_cap: float, horizon: float | None = None) -> np.ndarray:
     """Return how much the battery buys in each hour.
 
     prices      price per MWh in each hour
     demand      MWh of heat the factory needs every hour
     storage     tank size in MWh
     charge_cap  most the battery can buy in any single hour, in MWh
+    horizon     how many hours ahead the operator can see. None means limited
+                only by the tank.
 
     The tank is empty at the start and ends empty, so total purchases equal
     total heat delivered.
+
+    On `horizon`. Deciding to buy at hour j to cover a shortfall at hour h means
+    knowing at j what will happen h - j hours later. So the operator's forecast
+    horizon and the search window are the same quantity, and capping one caps
+    the other. A horizon of 1 is a buyer who cannot see ahead at all and must
+    buy as it burns; an uncapped horizon still cannot exceed what the tank can
+    carry, because power bought earlier than that has already been burnt.
     """
     n = len(prices)
     charge = np.zeros(n)
@@ -67,6 +76,10 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
     # makes a full year tractable — and it is a physical fact, not an
     # approximation.
     lookback = int(math.ceil(storage / demand)) + 2
+    if horizon is not None:
+        # A horizon of 1 hour means seeing only the hour you are in, which
+        # leaves no earlier hour to have bought in: lookback zero.
+        lookback = min(lookback, max(0, int(horizon) - 1))
 
     prev = 0.0
     for h in range(n):
@@ -109,16 +122,19 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
 
 
 def evaluate(prices: np.ndarray, demand: float, storage_hours: float,
-             charge_cap_hours: float = 4.0) -> Result:
+             charge_cap_hours: float = 4.0,
+             horizon: float | None = None) -> Result:
     """Run both buyers over the same prices and report cost per MWh of heat.
 
     storage_hours     tank size, expressed in hours of the factory's demand
     charge_cap_hours  most it can buy in one hour, in hours of demand
+    horizon           hours of price visibility; None means tank-limited
     """
     prices = np.asarray(prices, dtype=float)
     charge = schedule(prices, demand,
                       storage=storage_hours * demand,
-                      charge_cap=charge_cap_hours * demand)
+                      charge_cap=charge_cap_hours * demand,
+                      horizon=horizon)
 
     delivered = len(prices) * demand
     return Result(
@@ -162,6 +178,20 @@ def _self_test() -> None:
     assert math.isclose(rf.battery_cost, 50.0, abs_tol=1e-6)
     print(f"  flat-price check: battery ${rf.battery_cost:.2f} == "
           f"flat ${rf.flat_cost:.2f}  (nothing to wait for)")
+
+    # A buyer who cannot see ahead has no way to use a tank, so it must pay
+    # what a normal factory pays however large the tank is.
+    rb = evaluate(prices, demand=10, storage_hours=12, horizon=1)
+    assert math.isclose(rb.battery_cost, rb.flat_cost, abs_tol=1e-6)
+    print(f"  blind-buyer check: battery ${rb.battery_cost:.2f} == "
+          f"flat ${rb.flat_cost:.2f}  (12h tank, no visibility)")
+
+    # More visibility can never be worse than less.
+    costs = [evaluate(prices, demand=10, storage_hours=12, horizon=h).battery_cost
+             for h in (1, 2, 3, 6, 12, 24)]
+    assert all(b <= a + 1e-9 for a, b in zip(costs, costs[1:])), costs
+    print(f"  monotonic check: cost falls as visibility grows "
+          f"{' -> '.join(f'${c:.0f}' for c in costs)}")
 
     print("\nAll checks passed.")
 
