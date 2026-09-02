@@ -189,31 +189,69 @@ MISO_ENERGY_USD_MWH = {"summer": 20.10, "winter": 22.00}
 MISO_CUSTOMER_USD_MONTH = 253.00
 MISO_SUMMER_MONTHS = {6, 7, 8, 9}
 
+# The rate summary excludes the Energy Adjustment and the riders, and Otter Tail
+# says so. Both are published separately and both are large enough to matter.
+#
+# Energy Adjustment Factor, Large General Service Non Time of Day, 2025, USD/MWh.
+# This is the fuel and purchased-energy pass-through, so a customer buying its
+# own energy at MISO prices does not pay it.
+MISO_EAF_USD_MWH_2025 = {1: 18.30, 2: 19.46, 3: 13.85, 4: 15.28, 5: 14.22,
+                         6: 11.08, 7: 18.44, 8: 19.58, 9: 17.00, 10: 16.57,
+                         11: 18.76, 12: 23.74}
+
+# Volumetric riders. These are public-policy surcharges on delivered energy, so
+# they apply however the energy was procured.
+MISO_ECO_USD_MWH = 5.78          # Energy Conservation & Optimisation, LGS
+MISO_EITE_USD_MWH = 0.45         # Energy-Intensive Trade-Exposed surcharge
+# Renewable Resource Cost Recovery: an energy component that flipped to a small
+# credit mid-year, and a demand component. Supply-side, so battery-exempt.
+MISO_RRCR_ENERGY_USD_MWH = {"h1": 2.28, "h2": -0.24}   # to 30 Jun / from 1 Jul
+MISO_RRCR_DEMAND_USD_KW = {"h1": 0.413, "h2": 0.038}
+MISO_TCR_DEMAND_USD_KW = 1.03    # Transmission Cost Recovery, Apr 24 - Dec 25
+
 
 def miso_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
                       delivered_mwh: float,
-                      include_energy: bool = False) -> NetworkCost:
+                      utility_supplied: bool = False,
+                      riders: bool = True) -> NetworkCost:
     """What a buyer pays Otter Tail under Schedule 632.
 
-    `include_energy` adds the schedule's own kWh charge. That charge is part of
-    a bundled retail rate covering supply as well as delivery, so it is used
-    only for the normal factory, which buys its power from the utility. A
-    battery buying at MISO hourly prices pays for its energy there instead.
+    `utility_supplied` is True for the normal factory, which buys its power
+    from Otter Tail: it then pays the schedule's own kWh charge, the Energy
+    Adjustment that trues that up to actual fuel and purchased-energy cost, and
+    the supply-side Renewable Resource rider. A battery buying at MISO hourly
+    prices pays for its energy there instead and none of those apply.
+
+    Both buyers pay the demand charge, the demand-side riders, and the
+    volumetric public-policy riders, which fall on delivered energy however it
+    was procured.
     """
     df = pd.DataFrame({"draw": draw_mwh}, index=index)
     monthly_peak = df.groupby([index.year, index.month])["draw"].max()
 
-    capacity = 0.0
+    capacity = MISO_CUSTOMER_USD_MONTH * len(monthly_peak)
     for (_, month), peak_mw in monthly_peak.items():
         season = "summer" if month in MISO_SUMMER_MONTHS else "winter"
-        capacity += peak_mw * 1000 * MISO_DEMAND_USD_KW_MONTH[season]
-    capacity += MISO_CUSTOMER_USD_MONTH * len(monthly_peak)
+        rate = MISO_DEMAND_USD_KW_MONTH[season]
+        if riders:
+            half = "h1" if month <= 6 else "h2"
+            rate += MISO_TCR_DEMAND_USD_KW + MISO_RRCR_DEMAND_USD_KW[half]
+        capacity += peak_mw * 1000 * rate
 
     energy = 0.0
-    if include_energy:
+    if riders:
+        energy += draw_mwh.sum() * (MISO_ECO_USD_MWH + MISO_EITE_USD_MWH)
+
+    if utility_supplied:
         is_summer = np.isin(index.month, list(MISO_SUMMER_MONTHS))
-        energy = (draw_mwh[is_summer].sum() * MISO_ENERGY_USD_MWH["summer"]
-                  + draw_mwh[~is_summer].sum() * MISO_ENERGY_USD_MWH["winter"])
+        energy += (draw_mwh[is_summer].sum() * MISO_ENERGY_USD_MWH["summer"]
+                   + draw_mwh[~is_summer].sum() * MISO_ENERGY_USD_MWH["winter"])
+        energy += sum(draw_mwh[index.month == m].sum() * MISO_EAF_USD_MWH_2025[m]
+                      for m in range(1, 13))
+        if riders:
+            h1 = index.month <= 6
+            energy += (draw_mwh[h1].sum() * MISO_RRCR_ENERGY_USD_MWH["h1"]
+                       + draw_mwh[~h1].sum() * MISO_RRCR_ENERGY_USD_MWH["h2"])
 
     return NetworkCost(energy_per_mwh=energy / delivered_mwh,
                        capacity_per_mwh=capacity / delivered_mwh)

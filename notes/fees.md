@@ -30,7 +30,7 @@ forward visibility each market actually provides:
 |---|---|---|---|---|
 | Spain | 24h (day-ahead) | EUR 76.10 | EUR 48.36 | **+36.5%** |
 | South Australia | 6h (no day-ahead) | AUD 120.12 | AUD 61.16 | **+49.1%** |
-| MISO | 24h (day-ahead) | USD 36.32 | USD 59.58 | **−64.0%** |
+| MISO | 24h (day-ahead) | USD 62.47 | USD 63.80 | **−2.1%** |
 
 ---
 
@@ -118,23 +118,43 @@ customers cannot pick a supplier. **The only route to hourly MISO pricing is a
 specially filed tariff** — which is exactly what the TMEP rider is, and why it
 needed three state commissions to approve it.
 
-**Rates** (Otter Tail's published Minnesota commercial rate summary, Schedule
-632 Transmission Service; excludes tax, fuel adjustments and riders):
+**Rates.** Schedule 632 Transmission Service, from Otter Tail's published
+Minnesota commercial rate summary — **plus** the Energy Adjustment and riders,
+which that summary explicitly excludes and which turn out to be large:
 
 - Customer charge USD 253.00/month, facilities charge nil
-- **Billing demand: USD 12.74/kW/month June–September, 9.97 October–May,
-  charged on the maximum in each calendar month**
-- Energy 20.10 USD/MWh summer, 22.00 winter (bundled — includes supply)
+- **Billing demand: USD 12.74/kW/month June–September, 9.97 October–May, on
+  the maximum in each calendar month**
+- Base energy 20.10 USD/MWh summer, 22.00 winter
+- **Energy Adjustment Factor** (Large General Service, non-TOD), the fuel and
+  purchased-energy true-up: **11.08 to 23.74 USD/MWh** by month in 2025
+- Volumetric riders: ECO 5.78, EITE 0.45 USD/MWh
+- Demand riders: Transmission Cost Recovery 1.03 USD/kW, Renewable Resource
+  0.413 USD/kW to June then 0.038
 
-**There is no time-of-day structure in the demand charge at all.** Nothing about
-*when* a peak occurs reduces it, so a flexible load has no way to respond. The
-battery pays USD 29.88–59.72/MWh in demand charges alone — more than the entire
-wholesale price of the power — and ends up 64% to 138% *more expensive* than a
-normal factory.
+A customer buying its own energy at MISO prices avoids the base energy charge,
+the Energy Adjustment and the supply-side Renewable Resource rider, but still
+pays the demand charge, the demand riders and the volumetric public-policy
+riders.
 
-**This is the thesis, proven on the utility's own published rates.** Flexibility
-in Minnesota is not merely unrewarded; it is actively penalised. Cheap
-electricity is abundant, and access to it is scarce.
+**There is no time-of-day structure in the demand charge at all**, so a flexible
+load has nothing to respond to and its burstiness is charged for regardless.
+The demand charge scales linearly with charge rate while the energy saving
+flattens, so there is no interior optimum:
+
+| Charge rate | 1.5x | 2x | 2.5x | 3x | 4x | 6x |
+|---|---|---|---|---|---|---|
+| Delivered USD/MWh | 63.80 | 69.25 | 76.06 | 83.54 | 99.42 | 132.24 |
+| vs factory | −2.1% | −10.9% | −21.8% | −33.7% | −59.1% | −111.7% |
+
+**The best a battery can do under the standard tariff is break even — and only
+by being barely flexible.** At 1.5x it draws 15 MW to the factory's 10 and comes
+out 2.1% behind. Every increment of real flexibility costs more in demand charge
+than it saves in energy. Flexibility is not rewarded here at any setting.
+
+That is the case for TMEP, on the utility's own published numbers: not that
+Minnesota power is expensive, but that the standard tariff gives a flexible load
+no way to be paid for being flexible.
 
 Xcel's interruptible tariff, which cuts demand charges in exchange for
 curtailment rights, is a second precedent for paying flexible load differently.
@@ -203,15 +223,14 @@ The three markets are three different kinds of tariff:
   band to prefer, so flexibility has nothing to respond to and its burstiness
   is charged for regardless.
 
-### A caveat on the MISO baseline
+### The MISO baseline, now closed out
 
-Otter Tail's published Schedule 632 energy charge (USD 20.10–22.00/MWh) is
-*below* the MISO wholesale average of 41.16, because the published table
-excludes fuel adjustments and riders, which Otter Tail states are not included.
-So the normal factory's USD 36.32 is understated and the battery's disadvantage
-is overstated in magnitude.
+An earlier version of this file put the MISO factory at USD 36.32 and the
+battery 64% behind. That used the rate summary alone, which excludes the Energy
+Adjustment and riders. With both included the factory pays **USD 62.47** and the
+battery's best case is **63.80, or 2.1% behind** — a wash, not a rout.
 
-**The direction is unaffected.** The demand charge alone is USD 29.88–59.72/MWh,
-which exceeds the entire wholesale price of the power. Flexibility loses in
-Minnesota on the demand charge by itself, whatever the energy baseline. But the
-memo should quote the mechanism rather than the −64% headline.
+The qualitative finding survives and is now defensible: flexibility earns
+nothing in Minnesota at any charge rate, and the only way to avoid losing is to
+stop being flexible. The earlier −64% headline was an artefact of an
+understated baseline and should not be quoted.

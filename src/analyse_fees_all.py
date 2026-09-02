@@ -93,14 +93,15 @@ def main() -> None:
     deliv = len(pr) * DEMAND
     flat = np.full(len(pr), DEMAND)
     mi = []
-    nc = miso_network_cost(flat, idx, deliv, include_energy=True)
+    nc = miso_network_cost(flat, idx, deliv, utility_supplied=True)
     mi.append(("Normal\nfactory", 0.0, nc.energy_per_mwh, nc.capacity_per_mwh))
-    for label, mult in (("Battery\nignoring tariff", 4), ("Battery\nplaying tariff", 2)):
+    for label, mult in (("Battery\nignoring tariff", 4), ("Battery\nplaying tariff", 1.5)):
         d = schedule(pr, DEMAND, STORAGE_H * DEMAND, mult * DEMAND, horizon=24)
-        nc = miso_network_cost(d, idx, deliv, include_energy=False)
-        mi.append((label, float((d * pr).sum() / deliv), 0.0, nc.capacity_per_mwh))
+        nc = miso_network_cost(d, idx, deliv)
+        mi.append((label, float((d * pr).sum() / deliv), nc.energy_per_mwh,
+                   nc.capacity_per_mwh))
     panels.append(("MISO (Otter Tail)", "USD", mi,
-                   "Schedule 632 published rates, 24h visibility"))
+                   "Schedule 632 + Energy Adjustment + riders"))
 
     # ---------------- report ----------------
     for market, cur, data, note in panels:
