@@ -47,13 +47,17 @@ class Result:
 
 
 def schedule(prices: np.ndarray, demand: float, storage: float,
-             charge_cap: float, horizon: float | None = None) -> np.ndarray:
+             charge_cap: float | np.ndarray,
+             horizon: float | None = None) -> np.ndarray:
     """Return how much the battery buys in each hour.
 
     prices      price per MWh in each hour
     demand      MWh of heat the factory needs every hour
     storage     tank size in MWh
-    charge_cap  most the battery can buy in any single hour, in MWh
+    charge_cap  most the battery can buy in a single hour, in MWh. A single
+                number applies everywhere; an array lets the cap vary by hour,
+                which is how a battery holds itself back during the network's
+                expensive bands so it does not contract capacity there.
     horizon     how many hours ahead the operator can see. None means limited
                 only by the tank.
 
@@ -70,6 +74,8 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
     n = len(prices)
     charge = np.zeros(n)
     soc = np.zeros(n)  # tank level after each hour's buying and burning
+    cap = (np.full(n, float(charge_cap)) if np.isscalar(charge_cap)
+           else np.asarray(charge_cap, dtype=float))
 
     # Power bought more than this many hours ago has already been burnt, so it
     # cannot help with a shortfall now. Bounding the search this way is what
@@ -96,15 +102,16 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
             peak = -math.inf
             for j in range(h, lo - 1, -1):
                 peak = max(peak, soc[j])
-                room = min(charge_cap - charge[j], storage - peak)
+                room = min(cap[j] - charge[j], storage - peak)
                 if room > EPS and prices[j] < best_price:
                     best_j, best_price, best_room = j, prices[j], room
 
             if best_j < 0:
                 raise RuntimeError(
                     f"hour {h}: the factory runs short and there is no earlier "
-                    f"hour with room to buy. Storage {storage} MWh and charge "
-                    f"cap {charge_cap} MWh/h are too small for demand {demand}.")
+                    f"hour with room to buy. Storage {storage} MWh and the "
+                    f"charge caps around this hour are too small for demand "
+                    f"{demand}.")
 
             bought = min(best_room, -soc[h])
             charge[best_j] += bought
