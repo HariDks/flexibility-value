@@ -173,3 +173,45 @@ nothing it was actually trying to recover.
 3. **Cargos estimated at EUR 8–20/MWh.** Wrong by five to ten times; the
    published values are EUR 0.21–2.58/MWh. Spain deliberately keeps regulated
    charges low for high-voltage industry.
+
+---
+
+## Where each market's saving actually comes from
+
+Two levers are available to a battery: **hunt cheap prices**, and **obey the
+tariff clock**. Isolating them — the tariff-only case uses a flat price signal,
+so the battery has no price preference at all but still plans around the bands:
+
+| Market | Price hunting alone | Tariff clock alone | Together | Interaction |
+|---|---|---|---|---|
+| Spain | +21.1% | **+0.0%** | +36.5% | **+15.3** |
+| South Australia | +27.6% | **+16.1%** | +49.1% | +5.4 |
+| MISO | −137.6% | **−54.5%** | −64.0% | +128.1 |
+
+The three markets are three different kinds of tariff:
+
+- **Spain — permissive.** Obeying the clock is worth *nothing* on its own: a
+  battery with no price preference buys just-in-time and pays exactly what the
+  factory pays. But it nearly doubles what price-hunting is worth, 21.1% to
+  36.5%. The tariff does not reward flexibility; it *permits* it, by not
+  punishing the peak that price-hunting creates.
+- **South Australia — rewarding.** The clock pays 16.1% by itself, with no
+  forecasting whatsoever, because avoiding the 17:00–21:00 window directly cuts
+  the largest charge. Price-hunting then adds on top.
+- **MISO — punitive.** Every lever loses. Even a slow, price-blind battery is
+  54.5% worse off than a normal factory. There is no window to avoid and no
+  band to prefer, so flexibility has nothing to respond to and its burstiness
+  is charged for regardless.
+
+### A caveat on the MISO baseline
+
+Otter Tail's published Schedule 632 energy charge (USD 20.10–22.00/MWh) is
+*below* the MISO wholesale average of 41.16, because the published table
+excludes fuel adjustments and riders, which Otter Tail states are not included.
+So the normal factory's USD 36.32 is understated and the battery's disadvantage
+is overstated in magnitude.
+
+**The direction is unaffected.** The demand charge alone is USD 29.88–59.72/MWh,
+which exceeds the entire wholesale price of the power. Flexibility loses in
+Minnesota on the demand charge by itself, whatever the energy baseline. But the
+memo should quote the mechanism rather than the −64% headline.
