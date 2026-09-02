@@ -227,8 +227,15 @@ front of their policy team is the one unrecoverable error.
 
 1. **The battery knows the future** in the foresight case. Real operators guess.
    Step 5 quantifies this rather than hiding it.
-2. **Day-ahead prices only.** Real participation involves day-ahead and real-time
-   layers.
+2. **Day-ahead prices only** where a day-ahead market exists. South Australia has
+   none — the NEM is a real-time spot market — so "knowing the price ahead" is a
+   much stronger assumption there than in Spain or MISO. Worth saying out loud
+   in the memo: it is a market-design difference, not a data limitation.
+
+2a. **Everything is aggregated to hourly**, and that is measured to cost the
+   battery 3–12 percentage points of saving in South Australia depending on tank
+   size, while leaving the normal factory's bill untouched. All SA figures are
+   therefore floors. See `notes/resolution.md`.
 3. **One fee number per market** stands in for a stack of charges that varies by
    customer and connection voltage.
 4. **Adding a large flexible load changes prices.** A study of a load this size is
