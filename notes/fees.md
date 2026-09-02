@@ -128,3 +128,54 @@ rights — another precedent for paying flexible load differently.
 - [ ] South Australia: extract $/kVA rates from the AER pricing proposal
 - [ ] MISO: get Otter Tail's primary tariff sheets, and the TMEP filing itself
 - [ ] All: re-run the model with a two-part fee and see what survives
+
+---
+
+## Results, on published rates and realistic forward visibility
+
+Combining Step 4 (the network bill) with Step 5 (what each market lets an
+operator see). Delivered cost per MWh of heat, 12h tank:
+
+| Market | Visibility | Factory | Battery | Saving |
+|---|---|---|---|---|
+| Spain | 24h (day-ahead) | EUR 76.10 | EUR 48.36 | **+36.5%** |
+| South Australia | 6h (no day-ahead) | AUD 120.12 | AUD 61.16 | **+49.1%** |
+| MISO | 24h (day-ahead) | USD 36.32 | USD 59.58 | **−64.0%** |
+
+### Why South Australia still wins without a day-ahead market
+
+Its advantage splits into two parts that behave completely differently:
+
+- **The tariff half is robust.** Avoiding the 17:00–21:00 peak window needs a
+  clock, not a forecast. Network capacity cost stays at AUD 6.85/MWh at *any*
+  visibility — and is lower than the normal factory's 8.38, because the factory
+  cannot dodge dinnertime and the battery can.
+- **The energy half is fragile.** Power cost runs from −AUD 1.29 with perfect
+  foresight to AUD 29.31 at six hours. All of the erosion is here.
+
+So South Australia wins on **tariff design**, not on price-chasing. What it
+lacks (published day-ahead prices) is expensive; what it has (a demand charge
+measured in a narrow window) is valuable and needs no forecasting at all.
+
+**Sensitivity to visibility**, SA, tariff-aware:
+
+| Visibility | 3h | 4h | 5h | 6h | 8h | 12h | tank-limited |
+|---|---|---|---|---|---|---|---|
+| Saving | infeasible | infeasible | 42.4% | 49.1% | 57.5% | 71.2% | 74.6% |
+
+Below five hours the strategy is infeasible: the battery cannot fill up before
+a four-hour blackout it can see coming. **That floor is set by the tariff, not
+by the market** — a useful thing to be able to say about tariff design.
+
+### Rate-year check
+
+SA Power Networks publishes only the current year's price list, so the 2025-26
+schedule covering the data year is not retrievable. Both bracketing published
+years were run instead:
+
+| Vintage | Code | Energy | Peak | Anytime | Saving at 6h |
+|---|---|---|---|---|---|
+| 2024-25 | STN | 15.30 | 0.1584 | 0.0449 | 49.5% |
+| 2026-27 | STR | 25.00 | 0.1737 | 0.0274 | 49.1% |
+
+The rate changes offset almost exactly, so the year mismatch is immaterial.

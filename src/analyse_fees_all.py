@@ -57,25 +57,26 @@ def main() -> None:
     per = spain_periods(idx)
     eff = pr + np.array([ES_ENERGY_EUR_MWH[p] for p in per])
     flat = np.full(len(pr), DEMAND)
-    naive = schedule(pr, DEMAND, STORAGE_H * DEMAND, 4 * DEMAND)
+    naive = schedule(pr, DEMAND, STORAGE_H * DEMAND, 4 * DEMAND, horizon=24)
     cap = np.where(np.isin(per, (4, 5, 6)), 6, 1) * DEMAND
-    aware = schedule(eff, DEMAND, STORAGE_H * DEMAND, cap)
+    aware = schedule(eff, DEMAND, STORAGE_H * DEMAND, cap, horizon=24)
     es = []
     for name, d in (("Normal\nfactory", flat), ("Battery\nignoring tariff", naive),
                     ("Battery\nplaying tariff", aware)):
         nc = spain_network_cost(d, idx, deliv)
         es.append((name, float((d * pr).sum() / deliv),
                    nc.energy_per_mwh, nc.capacity_per_mwh))
-    panels.append(("Spain", "EUR", es, "6.1TD, published 2025 rates"))
+    panels.append(("Spain", "EUR", es, "6.1TD published rates, 24h visibility"))
 
     # ---------------- South Australia ----------------
     s = load("prices_sa", "price_aud_mwh", "Australia/Adelaide", year)
     idx, pr = s.index, s.to_numpy()
     deliv = len(pr) * DEMAND
     flat = np.full(len(pr), DEMAND)
-    naive = schedule(pr, DEMAND, STORAGE_H * DEMAND, 4 * DEMAND)
+    naive = schedule(pr, DEMAND, STORAGE_H * DEMAND, 4 * DEMAND, horizon=6)
     cap = np.where(np.isin(idx.hour, list(SA_PEAK_WINDOW)), 0.0, 6 * DEMAND)
-    aware = schedule(pr + SA_ENERGY_AUD_MWH, DEMAND, STORAGE_H * DEMAND, cap)
+    aware = schedule(pr + SA_ENERGY_AUD_MWH, DEMAND, STORAGE_H * DEMAND,
+                     cap, horizon=6)
     sa = []
     for name, d, flex in (("Normal\nfactory", flat, False),
                           ("Battery\nignoring tariff", naive, False),
@@ -84,7 +85,7 @@ def main() -> None:
         sa.append((name, float((d * pr).sum() / deliv),
                    nc.energy_per_mwh, nc.capacity_per_mwh))
     panels.append(("South Australia", "AUD", sa,
-                   "Sub Transmission (STR), published rates"))
+                   "Sub Transmission published rates, 6h visibility"))
 
     # ---------------- MISO ----------------
     s = load("prices_miso", "price_usd_mwh", "US/Central", year)
@@ -95,11 +96,11 @@ def main() -> None:
     nc = miso_network_cost(flat, idx, deliv, include_energy=True)
     mi.append(("Normal\nfactory", 0.0, nc.energy_per_mwh, nc.capacity_per_mwh))
     for label, mult in (("Battery\nignoring tariff", 4), ("Battery\nplaying tariff", 2)):
-        d = schedule(pr, DEMAND, STORAGE_H * DEMAND, mult * DEMAND)
+        d = schedule(pr, DEMAND, STORAGE_H * DEMAND, mult * DEMAND, horizon=24)
         nc = miso_network_cost(d, idx, deliv, include_energy=False)
         mi.append((label, float((d * pr).sum() / deliv), 0.0, nc.capacity_per_mwh))
     panels.append(("MISO (Otter Tail)", "USD", mi,
-                   "Schedule 632, published rates"))
+                   "Schedule 632 published rates, 24h visibility"))
 
     # ---------------- report ----------------
     for market, cur, data, note in panels:
@@ -146,7 +147,8 @@ def main() -> None:
                  x=0.062, y=1.045, ha="left", fontsize=13.5,
                  fontweight="bold", color=INK)
     fig.text(0.062, 0.975, "Same factory, same heat, same year — on each market's "
-             "own published tariff. Dashed line is what a normal factory pays.",
+             "own published tariff, with the forward view that market actually gives. "
+             "Dashed line is what a normal factory pays.",
              fontsize=9.5, color=INK2, ha="left")
     fig.tight_layout(rect=(0, 0.02, 1, 0.94))
 

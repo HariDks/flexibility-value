@@ -140,28 +140,35 @@ def spain_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
 # controllable load - a reform introduced 1 July 2025.
 # ---------------------------------------------------------------------------
 
-SA_ENERGY_AUD_MWH = 25.00          # $0.0250/kWh
-SA_PEAK_AUD_KVA_DAY = 0.1737
-SA_ANYTIME_AUD_KVA_DAY = 0.0274
-SA_ANYTIME_FLEX_AUD_KVA_DAY = 0.0137
 SA_PEAK_WINDOW = range(17, 21)     # 17:00-21:00, outside the CBD
+
+# SA Power Networks publishes only the current year's price list, so the
+# 2025-26 schedule covering our data year is not retrievable. Both published
+# years that bracket it are carried instead, and results are reported as the
+# range between them. Note the tariff code changed from STN to STR.
+SA_RATES = {
+    "2024-25": {"code": "STN", "energy_mwh": 15.30,     # $0.0153/kWh
+                "peak": 0.1584, "anytime": 0.0449, "anytime_flex": 0.0225},
+    "2026-27": {"code": "STR", "energy_mwh": 25.00,     # $0.0250/kWh
+                "peak": 0.1737, "anytime": 0.0274, "anytime_flex": 0.0137},
+}
+SA_ENERGY_AUD_MWH = SA_RATES["2026-27"]["energy_mwh"]   # back-compat default
 
 
 def sa_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
-                    delivered_mwh: float, flexible: bool = False
-                    ) -> NetworkCost:
+                    delivered_mwh: float, flexible: bool = False,
+                    vintage: str = "2026-27") -> NetworkCost:
     """What a buyer pays SA Power Networks for a given hourly draw profile."""
+    r = SA_RATES[vintage]
     days = len(np.unique(index.date))
     in_peak = np.isin(index.hour, list(SA_PEAK_WINDOW))
 
     peak_kva = float(draw_mwh[in_peak].max(initial=0.0)) * 1000
     anytime_kva = float(draw_mwh.max(initial=0.0)) * 1000
-    anytime_rate = (SA_ANYTIME_FLEX_AUD_KVA_DAY if flexible
-                    else SA_ANYTIME_AUD_KVA_DAY)
+    anytime_rate = r["anytime_flex"] if flexible else r["anytime"]
 
-    capacity = days * (peak_kva * SA_PEAK_AUD_KVA_DAY
-                       + anytime_kva * anytime_rate)
-    return NetworkCost(energy_per_mwh=SA_ENERGY_AUD_MWH,
+    capacity = days * (peak_kva * r["peak"] + anytime_kva * anytime_rate)
+    return NetworkCost(energy_per_mwh=r["energy_mwh"],
                        capacity_per_mwh=capacity / delivered_mwh)
 
 
