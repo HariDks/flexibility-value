@@ -234,3 +234,66 @@ The qualitative finding survives and is now defensible: flexibility earns
 nothing in Minnesota at any charge rate, and the only way to avoid losing is to
 stop being flexible. The earlier −64% headline was an artefact of an
 understated baseline and should not be quoted.
+
+---
+
+## TMEP, read from the tariff itself
+
+Otter Tail Section 14.16, Thermal Market Energy Pricing. Approved by the
+Minnesota PUC 13 November 2025, Docket No. E017/M-25-253, effective 1 January
+2026. Source: `otpco.com/media/40nlwdts/mn_1416.pdf`.
+
+**The clause that does the work:**
+
+> *"Demand: A Customer's monthly bill for Demand shall be determined by
+> multiplying the Customer's **Baseline Demand** by the Demand rate provided in
+> the Large General Service rate schedule applicable to the Customer."*
+
+Demand is billed on an agreed **Baseline Demand** — "a representation of its
+typical pattern of electricity consumption", fixed in the service agreement —
+**not on metered peak.** Energy above baseline settles at the MISO LMP at a
+customer-specific CP Node, and is explicitly exempt from the Energy Adjustment
+Rider.
+
+That is exactly the fix this analysis said was needed, and it is a single clause.
+
+### What it does to the numbers
+
+| Charge rate | Schedule 632 | TMEP |
+|---|---|---|
+| 1.5x | −2.1% | **+11.2%** |
+| 2x | −10.9% | **+15.8%** |
+| 3x | −33.7% | **+19.6%** |
+| 4x | −59.1% | **+20.8%** |
+| 6x | −111.7% | **+21.5%** |
+
+**The sign of the gradient flips.** Under the standard tariff every increment of
+flexibility costs more than it earns, so the best strategy is to stop being
+flexible. Under TMEP every increment *earns* more, so the best strategy is to be
+as flexible as the equipment allows.
+
+Same battery, same market, same prices, same year. One tariff makes flexibility
+a liability; the other makes it an asset. The difference is which number the
+demand charge is multiplied by.
+
+### Other terms worth knowing
+
+- **Availability:** new greenfield only, Demand ≥ 25 MW, **load factor < 50%**,
+  entire thermal load registered as a MISO load modifying resource, no
+  behind-the-meter generation except emergency backup.
+- **The coincidence condition:** service must be taken "coincident with and not
+  to exceed the hourly generating output of a nearby specifically identified
+  wind and/or solar generation resource that is not owned by the Company."
+  **This is a real constraint not modelled here** — the battery may only charge
+  when a named wind farm is generating, and only up to its output. It would cut
+  the saving below the figures above.
+- **Day-ahead prices are provided.** The Company makes day-ahead thermal market
+  prices available by 16:00 the preceding day, and the customer nominates its
+  expected hourly load by 07:00. So the 24h visibility assumed for MISO is
+  correct, and is a tariff obligation rather than a market feature.
+- **Curtailable** to Firm Demand at the Company's sole discretion, with the
+  customer liable for costs of failing to curtail.
+- Customer charge USD 282.00/month; minimum one-year term.
+- **NITS** (Network Integration Transmission Service) charges are added to the
+  price and are **not modelled here** — another reason the figures above are an
+  upper bound.

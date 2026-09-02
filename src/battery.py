@@ -48,7 +48,8 @@ class Result:
 
 def schedule(prices: np.ndarray, demand: float, storage: float,
              charge_cap: float | np.ndarray,
-             horizon: float | None = None) -> np.ndarray:
+             horizon: float | None = None,
+             loss_per_hour: float = 0.0) -> np.ndarray:
     """Return how much the battery buys in each hour.
 
     prices      price per MWh in each hour
@@ -60,9 +61,13 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
                 expensive bands so it does not contract capacity there.
     horizon     how many hours ahead the operator can see. None means limited
                 only by the tank.
+    loss_per_hour
+                fraction of stored heat lost each hour it is held. Zero keeps
+                the tank perfect; a real one leaks, and leaks more the longer
+                it holds, which penalises large tanks specifically.
 
     The tank is empty at the start and ends empty, so total purchases equal
-    total heat delivered.
+    total heat delivered plus whatever leaked away.
 
     On `horizon`. Deciding to buy at hour j to cover a shortfall at hour h means
     knowing at j what will happen h - j hours later. So the operator's forecast
@@ -87,24 +92,33 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
         # leaves no earlier hour to have bought in: lookback zero.
         lookback = min(lookback, max(0, int(horizon) - 1))
 
+    keep = 1.0 - loss_per_hour   # share of stored heat surviving an hour
+
     prev = 0.0
     for h in range(n):
-        soc[h] = prev + charge[h] - demand
+        soc[h] = prev * keep + charge[h] - demand
 
         while soc[h] < -EPS:
             lo = max(0, h - lookback)
 
-            # Walk backwards from now, tracking the highest the tank gets
-            # between a candidate hour and now. Buying at hour j lifts the tank
-            # for every hour from j onwards, so that peak is what limits how
-            # much more we can take on.
-            best_j, best_price, best_room = -1, math.inf, 0.0
-            peak = -math.inf
+            # Walk backwards from now. Buying x at hour j lifts the tank at
+            # every later hour k by x * keep^(k-j) - less the further back you
+            # buy, because the heat has been leaking since. Two running
+            # quantities carry that:
+            #   room  the most that can be added at j without overfilling at
+            #         any hour between j and now
+            #   decay how much of it still survives by now
+            best_j, best_price, best_room, best_decay = -1, math.inf, 0.0, 1.0
+            room_limit, decay = math.inf, 1.0
             for j in range(h, lo - 1, -1):
-                peak = max(peak, soc[j])
-                room = min(cap[j] - charge[j], storage - peak)
+                if j < h:
+                    room_limit /= keep
+                    decay *= keep
+                room_limit = min(room_limit, storage - soc[j])
+                room = min(cap[j] - charge[j], room_limit)
                 if room > EPS and prices[j] < best_price:
-                    best_j, best_price, best_room = j, prices[j], room
+                    best_j, best_price = j, prices[j]
+                    best_room, best_decay = room, decay
 
             if best_j < 0:
                 raise RuntimeError(
@@ -113,17 +127,26 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
                     f"charge caps around this hour are too small for demand "
                     f"{demand}.")
 
-            bought = min(best_room, -soc[h])
+            # Buy enough at best_j that what survives to now closes the gap.
+            bought = min(best_room, -soc[h] / best_decay)
             charge[best_j] += bought
-            soc[best_j:h + 1] += bought
+            surviving = bought
+            for k in range(best_j, h + 1):
+                soc[k] += surviving
+                surviving *= keep
 
         prev = soc[h]
 
     delivered = n * demand
-    if not math.isclose(charge.sum(), delivered, rel_tol=1e-6):
+    if loss_per_hour == 0.0 and not math.isclose(charge.sum(), delivered,
+                                                 rel_tol=1e-6):
         raise RuntimeError(
             f"energy does not balance: bought {charge.sum():.1f} MWh to deliver "
             f"{delivered:.1f} MWh")
+    if charge.sum() < delivered - EPS:
+        raise RuntimeError(
+            f"bought {charge.sum():.1f} MWh to deliver {delivered:.1f} MWh — "
+            f"less than the heat delivered, which is impossible")
 
     return charge
 
