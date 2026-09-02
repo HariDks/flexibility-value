@@ -297,3 +297,78 @@ demand charge is multiplied by.
 - **NITS** (Network Integration Transmission Service) charges are added to the
   price and are **not modelled here** — another reason the figures above are an
   upper bound.
+
+---
+
+## Robustness checks
+
+### How close is the greedy to optimal?
+
+The scheduling rule is a greedy heuristic, chosen for explainability. The exact
+minimum-cost schedule was solved as a linear program (tank level as the
+variable, which keeps the constraint matrix bidiagonal; solves in under a
+second) and compared. Gaps expressed against the **factory's bill**, because at
+large tanks the battery's own bill approaches zero and percentages of it become
+meaningless:
+
+| Tank | Spain | South Australia | MISO |
+|---|---|---|---|
+| 4h | 0.0% | 0.1% | 0.0% |
+| **12h (base case)** | **0.2%** | **0.7%** | **0.2%** |
+| 24h | 0.9% | 1.9% | 0.8% |
+| 48h | 3.0% | 3.6% | 1.3% |
+
+**At the 12-hour base case the greedy is within about half a percent of optimal.**
+The claim that it is "good enough" is now measured rather than asserted. It
+degrades at large tanks — another reason the 48h figures were always the weakest
+in the set — and it always errs the same way, costing more than optimal, so
+every saving reported is a floor.
+
+Switching to the exact solver would be cheap. It is not done because the greedy
+is explainable to a non-technical reader in two sentences and the difference at
+the size that matters is half a percent.
+
+### Does the Spanish tariff class change the conclusion?
+
+6.1TD covers 1–30 kV, and a load of this size may connect higher. All four
+industrial classes, 2025 peajes plus cargos:
+
+| Class | Factory | Battery | Saving |
+|---|---|---|---|
+| 6.1TD (1–30 kV) | 76.10 | 48.36 | **36.5%** |
+| 6.2TD | 72.35 | 44.79 | 38.1% |
+| 6.3TD (30–72.5 kV) | 70.86 | 43.45 | 38.7% |
+| 6.4TD (>72.5 kV) | 69.14 | 41.65 | 39.8% |
+
+Higher voltages are cheaper for both buyers, and the saving *rises* with
+voltage. **Whichever class is correct, the answer is 36.5–39.8%, and the
+reported 36.5% is the most conservative available.** The Spanish half of the
+connection-voltage risk is closed.
+
+The Australian half is not: if a load this size connects at transmission level
+it leaves SA Power Networks' network entirely, and the peak-window structure
+that produces the Australian result may not apply. That still needs checking.
+
+### Does the choice of baseline factory matter?
+
+The baseline factory buys at hourly prices and consumes flat, so it pays the
+realised annual average. A real industrial customer is more likely on a
+**fixed-price contract**, which is priced off the forward curve and embeds a
+risk premium over the realised average.
+
+That means the chosen baseline is the **cheapest inflexible option available** —
+any real alternative costs more, and every euro more makes the battery look
+better:
+
+| Risk premium | Spain | South Australia |
+|---|---|---|
+| 0% (as reported) | 36.5% | 49.1% |
+| 5% | 39.1% | 50.9% |
+| 10% | 41.5% | 52.5% |
+| 20% | 45.8% | 55.5% |
+
+**The direction is unambiguous, so the reported figures are a floor.** What the
+baseline choice does affect is the *framing*: this measures the value of timing
+against inflexible electricity, not the competitiveness of electric heat against
+gas. That distinction belongs in the memo, and confirming which frame the
+audience uses is the one open question here.
