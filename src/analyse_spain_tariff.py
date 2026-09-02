@@ -22,8 +22,7 @@ import numpy as np
 import pandas as pd
 
 from battery import schedule
-from tariff import (ES_ENERGY_EUR_MWH, CARGOS_RANGE_EUR_MWH,
-                    spain_network_cost, spain_periods)
+from tariff import ES_ENERGY_EUR_MWH, spain_network_cost, spain_periods
 
 ROOT = Path(__file__).resolve().parents[1]
 FIGS = ROOT / "output" / "figures"
@@ -46,9 +45,9 @@ mpl.rcParams.update({
 })
 
 
-def bill(draw, idx, prices, cargos):
+def bill(draw, idx, prices):
     delivered = len(prices) * DEMAND
-    nc = spain_network_cost(draw, idx, delivered, cargos_eur_mwh=cargos)
+    nc = spain_network_cost(draw, idx, delivered)
     energy = float((draw * prices).sum() / delivered)
     return {"energy": energy, "net_energy": nc.energy_per_mwh,
             "net_capacity": nc.capacity_per_mwh,
@@ -58,12 +57,7 @@ def bill(draw, idx, prices, cargos):
 def main() -> None:
     p = argparse.ArgumentParser()
     p.add_argument("--year", type=int, default=2025)
-    p.add_argument("--cargos", type=float, default=None,
-                   help="system charges EUR/MWh; default is the midpoint")
     args = p.parse_args()
-
-    cargos = args.cargos if args.cargos is not None else float(
-        np.mean(CARGOS_RANGE_EUR_MWH))
 
     df = pd.read_csv(PROCESSED / f"prices_spain_{args.year}.csv")
     df["ts"] = pd.to_datetime(df["ts"], utc=True).dt.tz_convert("Europe/Madrid")
@@ -73,20 +67,20 @@ def main() -> None:
 
     # The price the battery should actually be reacting to: the market price
     # plus what the network charges for energy in that band.
-    net_energy = np.array([ES_ENERGY_EUR_MWH[p] + cargos for p in per])
+    net_energy = np.array([ES_ENERGY_EUR_MWH[p] for p in per])
     effective = prices + net_energy
 
     storage = STORAGE_H * DEMAND
     flat = np.full(len(prices), DEMAND)
 
-    print(f"Spain {args.year}, {STORAGE_H}h tank, "
-          f"system charges assumed EUR {cargos:.1f}/MWh\n")
+    print(f"Spain {args.year}, {STORAGE_H}h tank. Network tolls and system "
+          f"charges both from published 2025 rates.\n")
 
-    results = {"Normal factory": bill(flat, idx, prices, cargos)}
+    results = {"Normal factory": bill(flat, idx, prices)}
 
     # 1. energy-only, the battery from every previous step
     d1 = schedule(prices, DEMAND, storage, 4 * DEMAND)
-    results["Battery, ignores network"] = bill(d1, idx, prices, cargos)
+    results["Battery, ignores network"] = bill(d1, idx, prices)
 
     # 2 & 3. sweep how hard it may pull in cheap versus expensive bands
     rows = []
@@ -99,7 +93,7 @@ def main() -> None:
                 d = schedule(effective, DEMAND, storage, cap)
             except RuntimeError:
                 continue
-            b = bill(d, idx, prices, cargos)
+            b = bill(d, idx, prices)
             rows.append({"cheap": cheap, "peak": peak, **b})
 
     sweep = pd.DataFrame(rows).sort_values("total")
@@ -107,7 +101,7 @@ def main() -> None:
     cap = np.where(np.isin(per, CHEAP_PERIODS), best.cheap, best.peak) * DEMAND
     d3 = schedule(effective, DEMAND, storage, cap)
     results[f"Battery, tariff-aware ({best.cheap:.0f}x cheap / "
-            f"{best.peak:.2f}x peak)"] = bill(d3, idx, prices, cargos)
+            f"{best.peak:.2f}x peak)"] = bill(d3, idx, prices)
 
     # ---- report ----------------------------------------------------------
     print(f"  {'':<46}{'power':>8}{'net.en':>8}{'net.cap':>9}{'TOTAL':>9}"
@@ -131,16 +125,6 @@ def main() -> None:
     for _, r in sweep.head(6).iterrows():
         print(f"  {r.cheap:>6.0f}x{r.peak:>6.2f}x{r.energy:>9.2f}"
               f"{r.net_capacity:>9.2f}{r.total:>9.2f}")
-
-    # ---- sensitivity to the one number we are least sure of ---------------
-    print(f"\n  Sensitivity to system charges (the least certain input):")
-    print(f"  {'cargos':>8}{'factory':>10}{'battery':>10}{'saving':>9}")
-    for c in (CARGOS_RANGE_EUR_MWH[0], cargos, CARGOS_RANGE_EUR_MWH[1]):
-        ne = np.array([ES_ENERGY_EUR_MWH[p] + c for p in per])
-        dd = schedule(prices + ne, DEMAND, storage, cap)
-        fb, bb = bill(flat, idx, prices, c), bill(dd, idx, prices, c)
-        print(f"  {c:>7.0f} {fb['total']:>9.2f} {bb['total']:>9.2f}"
-              f"{100 * (fb['total'] - bb['total']) / fb['total']:>8.1f}%")
 
     # ---- figure ----------------------------------------------------------
     labels = ["Normal\nfactory", "Battery\nignoring network",
