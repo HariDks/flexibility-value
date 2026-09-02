@@ -75,11 +75,42 @@ Each step ends with something that exists. Do not start the next one until the
 current one produces its checkpoint.
 
 ### Step 1 — Look at Spanish prices *(half a day)*
-Download one year of hourly Spanish day-ahead prices from OMIE. Plot a week in
-April and a week in December. Do no modelling.
+Download one year of hourly Spanish day-ahead prices from OMIE. Do no modelling.
 
-**Checkpoint:** a plot on screen, and confidence the data is what I think it is.
+Look at the year in two stages — zoom out, then zoom in:
+
+**1a. The whole year, in one picture.** A heatmap: 365 columns (day of year) ×
+24 rows (hour of day), each cell coloured by price. Read off it:
+
+- which months are genuinely the extremes — **measured, not assumed**
+- how many hours tall the cheap midday band is, and how that changes by season
+  (this is the storage-sizing intuition)
+- whether the pattern is consistent day to day (a clean band means forecasting is
+  worth little; a speckled one means it is worth a lot — this predicts Step 5)
+- weekends, as faint vertical striping every seven columns
+
+**1b. Two weeks in detail.** Line charts of one week from each extreme month
+*that the heatmap identified*. Colour cannot show precision, so this is where the
+exact trough depth, trough width, and any absurd values get read.
+
+Also worth producing, and likely a memo figure: average price by hour of day, one
+line per month, twelve lines on one chart. Do not lead with it — averaging hides
+the day-to-day variability that 1a exists to reveal.
+
+**Data checks, all of which a plot catches and a table does not:**
+- exactly 8,760 hours (8,784 in a leap year); one 23-hour and one 25-hour day at
+  the clock changes
+- **the clock is right** — if the midday crash appears at 3am, the timestamps are
+  wrong. This is the most common and most damaging bug in energy data, and it
+  would silently corrupt every number downstream
+- no absurd values that are parsing errors rather than real scarcity pricing
+
+**Checkpoint:** the heatmap and two week-plots on screen, extreme months chosen
+from evidence, and confidence the data is what I think it is.
 **Guard:** if the plot looks wrong, stop and fix the data. Do not model bad data.
+
+*(Revised from "plot April and December" — those were assumed to be the extremes.
+Plotting the full year measures which months actually are.)*
 
 ### Step 2 — Run the model on Spain *(half a day)*
 Port the charging logic from the explainer (`explainer/flexibility-worth.html`,
