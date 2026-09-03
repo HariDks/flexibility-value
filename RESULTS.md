@@ -10,23 +10,11 @@ Australia). Calendar year **2025**.
 
 ---
 
-## 1. Headline — against an inflexible electric buyer
+## 1. The business case — against a gas boiler
 
-*`analyse_fees_all.py`. Delivered cost per MWh of heat, on each market's
-published tariff.*
-
-| | Inflexible | Battery ignoring tariff | Battery playing tariff |
-|---|---|---|---|
-| **Spain** (6.3TD) | €70.86 | €46.82 · +33.9% | **€43.45 · +38.7%** |
-| **South Australia** (Sub-Transmission) | A$120.12 | A$72.49 · +39.6% | **A$60.32 · +49.8%** |
-| **MISO** (Schedule 632 + riders) | $62.47 | $99.42 · −59.1% | **$63.80 · −2.1%** |
-
-In Minnesota the battery **loses** under the standard tariff — and its best case
-is achieved by being barely flexible at all.
-
-## 2. Headline — against a gas boiler
-
-*`analyse_gas.py`. The comparison a real customer makes.*
+*`analyse_gas.py`.* **This is the comparison a customer actually makes.** A
+factory choosing whether to install thermal storage is choosing against the gas
+boiler it already runs, not against a hypothetical electric heater.
 
 | | Gas alone | Gas + carbon | Battery | vs gas+carbon | vs gas alone |
 |---|---|---|---|---|---|
@@ -42,7 +30,23 @@ is achieved by being barely flexible at all.
 | South Australia | **A$21.74/t** | A$36.99 | 70% margin |
 | MISO | **$100.70/t** | $0.00 | no carbon price exists |
 
-## 3. Headline — the same battery on two networks in one country
+## 2. The analytical decomposition — against inflexible electrification
+
+*`analyse_fees_all.py`.* **This is not a competitor — it is a measuring stick.**
+Nobody runs a 50 MW resistive heater flat off the grid. Holding everything
+constant except *when* the power is bought isolates the value of flexibility
+alone, which is what the rest of this study is about.
+
+| | Inflexible | Battery ignoring tariff | Battery playing tariff |
+|---|---|---|---|
+| **Spain** (6.3TD) | €70.86 | €46.82 · +33.9% | **€43.45 · +38.7%** |
+| **South Australia** (Sub-Transmission) | A$120.12 | A$72.49 · +39.6% | **A$60.32 · +49.8%** |
+| **MISO** (Schedule 632 + riders) | $62.47 | $99.42 · −59.1% | **$63.80 · −2.1%** |
+
+In Minnesota the battery **loses** under the standard tariff — and its best case
+is achieved by being barely flexible at all.
+
+## 3. The mechanism, isolated — the same battery on two networks in one country
 
 *`analyse_networks.py`. The strongest evidence in the study: no currency,
 weather or market-design confound.*
@@ -136,7 +140,7 @@ committable price at any horizon.
 | Assumption | Base | Tested across | Effect |
 |---|---|---|---|
 | Storage duration | 12h | 4–168h | Saturates at the forecast horizon |
-| Charge rate | 4× | 2×/4×/6× | Large under demand charges; see §1 |
+| Charge rate | 4× | 2×/4×/6× | Large under demand charges; see §2 |
 | Standby loss | 1%/day | 0–10%/day | **0.1–1.9 points.** Immaterial |
 | Boiler efficiency | 85% | 80–90% | Does not change any verdict |
 | Gas price | published | ±10% | Spain and MISO hold; SA holds in 7 of 9 |
