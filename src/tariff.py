@@ -168,7 +168,8 @@ def spain_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
 # controllable load - a reform introduced 1 July 2025.
 # ---------------------------------------------------------------------------
 
-SA_PEAK_WINDOW = range(17, 21)     # 17:00-21:00, outside the CBD
+SA_PEAK_WINDOW = range(17, 21)      # 17:00-21:00, outside the Adelaide CBD
+SA_PEAK_MONTHS = {11, 12, 1, 2, 3}  # Peak Demand is measured Nov-Mar only
 
 # SA Power Networks publishes only the current year's price list, so the
 # 2025-26 schedule covering our data year is not retrievable. Both published
@@ -186,12 +187,28 @@ SA_ENERGY_AUD_MWH = SA_RATES["2026-27"]["energy_mwh"]   # back-compat default
 def sa_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
                     delivered_mwh: float, flexible: bool = False,
                     vintage: str = "2026-27") -> NetworkCost:
-    """What a buyer pays SA Power Networks for a given hourly draw profile."""
+    """What a buyer pays SA Power Networks for a given hourly draw profile.
+
+    Per SA Power Networks' large-business tariff definitions:
+
+      Peak Demand     the highest *daily average* demand inside the window,
+                      measured **November to March only**, though billed all
+                      year round. Outside the Adelaide CBD the window is
+                      17:00-21:00.
+      Anytime Demand  the highest interval at any time in the last 12 months.
+    """
     r = SA_RATES[vintage]
     days = len(np.unique(index.date))
-    in_peak = np.isin(index.hour, list(SA_PEAK_WINDOW))
 
-    peak_kva = float(draw_mwh[in_peak].max(initial=0.0)) * 1000
+    in_window = (np.isin(index.hour, list(SA_PEAK_WINDOW))
+                 & np.isin(index.month, list(SA_PEAK_MONTHS)))
+    if in_window.any():
+        daily_mean = (pd.Series(draw_mwh[in_window], index=index[in_window])
+                      .groupby(index[in_window].date).mean())
+        peak_kva = float(daily_mean.max()) * 1000 if len(daily_mean) else 0.0
+    else:
+        peak_kva = 0.0
+
     anytime_kva = float(draw_mwh.max(initial=0.0)) * 1000
     anytime_rate = r["anytime_flex"] if flexible else r["anytime"]
 

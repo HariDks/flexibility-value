@@ -15,7 +15,7 @@ from pathlib import Path
 from battery import schedule
 from tariff import (miso_network_cost, sa_network_cost, spain_network_cost,
                     spain_periods, ES_ENERGY_EUR_MWH, SA_ENERGY_AUD_MWH,
-                    SA_PEAK_WINDOW, MISO_DEMAND_USD_KW_MONTH, MISO_SUMMER_MONTHS,
+                    SA_PEAK_WINDOW, SA_PEAK_MONTHS, MISO_DEMAND_USD_KW_MONTH, MISO_SUMMER_MONTHS,
                     MISO_TCR_DEMAND_USD_KW, MISO_RRCR_DEMAND_USD_KW,
                     MISO_ECO_USD_MWH, MISO_EITE_USD_MWH)
 
@@ -76,8 +76,9 @@ def battery_cost(market: str, charge_mult: float, storage_h: float = STORAGE_H,
     if market == "South Australia":
         s = load("prices_sa", "price_aud_mwh", "Australia/Adelaide")
         idx, pr = s.index, s.to_numpy()
-        cap = np.where(np.isin(idx.hour, list(SA_PEAK_WINDOW)), 0.0,
-                       charge_mult * DEMAND)
+        blocked = (np.isin(idx.hour, list(SA_PEAK_WINDOW))
+                   & np.isin(idx.month, list(SA_PEAK_MONTHS)))
+        cap = np.where(blocked, 0.0, charge_mult * DEMAND)
         ch = schedule(pr + SA_ENERGY_AUD_MWH, DEMAND, st, cap, horizon=6,
                       loss_per_hour=loss)
         d = len(pr) * DEMAND

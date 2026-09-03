@@ -430,3 +430,63 @@ This is the strongest form of the argument available: it removes every
 confound. No currency difference, no market-design difference, no weather. Only
 the structure of the demand charge changes, and it changes the sign of the
 answer.
+
+---
+
+## QA pass — three checks that had not been run
+
+### 1. South Australia and MISO price data were never inspected visually
+
+Step 1's whole purpose was catching data errors by eye, and it had only been run
+on Spain. Both other markets now have the same year-heatmap.
+
+Both pass, and both are physically right: South Australia shows a pale midday
+solar band and a dark evening band sitting exactly where SA Power Networks
+measures peak demand; MISO shows a pale overnight band (wind) with winter and
+summer evening peaks. No gaps, no duplicates, no repeated-value days. Clock
+changes land correctly in both hemispheres — Adelaide's 25-hour day in April and
+23-hour in October, Minnesota's the other way round.
+
+South Australia has 25 hours above 20x its median price, up to AUD 11,841. These
+are genuine scarcity events, not errors.
+
+### 2. Is full peak-window avoidance actually optimal in South Australia?
+
+It had been assumed. Tested by sweeping how much draw to allow inside the window:
+
+| Allowance inside the window | Delivered AUD/MWh |
+|---|---|
+| **0x demand** | **60.23** |
+| 0.5x | 63.57 |
+| 1x | 66.16 |
+| 2x | 72.79 |
+| 4x | 87.00 |
+
+Monotonic, so zero is optimal. The assumption holds.
+
+### 3. The peak window definition was wrong — and it is load-bearing
+
+Sensitivity first, because it shows why this mattered. Assuming the window is
+16:00–20:00 when the charge actually falls on 17:00–21:00 costs **39 percentage
+points** — the saving collapses from 49% to 10%. Assuming a *wider* window makes
+the schedule infeasible outright. An hour's error here is not a rounding issue.
+
+So the definition was checked against SA Power Networks' own tariff page, which
+says:
+
+> *"Peak demand is measured as the highest daily average demand during the last
+> 12 months **November to March**: CBD 11am–5pm, Rest of South Australia
+> 5pm–9pm. Peak demand values are billed all year round."*
+
+Two corrections follow:
+
+- **Peak Demand is measured November to March only**, though billed year round.
+  The model had been blocking the window on all 365 days.
+- **It is the highest daily *average* over the window**, not the highest
+  instant — a softer constraint than modelled.
+
+Corrected, the South Australian saving moves from 49.1% to **49.9%**, and the
+delivered cost from AUD 61.15 to 60.23. **Real error, immaterial effect** — the
+battery wants the midday solar trough anyway, so giving up evening hours costs
+little either way. `sa_network_cost` now implements the seasonal window and the
+daily-average measure.
