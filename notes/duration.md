@@ -76,3 +76,47 @@ losing heat. Standing thermal loss is a separate parameter entirely.
 
 This study's loss sensitivity (immaterial below ~10%/day) addresses the second;
 nothing here bears on the first.
+
+
+---
+
+## Tested: do the conclusions hold at multi-day duration?
+
+Saving against the inflexible counterfactual, tariff-aware, at each market's
+real forecast horizon:
+
+| Tank | Spain (24h horizon) | South Australia (6h) | MISO (24h) |
+|---|---|---|---|
+| 12h | 37.9% | 49.9% | −11.0% |
+| 24h | **45.6%** | 49.9% | −10.0% |
+| 48h | 45.6% | 49.9% | −10.0% |
+| 96h | 45.6% | 49.9% | −10.0% |
+| 168h | 45.6% | 49.9% | −10.0% |
+
+**Every market goes flat at its own forecast horizon**, and stays flat however
+much more storage is added.
+
+### This corrects the finding, not just its framing
+
+"Returns diminish past 12-24 hours" was imprecise. They do not diminish —
+**they stop, at the forecast horizon.** An operator cannot plan into capacity it
+has no forecast for, so beyond that point extra storage earns exactly nothing on
+arbitrage.
+
+The limit on usefully arbitraged storage is therefore **neither economic nor
+physical — it is informational.** That points at a policy lever: a market
+publishing prices further ahead would make longer storage economically usable.
+It is the same mechanism that caps South Australia at six hours, seen in a
+market that happens to publish twenty-four.
+
+### Consequence for the reported numbers
+
+Spain should be reported as **37.9% at 12 hours, rising to 45.6% and flat from
+24 hours onward**, with the flattening attributed to the day-ahead horizon
+rather than to diminishing economics. A multi-day product in Spain operates at
+the saturated figure.
+
+**The rankings are unchanged at every storage size** — Spain positive, South
+Australia positive, MISO negative throughout — so the tariff-design finding, the
+two-networks comparison, the TMEP result and the gas comparison are all
+unaffected.
