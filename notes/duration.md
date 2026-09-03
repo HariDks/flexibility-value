@@ -5,9 +5,28 @@ for itself by shifting *when* power is bought. On that basis returns diminish
 past roughly 12-24 hours.
 
 That is not the only reason to build storage, and it is a narrower question than
-the one a real product answers. Antora publicly describes **multi-day** thermal
-storage designed to firm intermittent renewables into around-the-clock
-industrial energy — an order of magnitude longer than this study's base case.
+the one a real product answers. Antora publicly describes **multi-day** storage
+built to turn intermittent power into always-on supply — longer than this
+study's base case, and for a different purpose.
+
+Their own wording, from [antora.com/technology](https://www.antora.com/technology):
+
+> "**MULTI-DAY THERMAL STORAGE** — The carbon blocks store energy at temperatures
+> up to 2,400°C… Carbon's high thermal conductivity enables ultra-fast charging
+> that rapidly soaks up the cheapest hours of electricity generation… Energy is
+> discharged **around the clock** as heat."
+
+and from [antora.com](https://www.antora.com/):
+
+> "Reliable — **Multi-day storage delivers always-on heat and power** where
+> downtime is not an option."
+
+> "1 **Intermittent, Low-Cost Energy** → 2 Energy Stored as Heat in Carbon Blocks
+> → 3 **Always-on Heat and Power at Any Scale**"
+
+**No specific hour figure is used anywhere in this study**, because none was
+found in a citable public source. "Multi-day" is what Antora states, and it is
+enough: it is already several times this study's 12-hour base case.
 
 **Both answers are correct; they answer different questions.**
 
