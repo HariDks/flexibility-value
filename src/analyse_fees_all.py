@@ -16,6 +16,7 @@ import pandas as pd
 
 from battery import schedule
 from tariff import (ES_ENERGY_EUR_MWH, SA_ENERGY_AUD_MWH, SA_PEAK_WINDOW,
+                    SA_PEAK_MONTHS,
                     miso_network_cost, sa_network_cost, spain_network_cost,
                     spain_periods)
 
@@ -66,7 +67,7 @@ def main() -> None:
         nc = spain_network_cost(d, idx, deliv)
         es.append((name, float((d * pr).sum() / deliv),
                    nc.energy_per_mwh, nc.capacity_per_mwh))
-    panels.append(("Spain", "EUR", es, "6.1TD published rates, 24h visibility"))
+    panels.append(("Spain", "EUR", es, "6.3TD published rates, 24h visibility"))
 
     # ---------------- South Australia ----------------
     s = load("prices_sa", "price_aud_mwh", "Australia/Adelaide", year)
@@ -74,7 +75,9 @@ def main() -> None:
     deliv = len(pr) * DEMAND
     flat = np.full(len(pr), DEMAND)
     naive = schedule(pr, DEMAND, STORAGE_H * DEMAND, 4 * DEMAND, horizon=6)
-    cap = np.where(np.isin(idx.hour, list(SA_PEAK_WINDOW)), 0.0, 6 * DEMAND)
+    blocked = (np.isin(idx.hour, list(SA_PEAK_WINDOW))
+               & np.isin(idx.month, list(SA_PEAK_MONTHS)))
+    cap = np.where(blocked, 0.0, 6 * DEMAND)
     aware = schedule(pr + SA_ENERGY_AUD_MWH, DEMAND, STORAGE_H * DEMAND,
                      cap, horizon=6)
     sa = []
