@@ -372,3 +372,52 @@ baseline choice does affect is the *framing*: this measures the value of timing
 against inflexible electricity, not the competitiveness of electric heat against
 gas. That distinction belongs in the memo, and confirming which frame the
 audience uses is the one open question here.
+
+---
+
+## The Australian connection-voltage question, closed
+
+**Does a 25–60 MW load sit under SA Power Networks' tariff, or connect straight
+to transmission?** This was the last open risk in the analysis.
+
+**Answer: SA Power Networks, and the modelling is right.** ElectraNet's
+Prescribed Transmission Service Price Schedule for 2025-26 lists its exit
+points, and they are overwhelmingly **bulk supply points into SA Power
+Networks' own network** (Adelaide suburbs, Para subsystem, Port Pirie) plus a
+handful of legacy directly-connected loads — SA Water's pumping stations at
+3.3–11 kV. An industrial site of this size connects to SA Power Networks at
+33/66 kV.
+
+Two things follow, and both matter:
+
+1. **No transmission cost is missing.** SA Power Networks' published rates are
+   **NUoS = DUoS + TUoS**, so ElectraNet's transmission charge is already inside
+   the STR rates used throughout.
+2. **The counterfactual is worth stating anyway**, because it proves the thesis
+   inside a single country.
+
+### If the same load connected directly to ElectraNet
+
+ElectraNet bills capacity on **agreed maximum demand, every day of the year,
+with no peak window** — structurally identical to MISO's monthly maximum.
+All-in capacity is 203.2 $/MW/day non-locational and common-service, plus a
+locational component from 50 to 207, with 31.56 $/MWh of energy charges
+(ex-GST; the published schedule is GST-inclusive).
+
+| Network | Charge design | Battery result |
+|---|---|---|
+| **SA Power Networks** | Peak Demand measured 17:00–21:00 only | **+49.1%** |
+| ElectraNet, Para 66kV | Agreed maximum demand, any hour | +5.9% |
+| ElectraNet, Brinkworth 33kV | Agreed maximum demand, any hour | **−4.8%** |
+| ElectraNet, Ardrossan West 33kV | Agreed maximum demand, any hour | **−14.1%** |
+| ElectraNet, Berri 66kV | Agreed maximum demand, any hour | **−18.6%** |
+
+**Same country, same prices, same year, same battery.** Connected to a network
+whose charge knows what time it is, flexibility is worth 49%. Connected to one
+whose charge does not, it is worth between +6% and −19% depending only on where
+you stand.
+
+This is the strongest form of the argument available: it removes every
+confound. No currency difference, no market-design difference, no weather. Only
+the structure of the demand charge changes, and it changes the sign of the
+answer.
