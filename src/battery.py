@@ -49,7 +49,8 @@ class Result:
 def schedule(prices: np.ndarray, demand: float, storage: float,
              charge_cap: float | np.ndarray,
              horizon: float | None = None,
-             loss_per_hour: float = 0.0) -> np.ndarray:
+             loss_per_hour: float = 0.0,
+             initial_soc: float = 0.0) -> np.ndarray:
     """Return how much the battery buys in each hour.
 
     prices      price per MWh in each hour
@@ -65,6 +66,10 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
                 fraction of stored heat lost each hour it is held. Zero keeps
                 the tank perfect; a real one leaks, and leaks more the longer
                 it holds, which penalises large tanks specifically.
+    initial_soc how much heat is already in the tank at hour zero. A real
+                facility commissions with a charged store; starting empty makes
+                the first hours artificially binding, which matters when a hard
+                availability constraint applies from the start.
 
     The tank is empty at the start and ends empty, so total purchases equal
     total heat delivered plus whatever leaked away.
@@ -94,7 +99,7 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
 
     keep = 1.0 - loss_per_hour   # share of stored heat surviving an hour
 
-    prev = 0.0
+    prev = float(initial_soc)
     for h in range(n):
         soc[h] = prev * keep + charge[h] - demand
 

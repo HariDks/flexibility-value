@@ -35,7 +35,9 @@ GAS = {
     "Spain": (43.20, "EUR", "Eurostat nrg_pc_203 band I4 "
                             "(100,000-999,999 GJ/yr), 2025 average of both "
                             "half-years, excluding VAT"),
-    "South Australia": (12.10 / 0.277778, "AUD", "Adelaide STTM ~A$12.10/GJ, 2025"),
+    "South Australia": (13.00 / 0.277778, "AUD",
+                        "AER STTM quarterly register, Adelaide, mean of the "
+                        "four quarters of 2025 (13.51/12.90/12.76/12.82 A$/GJ)"),
     "MISO": (6.63 / (1.037 * 0.293071), "USD", "EIA Minnesota industrial, "
                                                "$6.63/Mcf 2025"),
 }

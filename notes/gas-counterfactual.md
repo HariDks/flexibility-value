@@ -176,10 +176,52 @@ tonne of CO2 to match the battery. In Spain, on published 2025 prices and the
 correct tariff class, **thermal storage beats gas outright — climate policy is
 upside, not the thing holding it up.**
 
-### South Australia — still open
+### South Australia's gas price, closed too
 
-The Adelaide STTM annual average could not be retrieved: the AER's register is
-unreachable programmatically, AEMO's data page returns 403, and nemweb keeps
-only 30 days live. On the September-2025 estimate the breakeven is AUD 37.78/t
-against an actual 36.99 — about 2% short, which is well inside the uncertainty.
-**Still too close to call, and the delivered gas price decides it.**
+Retrieved manually from the **AER's STTM quarterly price register** (the AER
+site is unreachable programmatically; AEMO returns 403 and nemweb keeps only 30
+days live). Adelaide, the four quarters of calendar 2025:
+
+| Quarter ending | Mar 25 | Jun 25 | Sep 25 | Dec 25 | **2025 mean** |
+|---|---|---|---|---|---|
+| A$/GJ | 13.51 | 12.90 | 12.76 | 12.82 | **13.00** |
+
+**AUD 46.80/MWh**, against the 43.56 previously assumed — 7% dearer, so again
+the battery looks better than estimated.
+
+**South Australia flips from a marginal loss to a win:**
+
+| | Before (estimate) | After (AER register) |
+|---|---|---|
+| Gas, no carbon price | 51.25 | **55.06** |
+| Gas with the Safeguard price | 60.04 | **63.85** |
+| Battery | 60.23 | 60.23 |
+| **Battery vs gas + carbon** | 0.3% *worse* | **5.7% cheaper** |
+| **Breakeven carbon price** | AUD 37.78 (vs 36.99 — marginal) | **AUD 21.74 (vs 36.99)** |
+
+It needs a carbon price of AUD 21.74/t and Australia charges 36.99 — a 70%
+margin, not a coin toss.
+
+Note this is a **wholesale hub** price. A factory pays transport and retail
+margin on top, so real delivered gas is dearer still and the battery's position
+is better than shown.
+
+
+---
+
+## Robustness, with both gas prices now sourced
+
+Breakeven carbon price across gas +/-10% and boiler efficiency 80-90%:
+
+| Market | Breakeven range | Actual | Verdict |
+|---|---|---|---|
+| Spain | −61 to +4 | **EUR 75** | wins in every combination, by a wide margin |
+| South Australia | −16 to +60 | **AUD 37** | wins in 7 of 9; fails only at 90% boiler efficiency with gas 10% cheaper |
+| MISO | 78 to 124 | **USD 0** | loses in every combination |
+
+The remaining uncertainty in Australia is the transport and retail margin on top
+of the wholesale hub price, and that can only push gas **higher** — which moves
+the breakeven down and makes the win more secure, not less.
+
+**All three conclusions are now robust**, and every gas and carbon input is a
+published annual figure rather than an estimate.
