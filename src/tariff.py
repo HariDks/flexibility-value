@@ -9,9 +9,8 @@ Every market charges in two parts, and they behave completely differently:
 The second is why tariff *design* decides whether flexibility pays, and it is
 the reason a bespoke tariff was needed to make Big Stone work.
 
-Spain is modelled from the published rates. South Australia and MISO are
-modelled structurally, with rates carried as documented ranges — see
-notes/fees.md for sources and confidence.
+All three markets are modelled from published rates — see notes/fees.md for
+the source of every figure.
 """
 
 from __future__ import annotations
@@ -28,9 +27,6 @@ import pandas as pd
 # (EUR/kWh). Rates below are the 2025 access tolls (peajes), transport plus
 # distribution, from CNMC's resolution of 4 December 2024, BOE-A-2024-26218.
 #
-# NOT included: the system charges (cargos), set separately by ministerial
-# order, which add materially to the energy side. Modelled as a sensitivity
-# instead - see CARGOS_RANGE.
 # ---------------------------------------------------------------------------
 
 # Access tolls by tariff class, 2025, transport plus distribution.
@@ -261,7 +257,7 @@ def miso_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
                       riders: bool = True) -> NetworkCost:
     """What a buyer pays Otter Tail under Schedule 632.
 
-    `utility_supplied` is True for the normal factory, which buys its power
+    `utility_supplied` is True for the inflexible counterfactual, which buys its power
     from Otter Tail: it then pays the schedule's own kWh charge, the Energy
     Adjustment that trues that up to actual fuel and purchased-energy cost, and
     the supply-side Renewable Resource rider. A battery buying at MISO hourly

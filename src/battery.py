@@ -32,7 +32,7 @@ EPS = 1e-9
 @dataclass(frozen=True)
 class Result:
     """What each buyer paid, per unit of heat delivered."""
-    flat_cost: float        # a normal factory, buying as it burns
+    flat_cost: float        # inflexible: buys as it burns
     battery_cost: float     # the thermal battery, buying when cheap
     charge: np.ndarray      # how much the battery bought in each hour
     storage_hours: float
@@ -184,7 +184,7 @@ def evaluate(prices: np.ndarray, demand: float, storage_hours: float,
 # Check against a case where the answer is already known.
 #
 # The interactive explainer works a made-up day in four six-hour blocks priced
-# 30 / 45 / 0 / 110. With a twelve-hour tank a normal factory pays $46.25 per
+# 30 / 45 / 0 / 110. With a twelve-hour tank the inflexible counterfactual pays $46.25 per
 # MWh and the battery pays $15.00. If this port is faithful, it reproduces both.
 # ---------------------------------------------------------------------------
 
@@ -194,14 +194,14 @@ def _self_test() -> None:
 
     r = evaluate(prices, demand=10, storage_hours=12)
     print("Toy day from the explainer (blocks 30 / 45 / 0 / 110, 12h tank)")
-    print(f"  normal factory : ${r.flat_cost:6.2f} / MWh   (expected $46.25)")
+    print(f"  inflexible     : ${r.flat_cost:6.2f} / MWh   (expected $46.25)")
     print(f"  thermal battery: ${r.battery_cost:6.2f} / MWh   (expected $15.00)")
     print(f"  saving         : {r.saving_pct:5.1f}%          (expected  68.0%)")
 
     assert math.isclose(r.flat_cost, 46.25, abs_tol=0.01), r.flat_cost
     assert math.isclose(r.battery_cost, 15.00, abs_tol=0.01), r.battery_cost
 
-    # No tank means no choice about when to buy: it must match a normal factory.
+    # No tank means no choice about when to buy: it must match the inflexible counterfactual.
     r0 = evaluate(prices, demand=10, storage_hours=0)
     assert math.isclose(r0.battery_cost, r0.flat_cost, abs_tol=1e-6)
     print(f"\n  zero-tank check: battery ${r0.battery_cost:.2f} == "
@@ -215,7 +215,7 @@ def _self_test() -> None:
           f"flat ${rf.flat_cost:.2f}  (nothing to wait for)")
 
     # A buyer who cannot see ahead has no way to use a tank, so it must pay
-    # what a normal factory pays however large the tank is.
+    # what the inflexible counterfactual pays however large the tank is.
     rb = evaluate(prices, demand=10, storage_hours=12, horizon=1)
     assert math.isclose(rb.battery_cost, rb.flat_cost, abs_tol=1e-6)
     print(f"  blind-buyer check: battery ${rb.battery_cost:.2f} == "

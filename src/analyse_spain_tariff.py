@@ -76,7 +76,7 @@ def main() -> None:
     print(f"Spain {args.year}, {STORAGE_H}h tank. Network tolls and system "
           f"charges both from published 2025 rates.\n")
 
-    results = {"Normal factory": bill(flat, idx, prices)}
+    results = {"Inflexible electric": bill(flat, idx, prices)}
 
     # 1. energy-only, the battery from every previous step
     d1 = schedule(prices, DEMAND, storage, 4 * DEMAND)
@@ -106,12 +106,12 @@ def main() -> None:
     # ---- report ----------------------------------------------------------
     print(f"  {'':<46}{'power':>8}{'net.en':>8}{'net.cap':>9}{'TOTAL':>9}"
           f"{'saving':>9}")
-    base = results["Normal factory"]["total"]
+    base = results["Inflexible electric"]["total"]
     for name, b in results.items():
         save = 100 * (base - b["total"]) / abs(base)
         print(f"  {name:<46}{b['energy']:>8.2f}{b['net_energy']:>8.2f}"
               f"{b['net_capacity']:>9.2f}{b['total']:>9.2f}"
-              + (f"{save:>8.1f}%" if name != "Normal factory" else f"{'—':>9}"))
+              + (f"{save:>8.1f}%" if name != "Inflexible electric" else f"{'—':>9}"))
 
     print(f"\n  Contracted power by band (MW):")
     print(f"  {'':<28}" + "".join(f"{'P'+str(p):>7}" for p in range(1, 7)))
@@ -127,7 +127,7 @@ def main() -> None:
               f"{r.net_capacity:>9.2f}{r.total:>9.2f}")
 
     # ---- figure ----------------------------------------------------------
-    labels = ["Normal\nfactory", "Battery\nignoring network",
+    labels = ["Inflexible\nelectric", "Battery\nignoring network",
               "Battery\ntariff-aware"]
     keys = list(results.keys())
     parts = np.array([[results[k]["energy"], results[k]["net_energy"],

@@ -62,7 +62,7 @@ def main() -> None:
     cap = np.where(np.isin(per, (4, 5, 6)), 6, 1) * DEMAND
     aware = schedule(eff, DEMAND, STORAGE_H * DEMAND, cap, horizon=24)
     es = []
-    for name, d in (("Normal\nfactory", flat), ("Battery\nignoring tariff", naive),
+    for name, d in (("Inflexible\nelectric", flat), ("Battery\nignoring tariff", naive),
                     ("Battery\nplaying tariff", aware)):
         nc = spain_network_cost(d, idx, deliv)
         es.append((name, float((d * pr).sum() / deliv),
@@ -81,7 +81,7 @@ def main() -> None:
     aware = schedule(pr + SA_ENERGY_AUD_MWH, DEMAND, STORAGE_H * DEMAND,
                      cap, horizon=6)
     sa = []
-    for name, d, flex in (("Normal\nfactory", flat, False),
+    for name, d, flex in (("Inflexible\nelectric", flat, False),
                           ("Battery\nignoring tariff", naive, False),
                           ("Battery\nplaying tariff", aware, False)):
         nc = sa_network_cost(d, idx, deliv, flexible=flex)
@@ -97,7 +97,7 @@ def main() -> None:
     flat = np.full(len(pr), DEMAND)
     mi = []
     nc = miso_network_cost(flat, idx, deliv, utility_supplied=True)
-    mi.append(("Normal\nfactory", 0.0, nc.energy_per_mwh, nc.capacity_per_mwh))
+    mi.append(("Inflexible\nelectric", 0.0, nc.energy_per_mwh, nc.capacity_per_mwh))
     for label, mult in (("Battery\nignoring tariff", 4), ("Battery\nplaying tariff", 1.5)):
         d = schedule(pr, DEMAND, STORAGE_H * DEMAND, mult * DEMAND, horizon=24)
         nc = miso_network_cost(d, idx, deliv)
@@ -110,7 +110,7 @@ def main() -> None:
     for market, cur, data, note in panels:
         base = sum(data[0][1:])
         print(f"\n{market} — {note}   ({cur}/MWh of heat)")
-        print(f"  {'':<24}{'power':>9}{'net.en':>9}{'net.cap':>9}{'TOTAL':>9}{'vs factory':>12}")
+        print(f"  {'':<24}{'power':>9}{'net.en':>9}{'net.cap':>9}{'TOTAL':>9}{'vs inflex.':>12}")
         for name, p, ne, ncap in data:
             tot = p + ne + ncap
             v = "—" if tot == base else f"{100 * (base - tot) / abs(base):+.1f}%"
@@ -152,7 +152,7 @@ def main() -> None:
                  fontweight="bold", color=INK)
     fig.text(0.062, 0.975, "Same factory, same heat, same year — on each market's "
              "own published tariff, with the forward view that market actually gives. "
-             "Dashed line is what a normal factory pays.",
+             "Dashed line is the inflexible electric counterfactual.",
              fontsize=9.5, color=INK2, ha="left")
     fig.tight_layout(rect=(0, 0.02, 1, 0.94))
 

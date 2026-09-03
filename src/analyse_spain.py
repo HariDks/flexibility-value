@@ -66,7 +66,7 @@ def main() -> None:
     res.to_csv(out, index=False)
 
     print(f"Spain {args.year} — energy price only, battery knows the future\n")
-    print(f"  A normal factory paid EUR {res['flat_eur_mwh'].iat[0]:.2f} / MWh "
+    print(f"  The inflexible counterfactual paid EUR {res['flat_eur_mwh'].iat[0]:.2f} / MWh "
           f"(the annual average price).\n")
     print(f"  {'tank':>6}  {'battery':>10}  {'saving':>8}")
     print(f"  {'':>6}  {'EUR/MWh':>10}  {'':>8}")
@@ -102,7 +102,7 @@ def main() -> None:
     ax.plot(res.storage_hours, res.battery_eur_mwh, lw=2, color=BATTERY,
             marker="o", ms=6, zorder=3, label="Thermal battery")
     ax.axhline(res.flat_eur_mwh.iat[0], lw=2, color=FACTORY, ls=(0, (4, 3)),
-               zorder=2, label="Normal factory")
+               zorder=2, label="Inflexible electric")
 
     for _, r in res.iterrows():
         if r.storage_hours in (0, 8, 48):
