@@ -490,3 +490,35 @@ delivered cost from AUD 61.15 to 60.23. **Real error, immaterial effect** — th
 battery wants the midday solar trough anyway, so giving up evening hours costs
 little either way. `sa_network_cost` now implements the seasonal window and the
 daily-average measure.
+
+
+---
+
+## South Australia's forward visibility — stated as the judgment it is
+
+AEMO publishes **5-minute pre-dispatch one hour ahead** and **30-minute
+pre-dispatch to the end of the next market day, up to ~40 hours**. So forecasts
+exist far beyond the six hours assumed here.
+
+But they are **deterministic point forecasts with no published confidence
+intervals**, and — the structural point — the NEM has no day-ahead market, so
+**there is no price a buyer can commit at, at any horizon**. In Spain and MISO
+the day-ahead price is a number you contract at. In the NEM it is a projection.
+
+The usable horizon is therefore a **forecasting capability**, not a market fact.
+Six hours is a judgment about how far ahead a competent operator can act on NEM
+forecasts, and the result is sensitive to it:
+
+| Visibility | 3h | 5h | 6h | 8h | 12h | 24h | tank-limited |
+|---|---|---|---|---|---|---|---|
+| Saving | infeasible | infeasible | **49.9%** | 58.0% | 69.7% | 73.1% | 73.1% |
+
+(At a 4x charge rate. With 6x the minimum feasible visibility drops to 5h — a
+faster charger needs less warning to clear the peak-window blackout.)
+
+**Report as a range.** The honest claim is that South Australian flexibility is
+worth 50% at a conservative reading of forecast quality and up to 73% at a
+generous one, and that improving the forecast is worth more there than anywhere
+else in the study — because it is the binding constraint. That is itself a
+finding: in South Australia, storage duration is irrelevant and forecasting
+capability is everything.
