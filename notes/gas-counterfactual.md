@@ -92,3 +92,52 @@ infeasible: the battery cannot fill up before the four-hour peak-window blackout
 it must avoid. The tariff sets a floor on how fast you must be able to charge.
 
 Neither of these appears anywhere else, and neither is about prices.
+
+---
+
+## How solid are the inputs?
+
+Mixed, and worth being explicit.
+
+**Well sourced.** Minnesota gas ($6.63/Mcf — EIA's published annual industrial
+price for the state, right customer class, right year). Australian carbon
+(A$36.99/t — the Safeguard Mechanism's official default prescribed unit price
+for 2025-26). US carbon (zero). Gas emissions factor (0.202 tCO2/MWh, standard
+inventory figure).
+
+**Estimated, and two are weak.** Spain's gas price is an **October 2025** figure
+applied to the whole year. Australia's is a **September 2025** Adelaide STTM
+figure, also annualised — and it is a *wholesale hub* price, so it understates
+what a factory actually pays once transport and margin are added. Neither annual
+series could be retrieved: Eurostat's `nrg_pc_203` and the AER's gas price
+register both need interactive queries rather than a fetchable file.
+
+**Assumed.** Boiler efficiency 85% (industrial steam boilers run 80-90%), and
+the EU carbon price at EUR 75/t, chosen from a sourced range of 72-84.
+
+## What that uncertainty does to the conclusions
+
+Breakeven carbon price — the price at which gas costs the same as the battery —
+across gas prices ±25% and boiler efficiency 80/90%:
+
+| Market | Breakeven range | Actual | Verdict |
+|---|---|---|---|
+| Spain | −57 to +57 | **EUR 75** | wins in every combination |
+| MISO | 61 to 140 | **USD 0** | loses in every combination |
+| South Australia | −31 to +107 | **AUD 37** | **flips** with the assumptions |
+
+**Spain and MISO are robust.** No combination of the weak inputs changes either
+answer, and neither is close. With the corrected 6.3TD tariff class Spain's
+battery matches gas at a carbon price near **zero** — competitive on fuel cost
+alone, before any climate policy.
+
+**South Australia is genuinely marginal and should not be quoted precisely.**
+Reporting it as "0.3% behind gas" implies a confidence the inputs do not
+support. The defensible statement is that South Australia sits close to the
+line and where it falls depends on the delivered gas price, which could not be
+sourced.
+
+Two mitigations worth noting. The breakeven framing does not use the assumed
+carbon price at all — it derives what is needed and compares. And the weak
+inputs mostly understate gas, which works against the battery, so Spain and
+South Australia are if anything better than shown.
