@@ -86,7 +86,24 @@ peak that price-hunting creates from being punished. **South Australia is
 rewarding** — the clock pays on its own, with no forecasting at all. **MISO is
 punitive** — every lever loses.
 
-**3. TMEP flips the sign of the incentive.** Minnesota's fix bills demand on an
+**3. TMEP flips the sign of the incentive — but the value sits in a negotiated
+number, not in the tariff.** Demand is billed on an agreed **Baseline Demand**,
+set in the service agreement and not specified by the tariff. The whole value
+turns on where it lands:
+
+| Agreed baseline | Delivered USD/MWh | vs inflexible |
+|---|---|---|
+| **10 MW** (the firm load — assumed here) | 49.60 | **+20.6%** |
+| 15 MW | 57.92 | +7.3% |
+| 20 MW | 66.24 | **−6.0%** |
+| 40 MW (the actual peak — i.e. no deal) | 99.52 | −59.3% |
+
+Same battery, same year; only the contracted figure changes. **The +20.6%
+headline is therefore a fact about the tariff *plus an assumption about a
+negotiation*.** Stated safely: the mechanism is right, and the baseline is where
+the value is actually decided.
+
+**3a. The mechanism itself.** Minnesota's fix bills demand on an
 agreed **Baseline Demand** rather than metered peak. At 4× charge rate the same
 battery goes from **−59.1%** under the standard tariff to **+20.6%** under TMEP.
 Under the standard tariff more flexibility always costs more; under TMEP more
