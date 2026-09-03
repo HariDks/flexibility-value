@@ -120,3 +120,44 @@ the saturated figure.
 Australia positive, MISO negative throughout — so the tariff-design finding, the
 two-networks comparison, the TMEP result and the gas comparison are all
 unaffected.
+
+
+---
+
+## Standby losses — conclusion holds, justification replaced
+
+An earlier version of this reasoning cited a "90 hours idle" figure as evidence
+that standby losses must be very low. **That was wrong.** The figure is a
+discharge-duration number — usable energy over discharge power — and says
+nothing about heat retention. It has been withdrawn as evidence.
+
+The conclusion survives on better grounds, taken from this model rather than
+from any claim about hardware. What matters is not how long the store *could*
+sit, but how long heat *actually* sits in it:
+
+| Tank | Mean residence | 0%/day | 1% | 5% | 10% |
+|---|---|---|---|---|---|
+| 12h | **4.9h** | 38.0% | 37.9% | 37.1% | 36.1% |
+| 24h | **8.3h** | 45.8% | 45.6% | 44.5% | 43.1% |
+| 96h | 8.3h | 45.8% | 45.6% | 44.5% | 43.1% |
+| 168h | 8.3h | 45.8% | 45.6% | 44.5% | 43.1% |
+
+Residence time does not grow with tank size, for the same reason savings do not:
+beyond the forecast horizon the battery never fills the extra space. Losses are
+charged on heat that is held, and it is held for hours.
+
+**So the reason losses do not matter is residence time, not insulation quality.**
+
+### What is no longer claimed
+
+- **Nothing about the actual standby-loss rate.** It is not known here. The
+  claim is only that the answer is insensitive to it below ~10%/day — a
+  statement about this model, not about any product.
+- **The 90-hour figure**, in any role.
+
+### Boundary condition
+
+This holds for the **arbitrage** case, where residence time is 5-8 hours. A
+**firming** battery deliberately holding heat for days would have residence
+times an order of magnitude longer, and losses would scale accordingly. That
+case is not modelled here and this result does not extend to it.
