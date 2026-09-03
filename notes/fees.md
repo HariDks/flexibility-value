@@ -522,3 +522,44 @@ generous one, and that improving the forecast is worth more there than anywhere
 else in the study — because it is the binding constraint. That is itself a
 finding: in South Australia, storage duration is irrelevant and forecasting
 capability is everything.
+
+
+---
+
+## Correction: the greedy-vs-optimal gap, measured on the real problem
+
+An earlier robustness check put the gap between the simple scheduling rule and
+the exact optimum at 0.2-0.7%. **That was measured without the tariff caps in
+play.** With them the gap is larger, because the caps create more opportunities
+for a myopic rule to commit early and block a better opportunity later.
+
+Like for like — both given unlimited foresight, both on the Spanish tariff-aware
+caps:
+
+| Tank | Simple rule | Exact | Gap (of the inflexible bill) |
+|---|---|---|---|
+| 6h | 54.25 | 52.44 | 2.6% |
+| **12h (base case)** | **43.90** | **42.81** | **1.5%** |
+| 24h | 37.82 | 36.55 | 1.8% |
+| 48h | 34.25 | 31.47 | 3.9% |
+
+Still entirely one-directional — the simple rule always costs more, never less —
+so every saving reported remains a floor. But 1.5% at the base case, not 0.5%.
+
+### What the 48-hour gap actually consists of
+
+Reported at 48h the total gap looked like 9.8%. Decomposed:
+
+| | EUR/MWh |
+|---|---|
+| simple rule, 24h foresight (what is reported) | 38.38 |
+| simple rule, unlimited foresight | 34.25 |
+| exact, unlimited foresight | 31.47 |
+
+**5.8 points of that 9.8 is the foresight limit, and imposing it is correct.**
+Spain publishes prices 24 hours ahead; a 48-hour tank cannot be planned with 24
+hours of information. Only 3.9 points is the scheduling rule being simple.
+
+So the large-tank weakness is mostly **a finding, not an error**: storage
+duration is capped by available information in Spain too, at 24 hours rather than
+South Australia's six. It is an independent argument for the 12-hour base case.
