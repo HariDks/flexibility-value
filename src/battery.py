@@ -142,15 +142,18 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
 
         prev = soc[h]
 
+    # Energy must balance: what was bought, plus whatever the tank started
+    # with, covers the heat delivered plus anything left over and anything lost.
     delivered = n * demand
-    if loss_per_hour == 0.0 and not math.isclose(charge.sum(), delivered,
+    supplied = charge.sum() + initial_soc
+    if loss_per_hour == 0.0 and not math.isclose(supplied, delivered + soc[-1],
                                                  rel_tol=1e-6):
         raise RuntimeError(
-            f"energy does not balance: bought {charge.sum():.1f} MWh to deliver "
-            f"{delivered:.1f} MWh")
-    if charge.sum() < delivered - EPS:
+            f"energy does not balance: {supplied:.1f} MWh supplied to deliver "
+            f"{delivered:.1f} MWh with {soc[-1]:.1f} MWh left in the tank")
+    if supplied < delivered - EPS:
         raise RuntimeError(
-            f"bought {charge.sum():.1f} MWh to deliver {delivered:.1f} MWh — "
+            f"supplied {supplied:.1f} MWh to deliver {delivered:.1f} MWh — "
             f"less than the heat delivered, which is impossible")
 
     return charge

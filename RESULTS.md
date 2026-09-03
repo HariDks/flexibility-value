@@ -166,6 +166,28 @@ committable price at any horizon.
 | Scheduling rule | greedy | vs exact LP | 1.5% at base case, always conservative |
 | Inflexible baseline | indexed flat | +0–20% premium | Every alternative costs more |
 
+## 6a. The single biggest untested assumption — now tested
+
+**Everything rests on one year.** Spain re-run on 2024 prices, same model and
+same 2025 tariff:
+
+| Year | Mean price | Hours below zero | Saving |
+|---|---|---|---|
+| 2024 | €63.04 | 2.8% | **29.8%** |
+| 2025 | €65.29 | 6.3% | **37.9%** |
+
+**Eight percentage points.** 2025 had more than twice the negative-price hours
+of 2024, so it was a materially better year for a flexible buyer.
+
+The headline should therefore be stated as a **range with a direction**, not a
+point: *roughly 30-38% in Spain depending on the year, and rising as solar
+penetration grows.* Quoting 2025 alone overstates the precision and understates
+the more interesting fact, which is the trend.
+
+**Not yet tested for South Australia or MISO** — only Spain has a second year
+loaded. Expect the same pattern: a year with more surplus is a better year for
+flexibility.
+
 ## 7. What this does not cover
 
 - **Firmness.** Storage is priced only as an arbitrage asset. Reliability value,
@@ -179,6 +201,11 @@ committable price at any horizon.
   size and is excluded from the headline TMEP figure.
 - **The forward risk premium** on fixed-price contracts, which could not be
   sourced and is therefore not claimed.
+- **Choice of price node.** MISO uses MINN.HUB and South Australia uses SA1,
+  both chosen for relevance rather than tested against alternatives.
+- **Scale.** A single size — 10 MW of heat, drawing up to 40-60 MW — runs
+  throughout. Tariff class and scheme eligibility both depend on size, so the
+  results do not transfer directly to a much smaller or larger plant.
 
 ## 8. Corrections log — claims made and later overturned
 
