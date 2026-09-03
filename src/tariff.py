@@ -33,10 +33,38 @@ import pandas as pd
 # instead - see CARGOS_RANGE.
 # ---------------------------------------------------------------------------
 
-ES_PEAJES_POWER = {1: 23.669055, 2: 12.513915, 3: 4.696330,
-                   4: 3.309245, 5: 0.069965, 6: 0.062286}          # EUR/kW/yr
-ES_PEAJES_ENERGY = {1: 0.027104, 2: 0.011894, 3: 0.004726,
-                    4: 0.002739, 5: 0.000122, 6: 0.000029}         # EUR/kWh
+# Access tolls by tariff class, 2025, transport plus distribution.
+# Class follows connection voltage, which follows connection size: Spanish
+# distribution rules put roughly 30 MW at 30 kV, 40 MW at 45 kV, 50 MW at
+# 50-55 kV, 60 MW at 66 kV. A battery drawing 40-60 MW therefore sits at
+# 45-66 kV, i.e. 6.2TD or 6.3TD - not 6.1TD, which is the cheapest assumption
+# to defend but the most expensive to pay.
+ES_CLASSES = {
+    "6.1TD": {"voltage": "1-30 kV",
+              "power": {1: 23.669055, 2: 12.513915, 3: 4.696330,
+                        4: 3.309245, 5: 0.069965, 6: 0.062286},
+              "energy": {1: 0.027104, 2: 0.011894, 3: 0.004726,
+                         4: 0.002739, 5: 0.000122, 6: 0.000029}},
+    "6.2TD": {"voltage": "30-45 kV",
+              "power": {1: 16.620368, 2: 9.426053, 3: 2.481516,
+                        4: 1.512028, 5: 0.059278, 6: 0.052654},
+              "energy": {1: 0.014770, 2: 0.006840, 3: 0.002279,
+                         4: 0.001219, 5: 0.000063, 6: 0.000020}},
+    "6.3TD": {"voltage": "30-72.5 kV",
+              "power": {1: 10.791377, 2: 6.502236, 3: 2.118318,
+                        4: 1.380541, 5: 0.045332, 6: 0.039905},
+              "energy": {1: 0.012294, 2: 0.005470, 3: 0.001931,
+                         4: 0.001063, 5: 0.000055, 6: 0.000015}},
+    "6.4TD": {"voltage": ">72.5 kV",
+              "power": {1: 6.590215, 2: 3.939980, 3: 0.956817,
+                        4: 0.665081, 5: 0.019779, 6: 0.013181},
+              "energy": {1: 0.007944, 2: 0.003569, 3: 0.001288,
+                         4: 0.000681, 5: 0.000036, 6: 0.000004}},
+}
+# Base case: 6.3TD, the class a 60 MW connection at 66 kV would take.
+ES_DEFAULT_CLASS = "6.3TD"
+ES_PEAJES_POWER = ES_CLASSES[ES_DEFAULT_CLASS]["power"]            # EUR/kW/yr
+ES_PEAJES_ENERGY = ES_CLASSES[ES_DEFAULT_CLASS]["energy"]          # EUR/kWh
 
 # System charges (cargos) for 2025, tariff segment 6, from Orden TED/1487/2024
 # of 26 December 2024, BOE-A-2024-27289. These fund regulated system costs
