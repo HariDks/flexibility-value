@@ -32,7 +32,9 @@ GAS_TCO2_PER_MWH = 0.202
 
 GAS = {
     # market: (price per MWh of gas, currency, source note)
-    "Spain": (37.40, "EUR", "industrial delivered, Oct 2025"),
+    "Spain": (43.20, "EUR", "Eurostat nrg_pc_203 band I4 "
+                            "(100,000-999,999 GJ/yr), 2025 average of both "
+                            "half-years, excluding VAT"),
     "South Australia": (12.10 / 0.277778, "AUD", "Adelaide STTM ~A$12.10/GJ, 2025"),
     "MISO": (6.63 / (1.037 * 0.293071), "USD", "EIA Minnesota industrial, "
                                                "$6.63/Mcf 2025"),
@@ -122,7 +124,8 @@ def main() -> None:
         print(f"  {m:<18}{bare:>10.2f}{full - bare:>9.2f}{full:>11.2f}"
               f"{bat:>10.2f}{100 * (full - bat) / full:>11.1f}%")
 
-    print(f"\n  Without a carbon price the battery loses everywhere:")
+    print(f"\n  Against gas with NO carbon price at all "
+          f"(positive = battery is cheaper):")
     for m, cur, bare, full, bat in rows:
         print(f"    {m:<18}{100 * (bare - bat) / bare:>7.1f}%")
 

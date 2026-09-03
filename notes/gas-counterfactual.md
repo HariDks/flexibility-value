@@ -141,3 +141,45 @@ Two mitigations worth noting. The breakeven framing does not use the assumed
 carbon price at all — it derives what is needed and compares. And the weak
 inputs mostly understate gas, which works against the battery, so Spain and
 South Australia are if anything better than shown.
+
+---
+
+## Spain's gas price, closed properly
+
+The October-2025 figure has been replaced with the real annual series, pulled
+from **Eurostat `nrg_pc_203`** via its open API — band **I4** (100,000–999,999
+GJ/yr, the right size: our factory burns about 371,000 GJ), averaged across both
+half-years of 2025, excluding VAT.
+
+| Band | 2025-S1 | 2025-S2 | 2025 average |
+|---|---|---|---|
+| I3 (10,000–99,999 GJ) | 0.0513 | 0.0508 | 0.0510 |
+| **I4 (100,000–999,999 GJ)** | **0.0472** | **0.0393** | **0.0432** |
+| I5 (1,000,000–3,999,999 GJ) | 0.0481 | 0.0390 | 0.0435 |
+
+**EUR 43.20/MWh**, against the EUR 37.40 previously assumed — gas is **16% more
+expensive** than estimated, so the battery looks better, not worse.
+
+### What it does to the Spanish result
+
+| | Before (estimate) | After (Eurostat) |
+|---|---|---|
+| Gas, no carbon price | 44.00 | **50.82** |
+| Gas with EU ETS | 61.82 | **68.65** |
+| Battery | 44.03 | 44.03 |
+| **Battery vs gas alone** | dead level | **13.4% cheaper** |
+| **Battery vs gas + carbon** | 28.8% cheaper | **35.9% cheaper** |
+| **Breakeven carbon price** | ~0 | **−EUR 28.58/t** |
+
+A negative breakeven means gas would need a **subsidy** of about EUR 29 per
+tonne of CO2 to match the battery. In Spain, on published 2025 prices and the
+correct tariff class, **thermal storage beats gas outright — climate policy is
+upside, not the thing holding it up.**
+
+### South Australia — still open
+
+The Adelaide STTM annual average could not be retrieved: the AER's register is
+unreachable programmatically, AEMO's data page returns 403, and nemweb keeps
+only 30 days live. On the September-2025 estimate the breakeven is AUD 37.78/t
+against an actual 36.99 — about 2% short, which is well inside the uncertainty.
+**Still too close to call, and the delivered gas price decides it.**
