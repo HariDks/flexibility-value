@@ -166,27 +166,41 @@ committable price at any horizon.
 | Scheduling rule | greedy | vs exact LP | 1.5% at base case, always conservative |
 | Inflexible baseline | indexed flat | +0–20% premium | Every alternative costs more |
 
-## 6a. The single biggest untested assumption — now tested
+## 6a. Does the year change the answer? Yes, and differently in each market
 
-**Everything rests on one year.** Spain re-run on 2024 prices, same model and
-same 2025 tariff:
+Everything above uses 2025. Re-run on every year available:
 
-| Year | Mean price | Hours below zero | Saving |
-|---|---|---|---|
-| 2024 | €63.04 | 2.8% | **29.8%** |
-| 2025 | €65.29 | 6.3% | **37.9%** |
+**Spain** — a clear trend, and 2025 is the top of it:
 
-**Eight percentage points.** 2025 had more than twice the negative-price hours
-of 2024, so it was a materially better year for a flexible buyer.
+| Year | Hours below zero | Saving |
+|---|---|---|
+| 2023 | 0.0% | 24.6% |
+| 2024 | 2.8% | 29.8% |
+| 2025 | 6.3% | **37.9%** |
 
-The headline should therefore be stated as a **range with a direction**, not a
-point: *roughly 30-38% in Spain depending on the year, and rising as solar
-penetration grows.* Quoting 2025 alone overstates the precision and understates
-the more interesting fact, which is the trend.
+Monotonic, tracking the growth in negative-price hours exactly — Spain had none
+at all in 2023. So 2025 is not a fluke; it is the latest point on a rising line.
+**State it as "25% three years ago, 38% now, rising with solar"**, which is
+stronger than any single year.
 
-**Not yet tested for South Australia or MISO** — only Spain has a second year
-loaded. Expect the same pattern: a year with more surplus is a better year for
-flexibility.
+**South Australia** — no trend, and 2025 is the *bottom* of the range:
+
+| Year | Hours below zero | Saving |
+|---|---|---|
+| 2022 | 18.6% | 45.6% |
+| 2023 | 26.2% | **55.5%** |
+| 2024 | 25.7% | 54.2% |
+| 2025 | 29.7% | 49.9% |
+
+Negative hours keep rising but the saving does not follow — **independent
+evidence for the horizon finding**, since with only ~6 hours of visibility more
+cheap hours cannot be exploited. The reported 49.9% is the lowest of four years,
+so South Australia's headline is conservative where Spain's sits at the top of
+its range.
+
+**Coverage limits.** Spain 2021-22 are not served at OMIE's daily URLs;
+South Australia before October 2021 is 30-minute data the loader does not
+accept. MISO has one further year loading.
 
 ## 7. What this does not cover
 
