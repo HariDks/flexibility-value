@@ -86,8 +86,9 @@ def check_optimality():
 def check_spain_class():
     print("\n" + "=" * 72)
     print("2. Does the Spanish tariff class change the conclusion?\n")
-    print("   Class follows connection voltage, which follows size. A 40-60 MW")
-    print("   connection sits at 45-66 kV, so 6.2TD or 6.3TD.\n")
+    print("   Class follows connection voltage. The MW threshold at each")
+    print("   voltage is set by the distributor's connection study, not by a")
+    print("   citable table - so the class is not asserted. All four are run.\n")
     s = load("prices_spain", "price_eur_mwh", "Europe/Madrid")
     idx, pr = s.index, s.to_numpy()
     d, per = len(pr) * DEMAND, spain_periods(s.index)

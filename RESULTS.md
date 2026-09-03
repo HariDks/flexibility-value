@@ -144,7 +144,7 @@ committable price at any horizon.
 | Standby loss | 1%/day | 0–10%/day | **0.1–1.9 points.** Immaterial |
 | Boiler efficiency | 85% | 80–90% | Does not change any verdict |
 | Gas price | published | ±10% | Spain and MISO hold; SA holds in 7 of 9 |
-| Spain tariff class | 6.3TD | 6.1–6.4TD | 36.4%–38.8%. Cannot overturn |
+| Spain tariff class | 6.3TD | 6.1–6.4TD | 36.4%–38.8%. **Class not asserted** — the MW threshold per voltage is set by the distributor's connection study, not a citable table. Cannot overturn the conclusion |
 | SA forecast horizon | 6h | 3–24h | **49.9% to 73.1%. The one real judgment** |
 | Scheduling rule | greedy | vs exact LP | 1.5% at base case, always conservative |
 | Inflexible baseline | indexed flat | +0–20% premium | Every alternative costs more |

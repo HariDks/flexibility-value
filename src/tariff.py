@@ -30,11 +30,17 @@ import pandas as pd
 # ---------------------------------------------------------------------------
 
 # Access tolls by tariff class, 2025, transport plus distribution.
-# Class follows connection voltage, which follows connection size: Spanish
-# distribution rules put roughly 30 MW at 30 kV, 40 MW at 45 kV, 50 MW at
-# 50-55 kV, 60 MW at 66 kV. A battery drawing 40-60 MW therefore sits at
-# 45-66 kV, i.e. 6.2TD or 6.3TD - not 6.1TD, which is the cheapest assumption
-# to defend but the most expensive to pay.
+#
+# Class follows connection voltage. Spanish regulation defines the voltage
+# bands (1-30 kV is third category, 30-66 kV second), and larger connections
+# take higher voltages - but the megawatt threshold at each level is set by the
+# distributor's own connection study, not by a citable universal table. So the
+# class a 40-60 MW load would take is NOT asserted here.
+#
+# Instead the study runs all four and reports the range. It does not need the
+# question settled: the saving is 36.4% on 6.1TD and 38.8% on 6.4TD, so no
+# choice of class can overturn the conclusion, and 6.1TD is the conservative
+# floor. See analyse_robustness.py check 2.
 ES_CLASSES = {
     "6.1TD": {"voltage": "1-30 kV",
               "power": {1: 23.669055, 2: 12.513915, 3: 4.696330,
@@ -57,7 +63,7 @@ ES_CLASSES = {
               "energy": {1: 0.007944, 2: 0.003569, 3: 0.001288,
                          4: 0.000681, 5: 0.000036, 6: 0.000004}},
 }
-# Base case: 6.3TD, the class a 60 MW connection at 66 kV would take.
+# Base case: 6.3TD (30-72.5 kV), a mid-range choice. The floor is 6.1TD.
 ES_DEFAULT_CLASS = "6.3TD"
 ES_PEAJES_POWER = ES_CLASSES[ES_DEFAULT_CLASS]["power"]            # EUR/kW/yr
 ES_PEAJES_ENERGY = ES_CLASSES[ES_DEFAULT_CLASS]["energy"]          # EUR/kWh
