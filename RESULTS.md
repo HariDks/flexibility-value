@@ -198,9 +198,35 @@ cheap hours cannot be exploited. The reported 49.9% is the lowest of four years,
 so South Australia's headline is conservative where Spain's sits at the top of
 its range.
 
+**MISO** — the level flips between years, the gradient does not:
+
+| Charge rate | 2024 standard | 2025 standard | 2024 TMEP | 2025 TMEP |
+|---|---|---|---|---|
+| 1.5x | **+15%** | −2% | +28% | +11% |
+| 2x | +4% | −11% | +31% | +16% |
+| 4x | −46% | −59% | +34% | +21% |
+| 6x | **−98%** | **−112%** | **+35%** | **+21%** |
+
+MISO wholesale averaged $27.28 in 2024 against $41.16 in 2025, so buying at
+wholesale was far more attractive that year — enough that at a gentle 1.5x
+charge rate the standard tariff *wins*.
+
+**So "in Minnesota the battery loses" is a 2025 statement and must not be used.**
+What holds in both years is the gradient: **under the standard tariff every
+increment of flexibility costs more, and under TMEP every increment earns more.**
+Stated safely:
+
+> Under Minnesota's standard tariff flexibility is penalised. Whether the
+> battery finishes ahead depends on that year's wholesale price, but being
+> *more* flexible always makes it worse, and the only way to come out ahead is
+> to be barely flexible. TMEP reverses the sign.
+
+That is the better claim anyway: it is about the incentive rather than the
+outcome, and an incentive is what a regulator can change.
+
 **Coverage limits.** Spain 2021-22 are not served at OMIE's daily URLs;
-South Australia before October 2021 is 30-minute data the loader does not
-accept. MISO has one further year loading.
+South Australian data before October 2021 is 30-minute, which the loader does
+not accept.
 
 ## 7. What this does not cover
 
