@@ -367,11 +367,20 @@ better:
 | 10% | 41.5% | 52.5% |
 | 20% | 45.8% | 55.5% |
 
-**The direction is unambiguous, so the reported figures are a floor.** What the
-baseline choice does affect is the *framing*: this measures the value of timing
-against inflexible electricity, not the competitiveness of electric heat against
-gas. That distinction belongs in the memo, and confirming which frame the
-audience uses is the one open question here.
+**The direction is unambiguous, so the reported figures are a floor.**
+
+**The exact premium could not be sourced and should not be estimated.** Pinning
+it down needs the Cal-2025 Iberian forward settlement price against the realised
+average, and OMIP's historical settlement archive is not publicly retrievable.
+Rather than put a made-up premium in the memo, the honest move is to **scope the
+claim**: what is reported is the value of *timing*, measured against the
+cheapest inflexible option available — an indexed customer paying the realised
+average. A fixed-price customer pays more, so the figures are a floor, and the
+memo says exactly that and no more.
+
+Separately, the baseline choice affects *framing*: this measures flexibility
+against inflexible electricity, not electric heat against gas. That distinction
+belongs in the memo, and which frame the audience uses is worth confirming.
 
 ---
 
