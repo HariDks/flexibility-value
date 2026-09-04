@@ -128,8 +128,13 @@ input:focus,select:focus{outline:2px solid var(--draw);outline-offset:-1px}
   color:var(--draw);border:1px solid var(--draw);padding:.5rem .8rem;
   border-radius:2px;cursor:pointer}
 .presets button:hover{background:var(--draw);color:var(--surface)}
+.presets button.on{background:var(--draw);color:var(--surface)}
 .presets button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
 
+.combo{font-size:.86rem;color:var(--muted);margin:0 0 1rem;max-width:46rem;line-height:1.6}
+.combo b{color:var(--ink2);font-weight:600}
+.combo.warn{color:var(--win);background:var(--win2);padding:.75rem .9rem;border-radius:3px}
+.combo.warn b{color:var(--win)}
 .verdict{border-left:3px solid var(--draw);padding:.2rem 0 .2rem 1.1rem;margin:1.4rem 0 0}
 .verdict p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink2)}
 .verdict .head{font-family:Spectral,Georgia,serif;font-size:1.3rem;
@@ -300,6 +305,8 @@ rect,path,line{transition:none}
       Leave at 0 if yours does not.</small></div>
   </div>
 
+  <p class="combo" id="combo"></p>
+
   <div class="panel">
     <dl class="readout">
       <div><dt>Without storage</dt><dd><span id="s-inflex">—</span><small>cost of heat if it buys power as it uses it</small></dd></div>
@@ -443,13 +450,18 @@ document.getElementById("b-any").onclick = () => { rule="anytime"; paintSwitch()
 
 /* ------------------------------------------------------------------ screener */
 const PRESETS = {
-  "SA Power Networks": {mkt:"sa", ener:25.00, meas:"window_season", read:"peakavg",
-                        cap:63.40, any:10.00},
-  "ElectraNet": {mkt:"sa", ener:25.00, meas:"anytime", read:"peak", cap:10.00, any:0},
-  "Otter Tail 632": {mkt:"miso", ener:6.23, meas:"anytime", read:"peak", cap:145.50, any:0},
-  "Otter Tail TMEP": {mkt:"miso", ener:6.23, meas:"baseline", read:"peak", cap:145.50, any:0},
-  "Energy-only": {mkt:"sa", ener:25.00, meas:"anytime", read:"peak", cap:0, any:0},
+  "SA Power Networks": {mkt:"sa", cur:"AUD", ener:25.00, meas:"window_season",
+                        read:"peakavg", cap:63.40, any:10.00},
+  "ElectraNet": {mkt:"sa", cur:"AUD", ener:25.00, meas:"anytime", read:"peak",
+                 cap:10.00, any:0},
+  "Otter Tail 632": {mkt:"miso", cur:"USD", ener:6.23, meas:"anytime", read:"peak",
+                     cap:145.50, any:0},
+  "Otter Tail TMEP": {mkt:"miso", cur:"USD", ener:6.23, meas:"baseline", read:"peak",
+                      cap:145.50, any:0},
+  "Energy-only": {mkt:"sa", cur:"AUD", ener:25.00, meas:"anytime", read:"peak",
+                  cap:0, any:0},
 };
+let loaded = "SA Power Networks";   // which preset the numbers came from
 
 const $ = id => document.getElementById(id);
 const sel = $("mkt");
@@ -463,10 +475,11 @@ const pbox = $("presets");
 for (const name of Object.keys(PRESETS)){
   const b = document.createElement("button");
   b.textContent = name;
+  b.dataset.name = name;
   b.onclick = () => { const p = PRESETS[name];
     sel.value = p.mkt; $("ener").value = p.ener; $("meas").value = p.meas;
     $("read").value = p.read; $("cap").value = p.cap; $("any").value = p.any;
-    score(); };
+    loaded = name; score(); };
   pbox.appendChild(b);
 }
 
@@ -514,6 +527,32 @@ function score(){
   }
   const save4 = at4 === null ? null : 100 * (inflex - at4) / inflex;
 
+  // Say plainly what combination is on screen, and refuse to pretend a
+  // cross-currency mix means anything.
+  const mname = DATA.markets[cfg.mkt].label;
+  const combo = $("combo");
+  const btns = pbox.querySelectorAll("button");
+  btns.forEach(b => b.classList.toggle("on", b.dataset.name === loaded));
+  if (loaded && PRESETS[loaded].cur !== cur){
+    combo.className = "combo warn";
+    combo.innerHTML = `<b>These numbers mix currencies.</b> You are applying
+      ${loaded}'s charges, which are in ${PRESETS[loaded].cur}, to ${mname}
+      prices in ${cur}. Convert the tariff first, or pick a market that uses
+      ${PRESETS[loaded].cur}.`;
+  } else if (loaded && PRESETS[loaded].mkt !== cfg.mkt){
+    combo.className = "combo";
+    combo.innerHTML = `Right now: <b>${loaded}'s tariff</b>, applied to
+      <b>${mname}</b> prices. Holding the tariff still and changing the market
+      is how you find out whether a result comes from the tariff or from the
+      market.`;
+  } else if (loaded){
+    combo.className = "combo";
+    combo.innerHTML = `Right now: <b>${loaded}</b>, on its own market.`;
+  } else {
+    combo.className = "combo";
+    combo.innerHTML = `Right now: <b>your own numbers</b>, on <b>${mname}</b> prices.`;
+  }
+
   $("s-inflex").textContent = inflex.toFixed(2);
   $("s-flex").textContent = best.v.toFixed(2);
   $("s-flex-s").textContent = "same heat, bought at better times (" + cur + "/MWh)";
@@ -537,8 +576,11 @@ function score(){
            ${save4 >= 0 ? "+" : ""}${save4.toFixed(1)}% instead.</span>`);
 }
 
-["mkt","ener","meas","read","cap","any"].forEach(id =>
-  $(id).addEventListener("input", score));
+["ener","meas","read","cap","any"].forEach(id =>
+  $(id).addEventListener("input", () => { loaded = null; score(); }));
+// Changing the market alone keeps the tariff, which is the whole point of
+// being able to hold one still and move the other.
+$("mkt").addEventListener("input", score);
 
 paintSwitch();
 score();
