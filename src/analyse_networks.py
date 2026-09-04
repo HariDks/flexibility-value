@@ -21,7 +21,7 @@ from battery import schedule
 from tariff import (EN_COMMON_CAP_AUD_MW_DAY, EN_ENERGY_AUD_MWH,
                     EN_LOCATIONAL_AUD_MW_DAY, EN_NONLOC_CAP_AUD_MW_DAY,
                     SA_ENERGY_AUD_MWH, SA_PEAK_MONTHS, SA_PEAK_WINDOW,
-                    sa_network_cost)
+                    electranet_network_cost, sa_network_cost)
 
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = ROOT / "data" / "processed"
@@ -69,8 +69,8 @@ def main() -> None:
         capd = loccap + en_cap_common
 
         def tot(dr):
-            return ((dr * pr).sum() / deliv + en_energy
-                    + float(dr.max(initial=0.0)) * capd * days / deliv)
+            nc = electranet_network_cost(dr, deliv, days, loc)
+            return (dr * pr).sum() / deliv + nc.total_per_mwh
 
         f, b = tot(flat), tot(bat_en)
         print(f"   {loc:<22}{f:>12.2f}{b:>10.2f}{100 * (f - b) / f:>9.1f}%")

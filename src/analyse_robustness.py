@@ -96,26 +96,24 @@ def check_spain_class():
     print(f"   {'class':<8}{'voltage':<14}{'flexible':>10}{'inflexible':>12}"
           f"{'saving':>9}")
     for cls, spec in ES_CLASSES.items():
-        pw = {p: spec["power"][p] + ES_CARGOS_POWER[p] for p in range(1, 7)}
+        # The billing now comes from tariff.py rather than being copied here,
+        # so there is one implementation of Spain's six bands and the screener
+        # can be verified against it.
+        def cost(dr):
+            return ((dr * pr).sum() / d
+                    + spain_network_cost(dr, idx, d, cls).total_per_mwh)
+
+        # The operator sees this class's own banded energy charge, which
+        # reorders the hours, so the schedule differs by class.
         en = {p: (spec["energy"][p] + ES_CARGOS_ENERGY[p]) * 1000
               for p in range(1, 7)}
-
-        def cost(dr):
-            run, con = 0.0, {}
-            for p in range(1, 7):
-                run = max(run, float(dr[per == p].max(initial=0.0)))
-                con[p] = run
-            cap_c = sum(con[p] * 1000 * pw[p] for p in range(1, 7))
-            en_c = sum(dr[per == p].sum() * en[p] for p in range(1, 7))
-            return (dr * pr).sum() / d + (cap_c + en_c) / d
-
         ch = schedule(pr + np.array([en[p] for p in per]), DEMAND,
                       STORAGE_H * DEMAND,
                       np.where(np.isin(per, (4, 5, 6)), 4, 1) * DEMAND,
                       horizon=24)
-        f, b = cost(flat), cost(ch)
-        print(f"   {cls:<8}{spec['voltage']:<14}{b:>10.2f}{f:>12.2f}"
-              f"{100 * (f - b) / f:>8.1f}%")
+        i, f = cost(flat), cost(ch)
+        print(f"   {cls:<8}{spec['voltage']:<14}{f:>10.2f}{i:>12.2f}"
+              f"{100 * (i - f) / i:>8.1f}%")
     print("\n   Higher voltage is cheaper for both buyers and the saving rises,")
     print("   so 6.1TD is the most conservative assumption available.")
 

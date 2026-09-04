@@ -48,7 +48,9 @@ from tariff import (ES_CARGOS_ENERGY, ES_CARGOS_POWER, ES_CLASSES,
                     MISO_CUSTOMER_USD_MONTH, MISO_DEMAND_USD_KW_MONTH,
                     MISO_ECO_USD_MWH, MISO_EITE_USD_MWH,
                     MISO_RRCR_DEMAND_USD_KW, MISO_SUMMER_MONTHS,
-                    MISO_TCR_DEMAND_USD_KW, miso_network_cost,
+                    MISO_TCR_DEMAND_USD_KW, ES_CLASSES as _ESC,
+                    electranet_capacity_aud_kw_year,
+                    electranet_network_cost, miso_network_cost,
                     sa_network_cost, spain_network_cost, spain_periods)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -344,19 +346,41 @@ def verify(rows: list[dict]) -> bool:
           miso_network_cost(ch, idx, row["mwh"], riders=True).energy_per_mwh,
           MISO_ECO_USD_MWH + MISO_EITE_USD_MWH)
 
-    # --- Spain: six contracted powers, six energy bands
-    idx, pr = idx_cache["spain"]
-    row = next(x for x in rows if x["market"] == "spain"
+    # --- ElectraNet: agreed maximum demand, charged daily, no window
+    idx, pr = idx_cache["sa"]
+    row = next(x for x in rows if x["market"] == "sa"
                and x["rule"] == "anytime" and x["charge_rate"] == 4.0)
-    ch = schedule(pr, DEMAND, STORAGE_H * DEMAND, 4.0 * DEMAND, horizon=24,
-                  loss_per_hour=LOSS)
-    truth = spain_network_cost(ch, idx, row["mwh"])
-    cap = sum(row["es_contracted"][p - 1] * 1000 * ES_POWER_EUR_KW_YR[p]
-              for p in range(1, 7)) / row["mwh"]
-    ener = sum(row["es_energy"][p - 1] * ES_ENERGY_EUR_MWH[p]
-               for p in range(1, 7)) / row["mwh"]
-    check("Spain 6.3TD capacity", truth.capacity_per_mwh, cap)
-    check("Spain 6.3TD energy", truth.energy_per_mwh, ener)
+    ch = schedule(pr, DEMAND, STORAGE_H * DEMAND, 4.0 * DEMAND,
+                  horizon=MARKETS["sa"]["horizon"], loss_per_hour=LOSS)
+    for loc in ("Para 66kV", "Berri 66kV"):
+        truth = electranet_network_cost(ch, row["mwh"], 365, loc)
+        rebuilt = (electranet_capacity_aud_kw_year(loc) * 1000 * row["peak_any"]
+                   / row["mwh"])
+        check(f"ElectraNet {loc.split()[0]} capacity",
+              truth.capacity_per_mwh, rebuilt)
+
+    # --- Spain: six contracted powers and six energy bands, every class
+    idx, pr = idx_cache["spain"]
+    per = spain_periods(idx)
+    for cls, c in _ESC.items():
+        row = next(x for x in rows if x["market"] == "spain"
+                   and x.get("es_class") == cls and x["charge_rate"] == 4.0)
+        adder = np.array([(c["energy"][p] + ES_CARGOS_ENERGY[p]) * 1000
+                          for p in per])
+        cheap = np.isin(per, (4, 5, 6))
+        ch = schedule(pr + adder, DEMAND, STORAGE_H * DEMAND,
+                      np.where(cheap, 4.0, 1.0) * DEMAND, horizon=24,
+                      loss_per_hour=LOSS)
+        truth = spain_network_cost(ch, idx, row["mwh"], cls)
+        power = {p: c["power"][p] + ES_CARGOS_POWER[p] for p in range(1, 7)}
+        energy = {p: (c["energy"][p] + ES_CARGOS_ENERGY[p]) * 1000
+                  for p in range(1, 7)}
+        cap = sum(row["es_contracted"][p - 1] * 1000 * power[p]
+                  for p in range(1, 7)) / row["mwh"]
+        ener = sum(row["es_energy"][p - 1] * energy[p]
+                   for p in range(1, 7)) / row["mwh"]
+        check(f"Spain {cls} capacity", truth.capacity_per_mwh, cap)
+        check(f"Spain {cls} energy", truth.energy_per_mwh, ener)
 
     print("\n  " + ("All tariffs reproduce from the recorded statistics."
                     if ok else "MISMATCH — do not ship this."))

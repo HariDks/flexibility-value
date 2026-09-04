@@ -126,13 +126,22 @@ class NetworkCost:
 
 
 def spain_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
-                       delivered_mwh: float) -> NetworkCost:
+                       delivered_mwh: float,
+                       cls: str = ES_DEFAULT_CLASS) -> NetworkCost:
     """What a buyer pays Spain's network for a given hourly draw profile.
 
     Contracted power is billed per period, and must be non-decreasing from P1 to
     P6 - so contracting more in the cheap late periods is explicitly allowed.
     A buyer contracts, in each period, the most it ever draws in that period.
+
+    `cls` selects the tariff class, which follows connection voltage. All four
+    are billed identically in structure and differ only in their rates, so the
+    class is a parameter rather than four copies of this function.
     """
+    spec = ES_CLASSES[cls]
+    power = {p: spec["power"][p] + ES_CARGOS_POWER[p] for p in range(1, 7)}
+    energy = {p: (spec["energy"][p] + ES_CARGOS_ENERGY[p]) * 1000
+              for p in range(1, 7)}
     periods = spain_periods(index)
 
     # Most drawn in each period, then enforce P1 <= P2 <= ... <= P6.
@@ -143,12 +152,11 @@ def spain_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
         running = max(running, peak[p])
         contracted[p] = running
 
-    capacity = sum(contracted[p] * 1000 * ES_POWER_EUR_KW_YR[p]
-                   for p in range(1, 7))
-    energy = sum(draw_mwh[periods == p].sum() * ES_ENERGY_EUR_MWH[p]
-                 for p in range(1, 7))
+    capacity = sum(contracted[p] * 1000 * power[p] for p in range(1, 7))
+    energy_total = sum(draw_mwh[periods == p].sum() * energy[p]
+                       for p in range(1, 7))
 
-    return NetworkCost(energy_per_mwh=energy / delivered_mwh,
+    return NetworkCost(energy_per_mwh=energy_total / delivered_mwh,
                        capacity_per_mwh=capacity / delivered_mwh)
 
 
@@ -248,6 +256,22 @@ EN_LOCATIONAL_AUD_MW_DAY = {"Para 66kV": 54.996 / EN_GST,
                             "Berri 66kV": 227.745 / EN_GST}
 
 EN_ENERGY_AUD_MWH = EN_NONLOC_ENERGY_AUD_MWH + EN_COMMON_ENERGY_AUD_MWH
+
+
+def electranet_network_cost(draw_mwh: np.ndarray, delivered_mwh: float,
+                            days: int = 365,
+                            location: str = "Para 66kV") -> NetworkCost:
+    """What a buyer connected directly to ElectraNet pays.
+
+    Capacity is billed on agreed maximum demand, charged every day, with no
+    peak window at all. That is structurally the same as MISO Schedule 632 and
+    is why this network is kept in the study as a counterfactual.
+    """
+    per_mw_day = (EN_NONLOC_CAP_AUD_MW_DAY + EN_COMMON_CAP_AUD_MW_DAY
+                  + EN_LOCATIONAL_AUD_MW_DAY[location])
+    capacity = float(draw_mwh.max(initial=0.0)) * per_mw_day * days
+    return NetworkCost(energy_per_mwh=EN_ENERGY_AUD_MWH,
+                       capacity_per_mwh=capacity / delivered_mwh)
 
 
 def electranet_capacity_aud_kw_year(location: str = "Para 66kV") -> float:
