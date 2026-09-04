@@ -264,6 +264,14 @@ publishes forecasts but no committable price at any horizon.
     matter, wrong about the measure. Raw spread misranks the five NEM regions;
     **the depth of the cheap hours relative to the daily mean is the predictor**
     (+0.90 against +0.50).
+15. *"The battery beats gas."* True in 2025, not in general. Run across every
+    year, the battery beats gas **on fuel alone** in 2 of 8 Spanish years, 1 of
+    9 Australian and 0 of 8 MISO. **2025 is the best year in the series.** The
+    finding that survives is the trend: Spain's breakeven carbon price fell from
+    **€101/t in 2018 to −€29/t in 2025**.
+16. *"2022 would favour the battery."* Wrong, and backwards. Gas more than
+    doubled, but so did the electricity the battery buys — Spain runs
+    **−31.2%** against gas in 2022 versus **+13.5%** in 2025.
 14. *"South Australia's saving is a market result."* Partly a South Australian
     one. Holding the SAPN tariff fixed and swapping regions gives 22.6%
     (Tasmania) to 49.9% (South Australia). The mechanism holds everywhere;

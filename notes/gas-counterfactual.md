@@ -225,3 +225,93 @@ the breakeven down and makes the win more secure, not less.
 
 **All three conclusions are now robust**, and every gas and carbon input is a
 published annual figure rather than an estimate.
+
+---
+
+# Every year, not just 2025
+
+The comparison above ran on 2025 alone while prices ran 25 market-years. **That
+was a scope decision, not a data limitation** — Eurostat's series starts 2007,
+EIA's is a long annual series, and the AER's quarterly register covering 64
+quarters from September 2010 was already sitting in `data/raw/aemo/`. The
+single-year study used four of those quarters.
+
+Run with `python src/fetch_gas.py` then `python src/analyse_gas_years.py`. All
+three 2025 figures reconcile with the original to within rounding.
+
+## Gas price per MWh of gas burnt
+
+| Year | Spain € | S. Australia A$ | MISO $ |
+|---|---|---|---|
+| 2018 | 26.25 | 32.84 | 15.79 |
+| 2019 | 27.85 | 34.02 | 14.61 |
+| 2020 | 21.75 | 20.53 | 13.13 |
+| 2021 | 30.05 | 33.24 | 18.00 |
+| **2022** | **93.25** | **77.31** | **27.67** |
+| 2023 | 57.75 | 44.82 | 20.33 |
+| 2024 | 42.50 | 46.66 | 16.78 |
+| 2025 | 43.25 | 46.79 | 21.82 |
+
+## The carbon price at which battery ties gas
+
+Derived from the two delivered costs, so it needs no carbon-price series — which
+matters, because no citable machine-readable EU ETS annual series was found.
+
+| Year | Spain €/t | S. Australia A$/t | MISO $/t |
+|---|---|---|---|
+| 2017 | — | 300.69 | — |
+| 2018 | 101.25 | 245.89 | 104.36 |
+| 2019 | 50.63 | 186.06 | 98.83 |
+| 2020 | 30.19 | 95.84 | 84.61 |
+| 2021 | 273.14 | 4.05 | 119.19 |
+| 2022 | 144.08 | 50.83 | 83.56 |
+| 2023 | 8.11 | −9.53 | 75.18 |
+| 2024 | **−7.85** | 26.51 | 90.19 |
+| 2025 | **−28.83** | 21.79 | 100.70 |
+| *actual, 2025* | *75.00* | *36.99* | *0.00* |
+
+## Three findings, and the first is uncomfortable
+
+**1. 2025 is the best Spanish year in the series, not a typical one.** The
+battery beats gas on fuel alone in **2 of 8** Spanish years, **1 of 9**
+Australian years, and **0 of 8** MISO years. Quoting 2025's +13.4% against gas
+alone without that context overstates the case, in exactly the way quoting South
+Australia without the other four regions did.
+
+**2. The intuitive stress test goes the wrong way.** 2022 looked like it should
+favour the battery — European gas more than doubled. It did the opposite:
+
+| | gas 2022 | gas 2025 | vs gas 2022 | vs gas 2025 |
+|---|---|---|---|---|
+| Spain | 93.25 | 43.25 | **−31.2%** | +13.5% |
+| South Australia | 77.31 | 46.79 | −13.3% | −9.4% |
+| MISO | 27.67 | 21.82 | −61.0% | −93.2% |
+
+Gas roughly doubled — **and so did the wholesale electricity the battery buys.**
+Spain's mean price ran €167.5/MWh in 2022 against €65.3 in 2025. An energy
+crisis is not a one-way bet on the battery, because both fuels are in it.
+
+**3. The trend is the real finding, and it is strong.** Spain's breakeven carbon
+price, excluding the two crisis years:
+
+    2018  101.25    2020  30.19    2024   −7.85
+    2019   50.63    2023   8.11    2025  −28.83
+
+**From €101/t to −€29/t in eight years.** The battery does not need a higher
+carbon price over time — it needs less of one each year, and since 2024 it needs
+none at all. That is the same mechanism driving the flexibility trend: more
+renewables, more cheap hours, a cheaper charge.
+
+## How this should be reported
+
+**As a trend, not a snapshot** — consistent with every other headline in the
+study. "In 2025 Spain's battery beats gas outright, and the carbon price it
+would need has fallen from €101 to below zero in eight years" is both truer and
+stronger than the single-year figure, because it survives the obvious question
+of whether 2025 was cherry-picked.
+
+**Australia's early years are a zero-carbon world.** The Safeguard Mechanism's
+prescribed unit price is recent, and the carbon tax it replaced was repealed in
+2014. So where the Australian breakeven is positive before 2023, gas won —
+not because the economics changed but because the policy did not yet exist.
+That is a policy statement, not an economic one, and it should be said that way.
