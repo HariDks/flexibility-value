@@ -6,7 +6,7 @@
 - **[T] Tested** — swept across a range, so no single value is claimed
 - **[J] Judgment** — my call. These are the ones to be able to defend
 
-Counts: **10 published, 14 tested, 20 judgment.**
+Counts: **10 published, 15 tested, 19 judgment.**
 
 Nearly half are judgment calls. Most are about *scope and framing* rather
 than about numbers — but they are still mine, and the honest count matters
@@ -49,10 +49,16 @@ tariff classes. Savings are ratios, so scale mostly cancels — but tariff class
 and scheme eligibility depend on size, so results do not transfer to a very
 different plant.
 
-**7. Demand is constant, 24/7/365. [J]**
-Real plants have shutdowns and maintenance. Not modelled. This is the cleanest
-case for isolating timing value and it slightly overstates how much heat must
-be covered.
+**7. Demand is constant, 24/7/365. [T]**
+Now tested against a two-week turnaround, a five-day week, and a five-day day
+shift. The saving holds: Spain 34.1-37.9%, MISO 47.6-52.1%, South Australia
+49.9-66.9% — and in South Australia every intermittent profile beats the base
+case, so continuous operation was the conservative assumption. The turnaround's
+timing changes the answer by at most 2.5 points across all twelve months.
+**What does move is the capacity charge: at 48% utilisation it is 2.1x higher
+per MWh in all three markets**, because a fixed charge spread over less output
+costs more per unit. Both buyers pay it, so the saving is unmoved and the bill
+is not. See `notes/demand-profile.md`.
 
 **8. 12-hour storage as base case. [T]**
 Tested 4h to 168h. Chosen because the median gap without cheap power is 8–13

@@ -46,7 +46,7 @@ class Result:
         return 100.0 * (self.flat_cost - self.battery_cost) / abs(self.flat_cost)
 
 
-def schedule(prices: np.ndarray, demand: float, storage: float,
+def schedule(prices: np.ndarray, demand: float | np.ndarray, storage: float,
              charge_cap: float | np.ndarray,
              horizon: float | None = None,
              loss_per_hour: float = 0.0,
@@ -54,7 +54,9 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
     """Return how much the battery buys in each hour.
 
     prices      price per MWh in each hour
-    demand      MWh of heat the factory needs every hour
+    demand      MWh of heat the factory needs every hour. A single number is a
+                plant that runs flat out all year; an array lets it vary, which
+                is how weekends and an annual maintenance shutdown are modelled.
     storage     tank size in MWh
     charge_cap  most the battery can buy in a single hour, in MWh. A single
                 number applies everywhere; an array lets the cap vary by hour,
@@ -82,6 +84,10 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
     carry, because power bought earlier than that has already been burnt.
     """
     n = len(prices)
+    dem = (np.full(n, float(demand)) if np.isscalar(demand)
+           else np.asarray(demand, dtype=float))
+    if len(dem) != n:
+        raise ValueError(f"demand has {len(dem)} hours, prices have {n}")
     charge = np.zeros(n)
     soc = np.zeros(n)  # tank level after each hour's buying and burning
     cap = (np.full(n, float(charge_cap)) if np.isscalar(charge_cap)
@@ -91,7 +97,12 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
     # cannot help with a shortfall now. Bounding the search this way is what
     # makes a full year tractable — and it is a physical fact, not an
     # approximation.
-    lookback = int(math.ceil(storage / demand)) + 2
+    # With demand varying, the tank stretches furthest across the *lowest*
+    # non-zero demand, so that is what bounds the search. Idle hours burn
+    # nothing and so do not consume the lookback at all.
+    burning = dem[dem > EPS]
+    span = storage / burning.min() if len(burning) else float(n)
+    lookback = min(n, int(math.ceil(span)) + 2)
     if horizon is not None:
         # A horizon of 1 hour means seeing only the hour you are in, which
         # leaves no earlier hour to have bought in: lookback zero.
@@ -101,7 +112,7 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
 
     prev = float(initial_soc)
     for h in range(n):
-        soc[h] = prev * keep + charge[h] - demand
+        soc[h] = prev * keep + charge[h] - dem[h]
 
         while soc[h] < -EPS:
             lo = max(0, h - lookback)
@@ -130,7 +141,7 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
                     f"hour {h}: the factory runs short and there is no earlier "
                     f"hour with room to buy. Storage {storage} MWh and the "
                     f"charge caps around this hour are too small for demand "
-                    f"{demand}.")
+                    f"{dem[h]}.")
 
             # Buy enough at best_j that what survives to now closes the gap.
             bought = min(best_room, -soc[h] / best_decay)
@@ -144,7 +155,7 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
 
     # Energy must balance: what was bought, plus whatever the tank started
     # with, covers the heat delivered plus anything left over and anything lost.
-    delivered = n * demand
+    delivered = float(dem.sum())
     supplied = charge.sum() + initial_soc
     if loss_per_hour == 0.0 and not math.isclose(supplied, delivered + soc[-1],
                                                  rel_tol=1e-6):
@@ -159,7 +170,8 @@ def schedule(prices: np.ndarray, demand: float, storage: float,
     return charge
 
 
-def evaluate(prices: np.ndarray, demand: float, storage_hours: float,
+def evaluate(prices: np.ndarray, demand: float | np.ndarray,
+             storage_hours: float,
              charge_cap_hours: float = 4.0,
              horizon: float | None = None) -> Result:
     """Run both buyers over the same prices and report cost per MWh of heat.
@@ -169,14 +181,19 @@ def evaluate(prices: np.ndarray, demand: float, storage_hours: float,
     horizon           hours of price visibility; None means tank-limited
     """
     prices = np.asarray(prices, dtype=float)
-    charge = schedule(prices, demand,
-                      storage=storage_hours * demand,
-                      charge_cap=charge_cap_hours * demand,
+    dem = (np.full(len(prices), float(demand)) if np.isscalar(demand)
+           else np.asarray(demand, dtype=float))
+    # Tank and charge cap are sized on the running load, not the annual mean,
+    # so an idle fortnight does not shrink the plant.
+    rated = float(dem[dem > EPS].max()) if (dem > EPS).any() else 0.0
+    charge = schedule(prices, dem,
+                      storage=storage_hours * rated,
+                      charge_cap=charge_cap_hours * rated,
                       horizon=horizon)
 
-    delivered = len(prices) * demand
+    delivered = float(dem.sum())
     return Result(
-        flat_cost=float((demand * prices).sum() / delivered),
+        flat_cost=float((dem * prices).sum() / delivered),
         battery_cost=float((charge * prices).sum() / delivered),
         charge=charge,
         storage_hours=storage_hours,
@@ -223,6 +240,23 @@ def _self_test() -> None:
     assert math.isclose(rb.battery_cost, rb.flat_cost, abs_tol=1e-6)
     print(f"  blind-buyer check: battery ${rb.battery_cost:.2f} == "
           f"flat ${rb.flat_cost:.2f}  (12h tank, no visibility)")
+
+    # A varying demand profile. Idle hours must buy nothing, the energy must
+    # still balance, and a plant idle for the expensive block must pay less per
+    # MWh than one running through it.
+    idle = np.repeat([10.0, 10.0, 10.0, 0.0], 6)          # idle in the $110 block
+    ri = evaluate(prices, demand=idle, storage_hours=12)
+    assert math.isclose(ri.charge.sum(), idle.sum(), abs_tol=1e-6), ri.charge.sum()
+    assert ri.flat_cost < r.flat_cost, (ri.flat_cost, r.flat_cost)
+    print(f"\n  varying-demand check: idle through the $110 block pays "
+          f"${ri.flat_cost:.2f} vs ${r.flat_cost:.2f} flat out")
+
+    # A constant array must give exactly what the scalar gives.
+    rc = evaluate(prices, demand=np.full(24, 10.0), storage_hours=12)
+    assert math.isclose(rc.battery_cost, r.battery_cost, abs_tol=1e-9)
+    assert math.isclose(rc.flat_cost, r.flat_cost, abs_tol=1e-9)
+    print(f"  constant-array check: ${rc.battery_cost:.2f} == scalar "
+          f"${r.battery_cost:.2f}")
 
     # More visibility can never be worse than less.
     costs = [evaluate(prices, demand=10, storage_hours=12, horizon=h).battery_cost
