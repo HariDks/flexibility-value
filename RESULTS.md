@@ -201,8 +201,21 @@ October 2021, 5-minute since, both handled):
 | 2024 | A$100.1 | 25.7% | 54.2% |
 | 2025 | A$86.7 | 29.7% | 49.9% |
 
-**MISO — 3 years maximum.** MISO's market reports are not served before 2023,
-so this cannot be extended.
+**MISO — 3 years without an account.** MISO's public market reports carry a
+retention window of roughly two years; their own wording is that reports
+"remain available on this page until they expire". Probing their server
+directly confirms it — `20230612_da_expost_lmp.csv` returns 1 MB,
+`20220612` and `20190612` return 404. It is not a limitation of the
+`gridstatus` library, which was the first route tried.
+
+**Older MISO data does exist**, in two places, both requiring free
+registration: the **Market Report Archives** (behind
+`misoenergy.org/account/login`) and the new **MISO Data Exchange API**, which
+replaces the file downloads from December 2025. Neither could be reached here.
+
+So the defensible statement is: *MISO publishes about two years openly, and the
+archive needs an account — hence three years for MISO against eight and nine
+for the other two, and the trend argument leans on those.*
 
 ### What the long series shows
 
