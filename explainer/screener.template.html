@@ -67,7 +67,7 @@ p{max-width:44rem}
 .panel{background:var(--surface);border:1px solid var(--rule);border-radius:3px;
   padding:1.4rem;margin-top:1rem;box-shadow:var(--shadow)}
 .chartwrap{overflow-x:auto}
-svg{display:block;width:100%;height:auto;min-width:34rem}
+svg{display:block;width:100%;height:auto;min-width:34rem;cursor:crosshair}
 .toc{margin:1.4rem 0 0;padding:0 0 0 1.2rem;max-width:42rem;color:var(--ink2);font-size:.95rem}
 .toc li{margin:.3rem 0}
 .toc b{color:var(--ink);font-weight:600}
@@ -79,6 +79,9 @@ svg{display:block;width:100%;height:auto;min-width:34rem}
 .hint{display:block;margin:.4rem 0 0;font-size:.76rem;line-height:1.5;color:var(--muted)}
 .hint b{color:var(--ink2);font-weight:600}
 .controls > div{min-width:0}
+.hover{font-size:.76rem;color:var(--muted);margin:.6rem 0 0;min-height:1.2em;
+  letter-spacing:.02em}
+.hover b{color:var(--ink);font-weight:500}
 .reading{font-size:.95rem;color:var(--ink2);margin:.9rem 0 0;max-width:46rem}
 .reading b{color:var(--ink);font-weight:600}
 .legend{display:flex;gap:1.4rem;flex-wrap:wrap;margin:.9rem 0 0;
@@ -189,12 +192,14 @@ rect,path,line{transition:none}
   </div>
 
   <div class="panel">
-    <div class="chartwrap"><svg id="chart" viewBox="0 0 1000 250" role="img"
+    <div class="chartwrap"><svg id="chart" viewBox="0 0 1000 330" role="img"
       aria-label="Hourly electricity price and battery draw over one week"></svg></div>
+    <p class="hover mono" id="hover"></p>
     <p class="reading" id="reading"></p>
     <div class="legend">
       <span><i style="background:var(--draw)"></i>what the battery buys, MW</span>
       <span><i style="background:var(--ink2)"></i>wholesale price</span>
+      <span><i style="background:var(--win);opacity:.4"></i>heat sitting in the tank</span>
       <span><i style="background:var(--win2);border:1px solid var(--win)"></i>hours the network is watching</span>
     </div>
     <dl class="readout">
@@ -356,9 +361,10 @@ const SAVE = { window_season: 49.9, anytime: 20.7 };
 
 function chart(){
   const w = DATA.weeks.sa[rule];
-  const n = w.price.length, W = 1000, H = 250;
+  const n = w.price.length, W = 1000, H = 330, TANK = 62, GAP = 16;
   const L = 46, R = 48, T = 22, B = 26;
-  const iw = W - L - R, ih = H - T - B;
+  const mainH = H - T - B - TANK - GAP;
+  const iw = W - L - R, ih = mainH;
   const pmin = Math.min(0, ...w.price), pmax = Math.max(...w.price);
   const dmax = Math.max(10, ...w.draw);
   const x = i => L + (i / n) * iw;
@@ -402,11 +408,48 @@ function chart(){
     font-family="DM Mono, monospace">${pmax.toFixed(0)}</text>`;
   s += `<text x="${W-R+4}" y="${yp(pmin).toFixed(1)}" fill="var(--muted)" font-size="10"
     font-family="DM Mono, monospace">${pmin.toFixed(0)}</text>`;
+  // ---- heat sitting in the store
+  const tT = T + ih + GAP, smax = Math.max(1, ...w.soc);
+  const ys = v => tT + TANK - (Math.max(0, v) / smax) * TANK;
+  s += `<rect x="${L}" y="${tT}" width="${iw}" height="${TANK}" fill="var(--rule2)"/>`;
+  let area = `M${L},${tT+TANK}`;
+  w.soc.forEach((v,k) => { area += `L${x(k+.5).toFixed(1)},${ys(v).toFixed(1)}`; });
+  area += `L${(W-R)},${tT+TANK}Z`;
+  s += `<path d="${area}" fill="var(--win)" opacity=".28"/>`;
+  s += `<path d="${area.replace(/^M[\d.,]+/, "M"+L+","+(tT+TANK)).replace(/L[\d.]+,[\d.]+Z$/, "")}"
+    fill="none" stroke="var(--win)" stroke-width="1.1"/>`;
+  s += `<text x="6" y="${tT+11}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${smax.toFixed(0)} MWh</text>`;
+  s += `<text x="6" y="${tT-4}" fill="var(--win)" font-size="9"
+    font-family="DM Mono, monospace">IN THE TANK</text>`;
+  s += `<line x1="${L}" y1="${tT+TANK}" x2="${W-R}" y2="${tT+TANK}" stroke="var(--rule)"/>`;
+
   const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
   for (let d = 0; d < n/24; d++)
-    s += `<text x="${(x(d*24+12)).toFixed(1)}" y="${H-8}" fill="var(--muted)" font-size="10"
+    s += `<text x="${(x(d*24+12)).toFixed(1)}" y="${H-6}" fill="var(--muted)" font-size="10"
       text-anchor="middle" font-family="DM Mono, monospace">${days[d%7]}</text>`;
-  document.getElementById("chart").innerHTML = s;
+  s += `<line id="guide" x1="0" y1="${T}" x2="0" y2="${tT+TANK}" stroke="var(--ink)"
+    stroke-width=".8" opacity="0"/>`;
+  const el = document.getElementById("chart");
+  el.innerHTML = s;
+
+  // ---- hover: read any single hour off the chart
+  const guide = el.querySelector("#guide"), out = document.getElementById("hover");
+  const at = ev => {
+    const r = el.getBoundingClientRect();
+    const px = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) / r.width * W;
+    const k = Math.round((px - L) / iw * n - .5);
+    if (k < 0 || k >= n){ guide.setAttribute("opacity","0"); out.textContent=""; return; }
+    guide.setAttribute("x1", x(k+.5)); guide.setAttribute("x2", x(k+.5));
+    guide.setAttribute("opacity",".45");
+    const hr = String(k % 24).padStart(2,"0");
+    out.innerHTML = `<b>${days[Math.floor(k/24)%7]} ${hr}:00</b> &nbsp; price
+      <b>${w.price[k].toFixed(0)}</b> &nbsp; bought <b>${w.draw[k].toFixed(0)} MW</b>
+      &nbsp; in the tank <b>${w.soc[k].toFixed(0)} MWh</b>`
+      + (w.watched[k] ? ` &nbsp; <span style="color:var(--win)">network watching</span>` : "");
+  };
+  el.onmousemove = at; el.ontouchmove = at;
+  el.onmouseleave = () => { guide.setAttribute("opacity","0"); out.textContent=""; };
 }
 
 function row(m, r, rate){
@@ -435,8 +478,9 @@ function paintSwitch(){
   document.getElementById("reading").innerHTML = rule === "window_season"
     ? `The network only watches <b>17:00\u201321:00</b>, and only from November to March.
        Those are the shaded columns. So the battery charges hard everywhere else and
-       <b>sits those four hours out completely</b>. Its billed peak is
-       <b>zero</b>, and it keeps the whole benefit of buying cheap.`
+       <b>sits those four hours out completely</b>, coasting on the heat already in
+       the tank. Its billed peak is <b>zero</b>, and it keeps the whole benefit
+       of buying cheap.`
     : `Now the network watches <b>every hour of the year</b>. There is nowhere to hide, so
        the battery charges straight through the shaded hours, and
        <b>every gulp sets the 40 MW peak it gets billed on</b>. The capacity

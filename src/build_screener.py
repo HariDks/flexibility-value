@@ -187,12 +187,29 @@ def run_market(key: str, cfg: dict) -> tuple[list[dict], dict]:
     sel = pick_week(idx, pr)
     profiles = {rk: dict(price=[round(float(x), 2) for x in pr[sel]],
                          draw=[round(float(x), 2) for x in ch[sel]],
+                         soc=[round(float(x), 2) for x in tank(ch)[sel]],
                          watched=[bool(x) for x in
                                   watching(idx, RULES[rk])[sel]])
                 for rk, ch in schedules.items()}
     for prof in profiles.values():
         prof["start"] = str(idx[sel][0])[:16]
     return rows, profiles
+
+
+def tank(charge: np.ndarray) -> np.ndarray:
+    """Heat sitting in the store after each hour.
+
+    Reproduces the level `battery.schedule` carries internally: what was there
+    an hour ago, less what leaked, plus what was bought, less what was burnt.
+    Showing it is what makes the mechanism legible — the store fills in the
+    cheap hours and then carries the factory through the expensive ones.
+    """
+    keep = 1.0 - LOSS
+    soc = np.zeros(len(charge))
+    prev = 0.0
+    for h in range(len(charge)):
+        prev = soc[h] = prev * keep + charge[h] - DEMAND
+    return soc
 
 
 def pick_week(idx, pr) -> np.ndarray:
