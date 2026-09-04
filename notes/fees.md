@@ -621,3 +621,58 @@ what perfect knowledge would.
 may differ in other seasons, and AEMO's own accuracy may improve. The direction
 is not in doubt: this is a discount on the South Australian figure, not a
 premium.
+
+---
+
+## Connection capital cost — the threshold, since the number cannot be sourced
+
+Everything in this study is operating cost. A battery that charges faster needs
+a physically larger connection, and that is capital, paid once, whatever the
+tariff does. The cost is site-specific and not published in any general form, so
+it is not asserted. What can be computed is the **threshold at which it would
+change the answer**.
+
+A 10 MW heat load charging at 2× needs a 20 MW connection, at 4× a 40 MW one, at
+6× a 60 MW one. Each step adds 20 MW.
+
+### What each step buys, per year
+
+| Market | Step | Saving/MWh | Saving/year |
+|---|---|---|---|
+| Spain | 2×→4× | €8.79 | **€770,000** |
+| Spain | 4×→6× | €0.45 | €40,000 |
+| South Australia | 4×→6× | −A$0.13 | **negative — slower already wins** |
+| MISO (TMEP) | 2×→4× | $3.10 | **$272,000** |
+| MISO (TMEP) | 4×→6× | $0.46 | $40,000 |
+
+### Break-even connection cost
+
+How much the extra 20 MW would have to cost, one-off, before charging slower
+becomes the better choice:
+
+| Market | Step | 6%/25yr | 8%/20yr | 10%/15yr |
+|---|---|---|---|---|
+| Spain | 2×→4× | **€493/kW** | €378/kW | €293/kW |
+| Spain | 4×→6× | €25/kW | €19/kW | €15/kW |
+| South Australia | 4×→6× | *slower wins regardless* | | |
+| MISO (TMEP) | 2×→4× | **$174/kW** | $133/kW | $103/kW |
+| MISO (TMEP) | 4×→6× | $26/kW | $20/kW | $15/kW |
+
+### What this settles
+
+**The 2×→4× step is robust.** It would take €293–493/kW in Spain, or
+$103–174/kW in MISO, of extra connection cost to overturn it. Those are large
+numbers for incremental connection capacity at an already-connected industrial
+site.
+
+**The 4×→6× step is not.** It breaks even at €15–26/kW — trivially small.
+**Any realistic connection cost kills it.** So the case for charging faster than
+about 4× rests on operating savings that would not survive its own capital cost,
+and 6× should not be recommended.
+
+**South Australia does not want 6× at all**, even before capex: the extra peak
+draw costs more in demand charge than the faster charging saves.
+
+**So the base case of 4× is not merely a middle choice — it is where the
+argument stops being sensitive to a number this study cannot source.** That is a
+better defence of it than "it seemed reasonable".
