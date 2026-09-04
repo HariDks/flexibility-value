@@ -138,6 +138,9 @@ input:focus,select:focus{outline:2px solid var(--draw);outline-offset:-1px}
 .combo b{color:var(--ink2);font-weight:600}
 .combo.warn{color:var(--win);background:var(--win2);padding:.75rem .9rem;border-radius:3px}
 .combo.warn b{color:var(--win)}
+#split{margin-top:1.6rem}
+.diag{font-size:.9rem;color:var(--ink2);margin:.9rem 0 0;max-width:46rem}
+.diag b{color:var(--ink);font-weight:600}
 .verdict{border-left:3px solid var(--draw);padding:.2rem 0 .2rem 1.1rem;margin:1.4rem 0 0}
 .verdict p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink2)}
 .verdict .head{font-family:Spectral,Georgia,serif;font-size:1.3rem;
@@ -260,8 +263,9 @@ rect,path,line{transition:none}
 <section>
   <h2>Try it on a tariff you actually care about</h2>
   <p class="sub">If you know the network tariff at a site, put its numbers in here and see
-  whether a thermal battery would save money there or lose it. Every figure is computed from
-  the same model that produces the study's published numbers.</p>
+  whether a thermal battery would save money there or lose it, <b>and which part of the bill
+  decided it</b>. Every figure is computed from the same model that produces the study's
+  published numbers.</p>
 
   <p class="do">Start here. Press a real tariff to load it, then change anything you like.</p>
   <div class="presets" id="presets"></div>
@@ -319,6 +323,9 @@ rect,path,line{transition:none}
       <div><dt>With a thermal battery</dt><dd><span id="s-flex">—</span><small id="s-flex-s"></small></dd></div>
       <div><dt>The battery saves</dt><dd><span id="s-save" class="big">—</span><small>off the bill, every year</small></dd></div>
     </dl>
+    <div class="scroll"><table id="split"></table></div>
+    <p class="diag" id="diag"></p>
+
     <div class="verdict">
       <p class="head" id="s-head">—</p>
       <p id="s-body"></p>
@@ -537,12 +544,14 @@ function billedPeak(r, meas, read){
   return r[`${read}_${meas}`];
 }
 
-function bill(r, cfg){
-  return r.wholesale
-       + cfg.ener * r.mwh
-       + cfg.cap * 1000 * billedPeak(r, cfg.meas, cfg.read)
-       + cfg.any * 1000 * r.peak_any;
+function parts(r, cfg){
+  const power    = r.wholesale / r.mwh;                       // what the power cost
+  const energy   = cfg.ener;                                  // per MWh delivered
+  const capacity = (cfg.cap * 1000 * billedPeak(r, cfg.meas, cfg.read)
+                  + cfg.any * 1000 * r.peak_any) / r.mwh;     // on the peak
+  return {power, energy, capacity, total: power + energy + capacity};
 }
+function bill(r, cfg){ return parts(r, cfg).total * r.mwh; }
 
 const PLAIN = {anytime:"with no window worth avoiding",
                window_season:"holding off between 5pm and 9pm in summer",
@@ -600,6 +609,34 @@ function score(){
     combo.className = "combo";
     combo.innerHTML = `Right now: <b>your own numbers</b>, on <b>${mname}</b> prices.`;
   }
+
+  // Which part of the bill did the damage?
+  const pf = parts(DATA.runs.find(x => x.market===cfg.mkt && x.flexible
+                     && x.feasible && x.rule===best.rule
+                     && x.charge_rate===best.rate), cfg);
+  const pi = parts(base, cfg);
+  const fmt = v => (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2);
+  const cls = v => v > 0.005 ? "pos" : v < -0.005 ? "neg" : "";
+  const rows = [["Power itself", pi.power, pf.power],
+                ["Energy charge", pi.energy, pf.energy],
+                ["Peak demand charge", pi.capacity, pf.capacity]];
+  $("split").innerHTML =
+    `<tr><th>Part of the bill</th><th>Without storage</th><th>With a battery</th>
+         <th>Change</th></tr>`
+    + rows.map(([n, a, b]) =>
+        `<tr><td>${n}</td><td>${a.toFixed(2)}</td><td>${b.toFixed(2)}</td>
+             <td class="${cls(a-b)}">${fmt(a-b)}</td></tr>`).join("")
+    + `<tr class="hi"><td>Total, per MWh of heat</td><td>${pi.total.toFixed(2)}</td>
+       <td>${pf.total.toFixed(2)}</td><td class="${cls(pi.total-pf.total)}">
+       ${fmt(pi.total - pf.total)}</td></tr>`;
+
+  const won = pi.power - pf.power, lost = pf.capacity - pi.capacity;
+  $("diag").innerHTML = lost > 0.005
+    ? `Buying at better times saves <b>${won.toFixed(2)} ${cur}</b> per MWh.
+       The peak demand charge takes <b>${lost.toFixed(2)}</b> of that back,
+       because charging harder raises the peak it is billed on.`
+    : `Buying at better times saves <b>${won.toFixed(2)} ${cur}</b> per MWh, and
+       the peak demand charge does not claw any of it back.`;
 
   $("s-inflex").textContent = inflex.toFixed(2);
   $("s-flex").textContent = best.v.toFixed(2);
