@@ -60,13 +60,24 @@ def main() -> None:
     end = pd.Timestamp(f"{args.year + 1}-01-01").tz_localize(LOCAL_TZ)
     native = native[(native.index >= start) & (native.index < end)]
 
-    # (3) five-minute -> hourly
+    # (3) native resolution -> hourly. The NEM settled at 30 minutes until
+    # October 2021 and at 5 minutes since, so an hour is built from either 2 or
+    # 12 intervals depending on the year. Both are fine; a mixture within one
+    # hour is not.
     per_hour = native["price_aud_mwh"].resample("h").count()
-    short = per_hour[per_hour != 12]
-    if len(short):
+    if (per_hour < 2).any():
+        bad = per_hour[per_hour < 2]
         raise SystemExit(
-            f"{len(short)} hour(s) are not built from 12 five-minute intervals, "
-            f"first: {short.index[0]} has {short.iat[0]}")
+            f"{len(bad)} hour(s) with fewer than 2 intervals — data is missing, "
+            f"first: {bad.index[0]} has {bad.iat[0]}")
+    odd = per_hour[~per_hour.isin([2, 12])]
+    if len(odd) > 2:
+        raise SystemExit(
+            f"{len(odd)} hour(s) built from an unexpected number of intervals, "
+            f"first: {odd.index[0]} has {odd.iat[0]}")
+    if len(odd):
+        print(f"  note: {len(odd)} hour(s) span the resolution changeover "
+              f"({odd.index[0]:%Y-%m-%d %H:%M}, {odd.iat[0]} intervals)")
 
     hourly = native["price_aud_mwh"].resample("h").mean().to_frame()
 
@@ -81,7 +92,7 @@ def main() -> None:
         freq="h", inclusive="left"))
 
     print(f"South Australia {args.year} -> {out.relative_to(ROOT)}")
-    print(f"  five-minute intervals in: {len(native):,}")
+    print(f"  native intervals in: {len(native):,}")
     print(f"  hours out:        {len(s)} (expected {expected})")
     print(f"  missing values:   {int(s.isna().sum())}")
     print(f"  range:            {s.min():.2f} to {s.max():.2f} AUD/MWh")

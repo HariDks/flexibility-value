@@ -167,83 +167,65 @@ committable price at any horizon.
 | Scheduling rule | greedy | vs exact LP | 1.5% at base case, always conservative |
 | Inflexible baseline | indexed flat | +0–20% premium | Every alternative costs more |
 
-## 6a. Does the year change the answer? Yes, and differently in each market
+## 6a. Does the year change the answer? Yes — and there is a trend
 
-Everything above uses 2025. Re-run on every year available:
+Every year each source publishes, run through the same model and the same
+2025 tariffs.
 
-**Spain — six years**, from OMIE's yearly archives (the daily URLs only serve
-recent years; completed years are published as `marginalpdbc_YYYY.zip`):
+**Spain — 8 years** (OMIE serves 2018-2022 as yearly archives and 2023 onward
+as daily files; nothing earlier exists on their server):
 
 | Year | Mean price | Hours below zero | Saving |
 |---|---|---|---|
-| 2020 | €33.96 | 0.0% | 17.1% |
-| 2021 | €111.93 | 0.0% | 14.7% |
-| 2022 | €167.52 | 0.0% | 16.8% |
-| 2023 | €87.10 | 0.0% | 24.6% |
-| 2024 | €63.04 | 2.8% | 29.8% |
-| 2025 | €65.29 | 6.3% | **37.9%** |
+| 2018 | €57.3 | 0.0% | 12.5% |
+| 2019 | €47.7 | 0.0% | 15.9% |
+| 2020 | €34.0 | 0.0% | 17.1% |
+| 2021 | €111.9 | 0.0% | 14.7% |
+| 2022 | €167.5 | 0.0% | 16.8% |
+| 2023 | €87.1 | 0.0% | 24.6% |
+| 2024 | €63.0 | 2.8% | 29.8% |
+| 2025 | €65.3 | 6.3% | **37.9%** |
 
-Flat at 15-17% for three years, then a clean rise. **+4.5 points per year across
-all six, +6.7 across the last three.** A trend on six points, not an
-extrapolation from three.
+**South Australia — 9 years** (AEMO monthly files; 30-minute settlement to
+October 2021, 5-minute since, both handled):
 
-### The most useful thing in this table
+| Year | Mean price | Hours below zero | Saving |
+|---|---|---|---|
+| 2017 | A$105.3 | 0.8% | 22.5% |
+| 2018 | A$99.9 | 1.4% | 27.2% |
+| 2019 | A$98.9 | 4.9% | 36.3% |
+| 2020 | A$43.5 | 10.1% | 39.0% |
+| 2021 | A$50.7 | 19.6% | 52.3% |
+| 2022 | A$155.9 | 18.6% | 45.6% |
+| 2023 | A$80.1 | 26.2% | **55.5%** |
+| 2024 | A$100.1 | 25.7% | 54.2% |
+| 2025 | A$86.7 | 29.7% | 49.9% |
 
-Between 2020 and 2022 the mean price went from **€34 to €168** — a five-fold
-swing through the European energy crisis — and **the saving barely moved: 17.1%
-to 16.8%.**
+**MISO — 3 years maximum.** MISO's market reports are not served before 2023,
+so this cannot be extended.
 
-> **The value of flexibility does not depend on how expensive power is. It
-> depends on how much the price moves within a day.**
+### What the long series shows
 
-That is a screening rule: when assessing a new market, look at intraday spread,
-not at price level. It also means the rise since 2023 is not about prices
-falling — it is about solar reshaping the shape of the day.
+**Both markets trend up, at almost the same rate** — Spain +3.2 points a year
+over eight years, South Australia +3.9 over nine. Both track the growth in
+negative-price hours, which is the growth in renewable surplus.
 
-**South Australia** — no trend, and 2025 is the *bottom* of the range:
+**The value of flexibility does not depend on the price level.** Spain's mean
+price ran from €34 in 2020 to €168 in 2022 — a five-fold swing through the
+energy crisis — while the saving moved only 17.1% to 16.8%. South Australia
+shows the same: A$43 in 2020 and A$156 in 2022, savings of 39.0% and 45.6%.
 
-| Year | Hours below zero | Saving |
-|---|---|---|
-| 2022 | 18.6% | 45.6% |
-| 2023 | 26.2% | **55.5%** |
-| 2024 | 25.7% | 54.2% |
-| 2025 | 29.7% | 49.9% |
+> **What matters is how much the price moves within a day, not how high it is.**
+> That is a screening rule for any new market.
 
-Negative hours keep rising but the saving does not follow — **independent
-evidence for the horizon finding**, since with only ~6 hours of visibility more
-cheap hours cannot be exploited. The reported 49.9% is the lowest of four years,
-so South Australia's headline is conservative where Spain's sits at the top of
-its range.
+**A correction this supersedes.** With only four recent Australian years the
+saving looked flat and trendless. Over nine years the trend is clear — the four
+recent years were the plateau at the top of it. **A short window can hide a
+trend and look like stability.**
 
-**MISO** — the level flips between years, the gradient does not:
-
-| Charge rate | 2024 standard | 2025 standard | 2024 TMEP | 2025 TMEP |
-|---|---|---|---|---|
-| 1.5x | **+15%** | −2% | +28% | +11% |
-| 2x | +4% | −11% | +31% | +16% |
-| 4x | −46% | −59% | +34% | +21% |
-| 6x | **−98%** | **−112%** | **+35%** | **+21%** |
-
-MISO wholesale averaged $27.28 in 2024 against $41.16 in 2025, so buying at
-wholesale was far more attractive that year — enough that at a gentle 1.5x
-charge rate the standard tariff *wins*.
-
-**So "in Minnesota the battery loses" is a 2025 statement and must not be used.**
-What holds in both years is the gradient: **under the standard tariff every
-increment of flexibility costs more, and under TMEP every increment earns more.**
-Stated safely:
-
-> Under Minnesota's standard tariff flexibility is penalised. Whether the
-> battery finishes ahead depends on that year's wholesale price, but being
-> *more* flexible always makes it worse, and the only way to come out ahead is
-> to be barely flexible. TMEP reverses the sign.
-
-That is the better claim anyway: it is about the incentive rather than the
-outcome, and an incentive is what a regulator can change.
-
-**Coverage limits.** Spain 2021-22 are not served at OMIE's daily URLs;
-South Australian data before October 2021 is 30-minute, which the loader does
-not accept.
+**How to state it.** Spain: *12% in 2018, 38% in 2025, rising about 3 points a
+year.* South Australia: *23% in 2017, around 50% now.* Both single-year figures
+are points on a rising line, not properties of the market.
 
 ## 7. What this does not cover
 
