@@ -71,6 +71,14 @@ td b{color:var(--ink);font-weight:500}
 caption{caption-side:bottom;text-align:left;font-family:Archivo,sans-serif;
   font-size:.75rem;color:var(--muted);padding-top:.55rem;line-height:1.5}
 
+.figbox{margin:1.4rem 0 1.5rem}
+svg.fig{display:block;width:100%;height:auto}
+.fig .ax{font-family:"DM Mono",monospace;font-size:9px;fill:var(--muted)}
+.fig .lab{font-family:Archivo,sans-serif;font-size:9.5px;font-weight:500}
+.fig .lab2{font-family:Archivo,sans-serif;font-size:9.5px;fill:var(--ink2)}
+figcaption{font-family:Archivo,sans-serif;font-size:.75rem;color:var(--muted);
+  line-height:1.5;margin-top:.5rem}
+figcaption b{color:var(--ink2);font-weight:600}
 .pull{border-left:3px solid var(--key);background:var(--key2);
   padding:.85rem 1rem;margin:1.2rem 0;font-size:.98rem}
 .pull p:last-child{margin-bottom:0}
@@ -84,11 +92,36 @@ footer a{color:var(--key)}
 footer b{color:var(--ink2);font-weight:500}
 
 @media print{
-  body{background:#fff;color:#000;font-size:10.5pt}
+  /* The figures draw from the same tokens as the text, so paper needs the
+     light palette named explicitly. Without it a dark-mode machine prints
+     pale lines onto white. */
+  :root, :root:not([data-theme="light"]), :root[data-theme="dark"]{
+    --paper:#fff; --ink:#111; --ink2:#39424E; --muted:#5F6874;
+    --rule:#CDD3DA; --rule2:#E7EAEE;
+    --key:#164A97; --key2:#EDF2FA;
+    --warn:#8F5C15; --warn2:#F8EEDF;
+    --good:#15604A; --bad:#93301F;
+  }
+  @page{margin:15mm 14mm}
+  body{background:#fff;color:#111;font-size:9.3pt;line-height:1.42}
   .page{max-width:none;padding:0}
-  h2{page-break-after:avoid} .tw{page-break-inside:avoid}
-  .pull{background:none;border-left:2px solid #000}
-  .method{background:none;border:1px solid #ccc}
+  p{margin:0 0 .55rem}
+  .head{margin-bottom:1rem;padding-bottom:.7rem}
+  h2{margin:1.15rem 0 .5rem;padding-top:.5rem;font-size:1.05rem;
+     page-break-after:avoid}
+  h3{margin:.85rem 0 .35rem;font-size:.94rem;page-break-after:avoid}
+  .figbox{margin:.7rem 0 .8rem;page-break-inside:avoid}
+  svg.fig{max-height:50mm}
+  figcaption{font-size:.67rem;margin-top:.3rem}
+  .tw{margin:.55rem 0 .7rem;page-break-inside:avoid}
+  table{font-size:.7rem} th,td{padding:.22rem .5rem .22rem 0}
+  thead th{font-size:.6rem} caption{font-size:.65rem;padding-top:.3rem}
+  .pull{background:none;border-left:2px solid #111;margin:.7rem 0;
+        padding:.5rem .75rem;font-size:.95rem}
+  .method{background:none;border:1px solid #CDD3DA;margin:.7rem 0;
+          padding:.5rem .75rem;font-size:.72rem}
+  footer{margin-top:1.2rem;padding-top:.7rem;font-size:.7rem;line-height:1.55;
+         page-break-inside:avoid}
 }
 </style>
 
@@ -192,6 +225,51 @@ points</b>, in every one of the nine years. Nothing else differs: same country, 
 prices, same weather, same battery, same currency. Connected to ElectraNet, the battery
 <b>loses money outright in 15 of the 36</b> year and location combinations.</p>
 
+<figure class="figbox"><svg viewBox="0 0 640 250" class="fig" role="img" aria-label="SA Power Networks against the ElectraNet range, 2017 to 2025">
+<line x1="42" y1="220.0" x2="626" y2="220.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="36" y="223.0" text-anchor="end" class="ax">-30%</text>
+<line x1="42" y1="186.0" x2="626" y2="186.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="36" y="189.0" text-anchor="end" class="ax">-15%</text>
+<line x1="42" y1="152.0" x2="626" y2="152.0" stroke="var(--ink2)" stroke-width="1"/>
+<text x="36" y="155.0" text-anchor="end" class="ax">0%</text>
+<line x1="42" y1="118.0" x2="626" y2="118.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="36" y="121.0" text-anchor="end" class="ax">15%</text>
+<line x1="42" y1="84.0" x2="626" y2="84.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="36" y="87.0" text-anchor="end" class="ax">30%</text>
+<line x1="42" y1="50.0" x2="626" y2="50.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="36" y="53.0" text-anchor="end" class="ax">45%</text>
+<line x1="42" y1="16.0" x2="626" y2="16.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="36" y="19.0" text-anchor="end" class="ax">60%</text>
+<path d="M42.0,156.5 L115.0,148.6 L188.0,129.6 L261.0,164.5 L334.0,128.7 L407.0,92.2 L480.0,97.8 L553.0,90.3 L626.0,105.1 L626.0,140.2 L553.0,123.0 L480.0,135.0 L407.0,115.7 L334.0,175.1 L261.0,211.8 L188.0,160.6 L115.0,178.7 L42.0,185.1 Z" fill="var(--bad)" opacity=".16"/>
+<path d="M42.0,185.1 L115.0,178.7 L188.0,160.6 L261.0,211.8 L334.0,175.1 L407.0,115.7 L480.0,135.0 L553.0,123.0 L626.0,140.2" fill="none" stroke="var(--bad)" stroke-width="1" stroke-linejoin="round"/>
+<path d="M42.0,156.5 L115.0,148.6 L188.0,129.6 L261.0,164.5 L334.0,128.7 L407.0,92.2 L480.0,97.8 L553.0,90.3 L626.0,105.1" fill="none" stroke="var(--bad)" stroke-width="1.4" stroke-linejoin="round"/>
+<path d="M42.0,101.0 L115.0,90.3 L188.0,69.7 L261.0,63.6 L334.0,33.5 L407.0,48.6 L480.0,26.2 L553.0,29.1 L626.0,38.9" fill="none" stroke="var(--good)" stroke-width="2.2" stroke-linejoin="round"/>
+<circle cx="42.0" cy="101.0" r="2.4" fill="var(--good)"/>
+<circle cx="115.0" cy="90.3" r="2.4" fill="var(--good)"/>
+<circle cx="188.0" cy="69.7" r="2.4" fill="var(--good)"/>
+<circle cx="261.0" cy="63.6" r="2.4" fill="var(--good)"/>
+<circle cx="334.0" cy="33.5" r="2.4" fill="var(--good)"/>
+<circle cx="407.0" cy="48.6" r="2.4" fill="var(--good)"/>
+<circle cx="480.0" cy="26.2" r="2.4" fill="var(--good)"/>
+<circle cx="553.0" cy="29.1" r="2.4" fill="var(--good)"/>
+<circle cx="626.0" cy="38.9" r="2.4" fill="var(--good)"/>
+<text x="42.0" y="240" text-anchor="middle" class="ax">2017</text>
+<text x="115.0" y="240" text-anchor="middle" class="ax">2018</text>
+<text x="188.0" y="240" text-anchor="middle" class="ax">2019</text>
+<text x="261.0" y="240" text-anchor="middle" class="ax">2020</text>
+<text x="334.0" y="240" text-anchor="middle" class="ax">2021</text>
+<text x="407.0" y="240" text-anchor="middle" class="ax">2022</text>
+<text x="480.0" y="240" text-anchor="middle" class="ax">2023</text>
+<text x="553.0" y="240" text-anchor="middle" class="ax">2024</text>
+<text x="626.0" y="240" text-anchor="middle" class="ax">2025</text>
+<text x="115.0" y="81.3" class="lab" fill="var(--good)">SA Power Networks</text>
+<text x="334.0" y="190.1" class="lab" fill="var(--bad)">ElectraNet, range across its four sites</text>
+</svg>
+<figcaption><b>Figure 1.</b> The same battery on two networks in the same state. The green
+line is SA Power Networks, which looks for your biggest burst only on summer evenings. The
+red band covers ElectraNet's four connection points, which look at any moment. The gap never
+closes.</figcaption></figure>
+
 <h3><span class="n">2</span>There are only two moves available, and the tariff decides
 whether either one works.</h3>
 
@@ -207,6 +285,40 @@ combinations on the same year separates what each is worth on its own.</p>
 <tr><td>South Australia</td><td>+39.6%</td><td class="win"><b>+8.9%</b></td><td>+49.8%</td><td>+1.3</td></tr>
 <tr><td>Minnesota</td><td class="lose"><b>&minus;59.1%</b></td><td class="lose">&minus;2.6%</td><td class="lose">&minus;10.9%</td><td>+50.8</td></tr>
 </tbody></table></div>
+
+<figure class="figbox"><svg viewBox="0 0 640 230" class="fig" role="img" aria-label="What each move is worth alone and together">
+<rect x="125.5" y="57.3" width="36.1" height="50.3" fill="var(--key)"/>
+<text x="143.5" y="53.3" text-anchor="middle" class="ax">+33.9</text>
+<rect x="171.1" y="107.6" width="36.1" height="7.3" fill="var(--warn)"/>
+<text x="189.1" y="125.9" text-anchor="middle" class="ax">-4.9</text>
+<rect x="216.6" y="50.2" width="36.1" height="57.4" fill="var(--ink2)"/>
+<text x="234.7" y="46.2" text-anchor="middle" class="ax">+38.7</text>
+<text x="196.0" y="222" text-anchor="middle" class="lab2">Spain</text>
+<rect x="297.5" y="48.8" width="36.1" height="58.7" fill="var(--key)"/>
+<text x="315.5" y="44.8" text-anchor="middle" class="ax">+39.6</text>
+<rect x="343.1" y="94.4" width="36.1" height="13.2" fill="var(--warn)"/>
+<text x="361.1" y="90.4" text-anchor="middle" class="ax">+8.9</text>
+<rect x="388.6" y="33.7" width="36.1" height="73.9" fill="var(--ink2)"/>
+<text x="406.7" y="29.7" text-anchor="middle" class="ax">+49.8</text>
+<text x="368.0" y="222" text-anchor="middle" class="lab2">South Australia</text>
+<rect x="469.5" y="107.6" width="36.1" height="87.7" fill="var(--key)"/>
+<text x="487.5" y="206.2" text-anchor="middle" class="ax">-59.1</text>
+<rect x="515.1" y="107.6" width="36.1" height="3.9" fill="var(--warn)"/>
+<text x="533.1" y="122.4" text-anchor="middle" class="ax">-2.6</text>
+<rect x="560.6" y="107.6" width="36.1" height="16.2" fill="var(--ink2)"/>
+<text x="578.7" y="134.8" text-anchor="middle" class="ax">-10.9</text>
+<text x="540.0" y="222" text-anchor="middle" class="lab2">Minnesota</text>
+<line x1="110" y1="107.6" x2="626" y2="107.6" stroke="var(--ink2)"/>
+<rect x="4" y="14" width="8" height="8" fill="var(--key)"/>
+<text x="16" y="21" class="lab2">chase cheap power only</text>
+<rect x="4" y="28" width="8" height="8" fill="var(--warn)"/>
+<text x="16" y="35" class="lab2">stay out of watched hours only</text>
+<rect x="4" y="42" width="8" height="8" fill="var(--ink2)"/>
+<text x="16" y="49" class="lab2">both together</text>
+</svg>
+<figcaption><b>Figure 2.</b> What each move earns alone, and what the two earn together. In
+Spain the grey bar is taller than the blue and orange added together, because neither move is
+worth much without the other. In Minnesota every bar is below the line.</figcaption></figure>
 
 <p>Three different designs show up.</p>
 
@@ -240,17 +352,56 @@ is cheap, so the comparison turns on what the factory pays for the carbon it emi
 <p>Rather than argue about the right carbon price, the analysis works out the price at
 which the two come out equal. In Spain that number has collapsed.</p>
 
-<div class="tw"><table>
-<caption>The carbon price at which heat from a battery costs the same as heat from gas,
-in Spain.</caption>
-<thead><tr><th></th><th>2018</th><th>2020</th><th>2023</th><th>2024</th><th>2025</th></tr></thead>
-<tbody><tr><td>Break-even carbon price</td><td>&euro;101/t</td><td>&euro;30/t</td>
-<td>&euro;8/t</td><td class="win"><b>&minus;&euro;8/t</b></td><td class="win"><b>&minus;&euro;29/t</b></td></tr>
-</tbody></table></div>
+<figure class="figbox"><svg viewBox="0 0 640 230" class="fig" role="img" aria-label="Break-even carbon price in Spain, 2018 to 2025">
+<rect x="280.6" y="18" width="110.9" height="182" fill="var(--warn)" opacity=".10"/>
+<text x="336.0" y="29" text-anchor="middle" class="lab" fill="var(--warn)">energy crisis</text>
+<line x1="46" y1="200.0" x2="626" y2="200.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="203.0" text-anchor="end" class="ax">-50</text>
+<line x1="46" y1="173.2" x2="626" y2="173.2" stroke="var(--ink2)" stroke-width="1"/>
+<text x="40" y="176.2" text-anchor="end" class="ax">0</text>
+<line x1="46" y1="133.1" x2="626" y2="133.1" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="136.1" text-anchor="end" class="ax">75</text>
+<line x1="46" y1="92.9" x2="626" y2="92.9" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="95.9" text-anchor="end" class="ax">150</text>
+<line x1="46" y1="52.8" x2="626" y2="52.8" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="55.8" text-anchor="end" class="ax">225</text>
+<line x1="46" y1="18.0" x2="626" y2="18.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="21.0" text-anchor="end" class="ax">290</text>
+<line x1="46" y1="133.1" x2="626" y2="133.1" stroke="var(--good)" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="624" y="128.1" text-anchor="end" class="lab" fill="var(--good)">what carbon actually costs, EUR 75</text>
+<path d="M46.0,119.0 L128.9,146.1 L211.7,157.1 L294.6,27.0 L377.4,96.1 L460.3,168.9 L543.1,177.4 L626.0,188.7" fill="none" stroke="var(--key)" stroke-width="2.2" stroke-linejoin="round"/>
+<circle cx="46.0" cy="119.0" r="2.6" fill="var(--key)"/>
+<circle cx="128.9" cy="146.1" r="2.6" fill="var(--key)"/>
+<circle cx="211.7" cy="157.1" r="2.6" fill="var(--key)"/>
+<circle cx="294.6" cy="27.0" r="2.6" fill="var(--key)"/>
+<circle cx="377.4" cy="96.1" r="2.6" fill="var(--key)"/>
+<circle cx="460.3" cy="168.9" r="2.6" fill="var(--key)"/>
+<circle cx="543.1" cy="177.4" r="2.6" fill="var(--key)"/>
+<circle cx="626.0" cy="188.7" r="2.6" fill="var(--key)"/>
+<text x="52.0" y="112.0" class="lab">EUR 101</text>
+<text x="622.0" y="180.7" text-anchor="end" class="lab">-EUR 29</text>
+<text x="46.0" y="220" text-anchor="middle" class="ax">2018</text>
+<text x="128.9" y="220" text-anchor="middle" class="ax">2019</text>
+<text x="211.7" y="220" text-anchor="middle" class="ax">2020</text>
+<text x="294.6" y="220" text-anchor="middle" class="ax">2021</text>
+<text x="377.4" y="220" text-anchor="middle" class="ax">2022</text>
+<text x="460.3" y="220" text-anchor="middle" class="ax">2023</text>
+<text x="543.1" y="220" text-anchor="middle" class="ax">2024</text>
+<text x="626.0" y="220" text-anchor="middle" class="ax">2025</text>
+</svg>
+<figcaption><b>Figure 3.</b> The carbon price at which heat from a battery costs the same as
+heat from gas, in Spain. Below the dashed line, the battery is already cheaper at the carbon
+price Europe actually charges.</figcaption></figure>
 
-<p>Read it as: in 2018, carbon would have had to cost &euro;101 a tonne before the
-battery beat gas. By 2025 the battery wins even if carbon costs nothing. The EU price is
-actually &euro;75.</p>
+<p>Read it as: in 2018, carbon would have had to cost &euro;101 a tonne before the battery
+beat gas. By 2025 the battery wins even if carbon costs nothing at all. Europe actually
+charges &euro;75.</p>
+
+<p>The two spikes are the European energy crisis, and they are worth understanding rather
+than removing. Gas more than doubled in 2022, which should have favoured the battery. It did
+the opposite, because the wholesale electricity the battery buys more than doubled too.
+Spain's average price ran &euro;168 per MWh that year against &euro;65 in 2025. <b>An energy
+crisis is not a one-way bet on storage, because both fuels are in it.</b></p>
 
 <p>The honest qualification is that 2025 is the best year in the series. Ignoring carbon
 and comparing fuel cost alone, the battery beat gas in only two of the eight Spanish
