@@ -170,18 +170,34 @@ committable price at any horizon.
 
 Everything above uses 2025. Re-run on every year available:
 
-**Spain** — a clear trend, and 2025 is the top of it:
+**Spain — six years**, from OMIE's yearly archives (the daily URLs only serve
+recent years; completed years are published as `marginalpdbc_YYYY.zip`):
 
-| Year | Hours below zero | Saving |
-|---|---|---|
-| 2023 | 0.0% | 24.6% |
-| 2024 | 2.8% | 29.8% |
-| 2025 | 6.3% | **37.9%** |
+| Year | Mean price | Hours below zero | Saving |
+|---|---|---|---|
+| 2020 | €33.96 | 0.0% | 17.1% |
+| 2021 | €111.93 | 0.0% | 14.7% |
+| 2022 | €167.52 | 0.0% | 16.8% |
+| 2023 | €87.10 | 0.0% | 24.6% |
+| 2024 | €63.04 | 2.8% | 29.8% |
+| 2025 | €65.29 | 6.3% | **37.9%** |
 
-Monotonic, tracking the growth in negative-price hours exactly — Spain had none
-at all in 2023. So 2025 is not a fluke; it is the latest point on a rising line.
-**State it as "25% three years ago, 38% now, rising with solar"**, which is
-stronger than any single year.
+Flat at 15-17% for three years, then a clean rise. **+4.5 points per year across
+all six, +6.7 across the last three.** A trend on six points, not an
+extrapolation from three.
+
+### The most useful thing in this table
+
+Between 2020 and 2022 the mean price went from **€34 to €168** — a five-fold
+swing through the European energy crisis — and **the saving barely moved: 17.1%
+to 16.8%.**
+
+> **The value of flexibility does not depend on how expensive power is. It
+> depends on how much the price moves within a day.**
+
+That is a screening rule: when assessing a new market, look at intraday spread,
+not at price level. It also means the rise since 2023 is not about prices
+falling — it is about solar reshaping the shape of the day.
 
 **South Australia** — no trend, and 2025 is the *bottom* of the range:
 
