@@ -6,7 +6,11 @@
 - **[T] Tested** — swept across a range, so no single value is claimed
 - **[J] Judgment** — my call. These are the ones to be able to defend
 
-Counts: **17 published, 14 tested, 13 judgment.**
+Counts: **10 published, 13 tested, 21 judgment.**
+
+Nearly half are judgment calls. Most are about *scope and framing* rather
+than about numbers — but they are still mine, and the honest count matters
+more than a flattering one.
 
 ---
 
