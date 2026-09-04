@@ -220,6 +220,49 @@ def sa_network_cost(draw_mwh: np.ndarray, index: pd.DatetimeIndex,
 
 
 # ---------------------------------------------------------------------------
+# ElectraNet: South Australia's transmission network.
+#
+# Source: ElectraNet Prescribed Transmission Service Price Schedule,
+# 1 July 2025 - 30 June 2026. The schedule is quoted GST-inclusive; SA Power
+# Networks' is not, so these are divided out to keep the two comparable.
+#
+# ElectraNet bills capacity on **agreed maximum demand, every day, with no peak
+# window** - structurally the same as MISO Schedule 632, and the reason it is
+# kept in this study as a counterfactual. A site of this size would really
+# connect to SA Power Networks, whose published rates already contain
+# transmission cost; the direct-connection case exists to prove the mechanism
+# inside one country with no confound.
+# ---------------------------------------------------------------------------
+
+EN_GST = 1.10
+
+EN_NONLOC_CAP_AUD_MW_DAY = 160.866 / EN_GST
+EN_NONLOC_ENERGY_AUD_MWH = 24.994 / EN_GST
+EN_COMMON_CAP_AUD_MW_DAY = 62.608 / EN_GST
+EN_COMMON_ENERGY_AUD_MWH = 9.727 / EN_GST
+
+# Locational component, by connection point.
+EN_LOCATIONAL_AUD_MW_DAY = {"Para 66kV": 54.996 / EN_GST,
+                            "Brinkworth 33kV": 128.158 / EN_GST,
+                            "Ardrossan West 33kV": 194.826 / EN_GST,
+                            "Berri 66kV": 227.745 / EN_GST}
+
+EN_ENERGY_AUD_MWH = EN_NONLOC_ENERGY_AUD_MWH + EN_COMMON_ENERGY_AUD_MWH
+
+
+def electranet_capacity_aud_kw_year(location: str = "Para 66kV") -> float:
+    """Capacity charge as one annual figure, per kW of agreed maximum demand.
+
+    The schedule is quoted per MW per day, which is the form a network planner
+    uses. Per kW per year is the form that compares against every other tariff
+    in this study, so the conversion lives here rather than being done by hand.
+    """
+    per_mw_day = (EN_NONLOC_CAP_AUD_MW_DAY + EN_COMMON_CAP_AUD_MW_DAY
+                  + EN_LOCATIONAL_AUD_MW_DAY[location])
+    return per_mw_day * 365 / 1000
+
+
+# ---------------------------------------------------------------------------
 # MISO: Otter Tail Power, Minnesota Schedule 632 - Transmission Service
 #
 # The right class for a load of this size. Rates from Otter Tail's published

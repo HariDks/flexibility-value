@@ -283,8 +283,9 @@ rect,path,line{transition:none}
 
     <div><label for="cap">Charge on your peak demand</label>
       <input id="cap" type="number" step="0.01" value="63.40">
-      <small class="hint">Per kW of peak, per year. If your bill quotes a monthly rate, multiply
-      by 12. <b>This is the one that punishes a battery.</b></small></div>
+      <small class="hint">Per kW of peak, per year. If your bill quotes a monthly rate multiply
+      by 12, and if it quotes a daily rate per MW multiply by 0.365.
+      <b>This is the one that punishes a battery.</b></small></div>
 
     <div><label for="meas">When does the network watch?</label>
       <select id="meas">
@@ -346,7 +347,8 @@ rect,path,line{transition:none}
 
 <footer>
   Prices: OMIE (Spain), AEMO (NEM), MISO market reports and monthly archives.<br>
-  Tariffs: CNMC and BOE, SA Power Networks, ElectraNet, Otter Tail Power. Every rate cited inline.<br>
+  Tariffs: CNMC and BOE, SA Power Networks, ElectraNet Prescribed Transmission Service<br>
+  Price Schedule 2025-26 (ex GST), Otter Tail Power. Every rate cited inline in tariff.py.<br>
   25 market-years · 44 logged decisions · 16 corrections on the record.
 </footer>
 </div>
@@ -496,8 +498,10 @@ document.getElementById("b-any").onclick = () => { rule="anytime"; paintSwitch()
 const PRESETS = {
   "SA Power Networks": {mkt:"sa", cur:"AUD", ener:25.00, meas:"window_season",
                         read:"peakavg", cap:63.40, any:10.00},
-  "ElectraNet": {mkt:"sa", cur:"AUD", ener:25.00, meas:"anytime", read:"peak",
-                 cap:10.00, any:0},
+  "ElectraNet (Para)": {mkt:"sa", cur:"AUD", ener:31.56, meas:"anytime",
+                        read:"peak", cap:92.4, any:0},
+  "ElectraNet (Berri)": {mkt:"sa", cur:"AUD", ener:31.56, meas:"anytime",
+                         read:"peak", cap:149.72, any:0},
   "Otter Tail 632": {mkt:"miso", cur:"USD", ener:6.23, meas:"anytime", read:"peak",
                      cap:145.50, any:0},
   "Otter Tail TMEP": {mkt:"miso", cur:"USD", ener:6.23, meas:"baseline", read:"peak",

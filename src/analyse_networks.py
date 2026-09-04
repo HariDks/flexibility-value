@@ -18,21 +18,17 @@ import pandas as pd
 from pathlib import Path
 
 from battery import schedule
-from tariff import (SA_ENERGY_AUD_MWH, SA_PEAK_MONTHS, SA_PEAK_WINDOW,
+from tariff import (EN_COMMON_CAP_AUD_MW_DAY, EN_ENERGY_AUD_MWH,
+                    EN_LOCATIONAL_AUD_MW_DAY, EN_NONLOC_CAP_AUD_MW_DAY,
+                    SA_ENERGY_AUD_MWH, SA_PEAK_MONTHS, SA_PEAK_WINDOW,
                     sa_network_cost)
 
 ROOT = Path(__file__).resolve().parents[1]
 PROCESSED = ROOT / "data" / "processed"
 DEMAND, STORAGE_H = 10.0, 12
-GST = 1.10   # ElectraNet's schedule is GST-inclusive; SA Power Networks' is not
-
-# ElectraNet Prescribed Transmission Service Price Schedule, 1 Jul 2025-30 Jun 2026
-EN_NONLOC_CAP, EN_NONLOC_EN = 160.866 / GST, 24.994 / GST   # $/MW/day, $/MWh
-EN_COMMON_CAP, EN_COMMON_EN = 62.608 / GST, 9.727 / GST
-EN_LOCATIONAL = {"Para 66kV": 54.996 / GST,
-                 "Brinkworth 33kV": 128.158 / GST,
-                 "Ardrossan West 33kV": 194.826 / GST,
-                 "Berri 66kV": 227.745 / GST}
+# ElectraNet's published rates now live in tariff.py with every other tariff,
+# so the screener and this analysis cannot drift apart.
+EN_LOCATIONAL = EN_LOCATIONAL_AUD_MW_DAY
 
 
 def main() -> None:
@@ -66,8 +62,8 @@ def main() -> None:
 
     print("\nB) Connected directly to ElectraNet transmission.")
     print("   Capacity billed on AGREED MAXIMUM DEMAND, every day, no window.")
-    en_cap_common = EN_NONLOC_CAP + EN_COMMON_CAP
-    en_energy = EN_NONLOC_EN + EN_COMMON_EN
+    en_cap_common = EN_NONLOC_CAP_AUD_MW_DAY + EN_COMMON_CAP_AUD_MW_DAY
+    en_energy = EN_ENERGY_AUD_MWH
     print(f"   {'connection point':<22}{'inflexible':>12}{'battery':>10}{'result':>10}")
     for loc, loccap in EN_LOCATIONAL.items():
         capd = loccap + en_cap_common

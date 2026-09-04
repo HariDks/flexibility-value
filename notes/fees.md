@@ -676,3 +676,36 @@ draw costs more in demand charge than the faster charging saves.
 **So the base case of 4× is not merely a middle choice — it is where the
 argument stops being sensitive to a number this study cannot source.** That is a
 better defence of it than "it seemed reasonable".
+
+---
+
+## Under a time-blind charge, the right answer is to charge gently
+
+Wiring ElectraNet's real rates into the screener surfaced something the study's
+fixed 4× base case hides. Against ElectraNet at Para 66kV, the saving is **not
+monotonic in charge rate**. It peaks at 2× and falls away in both directions:
+
+| Charge rate | Delivered A$/MWh | Saving |
+|---|---|---|
+| 1× | 128.85 | 0.0% |
+| 1.5× | 95.76 | 25.7% |
+| **2×** | **88.65** | **31.2%** |
+| 3× | 93.34 | 27.6% |
+| 4× | 102.17 | **20.7%** (the figure `RESULTS.md` quotes) |
+| 6× | 121.24 | **5.9%** (the figure `analyse_networks.py` quotes) |
+| 8× | 121.30 | 5.9% |
+
+All three published figures reconcile exactly. They are the same curve read at
+three different points.
+
+**The practical reading:** against a charge billed on your worst moment, a
+battery should charge *gently and for longer* rather than hard and briefly.
+Charging at 2× still captures most of the cheap hours while setting half the
+peak that 4× sets. Past 2× the demand charge grows faster than the energy
+saving, and the whole advantage is given back.
+
+This does not change any headline, because every market is reported at a
+consistent 4×. But it is the operational advice the fixed base case conceals,
+and it is worth stating: **the optimal charge rate is a function of the tariff,
+not of the hardware.** A windowed tariff wants a fast charger; a time-blind one
+wants a slow one.
