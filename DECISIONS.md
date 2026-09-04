@@ -6,7 +6,7 @@
 - **[T] Tested** — swept across a range, so no single value is claimed
 - **[J] Judgment** — my call. These are the ones to be able to defend
 
-Counts: **10 published, 13 tested, 21 judgment.**
+Counts: **10 published, 14 tested, 20 judgment.**
 
 Nearly half are judgment calls. Most are about *scope and framing* rather
 than about numbers — but they are still mine, and the honest count matters
@@ -138,10 +138,18 @@ points depending on tank size, and leaves the inflexible bill untouched. Kept
 because it is the only granularity all three markets share, it is the actual
 commitment unit in Spain and MISO, and it errs against the argument.
 
-**24. Price points: Spain national, SA1, MINN.HUB. [J]**
-MINN.HUB is the published hub closest to Big Stone. SA1 is the whole South
-Australian region. Not tested against alternatives — a different node would give
-different numbers, though the tariff finding does not depend on prices at all.
+**24. Price points: Spain national, SA1, MINN.HUB. [T]**
+Now tested. MISO publishes 2,464 pricing points including **OTP.OTP**, the load
+zone of Otter Tail Power itself — the settlement point a load on that system
+actually pays, and so a better answer than the nearest hub. Over four years
+MINN.HUB is out by **0.1 points** against it, and all nine MISO hubs span
+48.7–52.7%. Under the standard tariff every point is negative in every year
+(36 of 36), so the MISO finding is a property of the tariff, not the node.
+The NEM settles one price per region, so there is no node choice inside South
+Australia; holding the SAPN tariff fixed and swapping regions gives 22.6%
+(Tasmania) to 49.9% (South Australia). **The mechanism holds everywhere; SA is
+the best case, and should be quoted as the top of a range.** See
+`notes/nodes.md`. Spain has one national price, so nothing to vary.
 
 **25. Local time, not market time. [P]**
 Australia's market runs on Sydney winter time year-round while Adelaide shifts;

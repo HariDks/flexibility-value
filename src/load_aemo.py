@@ -28,7 +28,13 @@ RAW = ROOT / "data" / "raw" / "aemo"
 PROCESSED = ROOT / "data" / "processed"
 
 MARKET_TZ = timezone(timedelta(hours=10))   # AEST, fixed, no daylight saving
-LOCAL_TZ = "Australia/Adelaide"
+
+# Every region has its own local clock, and they do not agree. Queensland never
+# shifts for daylight saving; South Australia is half an hour off the rest.
+# Reading market time as local time would move the solar trough.
+REGION_TZ = {"SA1": "Australia/Adelaide", "NSW1": "Australia/Sydney",
+             "QLD1": "Australia/Brisbane", "VIC1": "Australia/Melbourne",
+             "TAS1": "Australia/Hobart"}
 
 
 def main() -> None:
@@ -36,6 +42,10 @@ def main() -> None:
     p.add_argument("--year", type=int, default=2025)
     p.add_argument("--region", default="SA1")
     args = p.parse_args()
+
+    if args.region not in REGION_TZ:
+        raise SystemExit(f"Unknown region {args.region}")
+    local_tz = REGION_TZ[args.region]
 
     # Read every month available, including the bracketing ones, and trim to the
     # local year later. Globbing only the target year would leave the first and
@@ -49,15 +59,15 @@ def main() -> None:
 
     # (1) interval-ending -> interval-beginning, (2) market time -> local time
     ts = ts.dt.tz_localize(MARKET_TZ) - pd.Timedelta(5, unit="m")
-    native = (pd.DataFrame({"ts": ts.dt.tz_convert(LOCAL_TZ),
+    native = (pd.DataFrame({"ts": ts.dt.tz_convert(local_tz),
                             "price_aud_mwh": raw["RRP"].to_numpy()})
               .sort_values("ts").set_index("ts"))
     native = native[~native.index.duplicated(keep="first")]
 
     # Trim to the local calendar year before aggregating, so no hour is built
     # from a partial set of intervals. The bracketing months make this possible.
-    start = pd.Timestamp(f"{args.year}-01-01").tz_localize(LOCAL_TZ)
-    end = pd.Timestamp(f"{args.year + 1}-01-01").tz_localize(LOCAL_TZ)
+    start = pd.Timestamp(f"{args.year}-01-01").tz_localize(local_tz)
+    end = pd.Timestamp(f"{args.year + 1}-01-01").tz_localize(local_tz)
     native = native[(native.index >= start) & (native.index < end)]
 
     # (3) native resolution -> hourly. The NEM settled at 30 minutes until
@@ -82,16 +92,18 @@ def main() -> None:
     hourly = native["price_aud_mwh"].resample("h").mean().to_frame()
 
     PROCESSED.mkdir(parents=True, exist_ok=True)
-    out = PROCESSED / f"prices_sa_{args.year}.csv"
+    # South Australia keeps its original filename; nothing downstream changes.
+    out = PROCESSED / (f"prices_sa_{args.year}.csv" if args.region == "SA1"
+                       else f"prices_nem_{args.region}_{args.year}.csv")
     hourly.reset_index().to_csv(out, index=False)
 
     s = hourly["price_aud_mwh"]
     expected = len(pd.date_range(
-        pd.Timestamp(f"{args.year}-01-01").tz_localize(LOCAL_TZ),
-        pd.Timestamp(f"{args.year + 1}-01-01").tz_localize(LOCAL_TZ),
+        pd.Timestamp(f"{args.year}-01-01").tz_localize(local_tz),
+        pd.Timestamp(f"{args.year + 1}-01-01").tz_localize(local_tz),
         freq="h", inclusive="left"))
 
-    print(f"South Australia {args.year} -> {out.relative_to(ROOT)}")
+    print(f"{args.region} {args.year} -> {out.relative_to(ROOT)}")
     print(f"  native intervals in: {len(native):,}")
     print(f"  hours out:        {len(s)} (expected {expected})")
     print(f"  missing values:   {int(s.isna().sum())}")
