@@ -43,8 +43,9 @@ alone, which is what the rest of this study is about.
 | **South Australia** (Sub-Transmission) | A$120.12 | A$72.49 · +39.6% | **A$60.32 · +49.8%** |
 | **MISO** (Schedule 632 + riders) | $62.47 | $99.42 · −59.1% | **$63.80 · −2.1%** |
 
-In Minnesota the battery **loses** under the standard tariff — and its best case
-is achieved by being barely flexible at all.
+In Minnesota the battery finishes behind **on 2025 prices** — and its best case
+is achieved by being barely flexible at all. The year-dependence matters here:
+see §6a. What holds in every year is the **gradient**, not the level.
 
 ## 3. The mechanism, isolated — the same battery on two networks in one country
 
