@@ -108,6 +108,8 @@ table{border-collapse:collapse;width:100%;min-width:28rem;font-size:.86rem}
 th,td{padding:.42rem .85rem .42rem 0;text-align:right;
   border-bottom:1px solid var(--rule2);font-variant-numeric:tabular-nums}
 th:first-child,td:first-child{text-align:left}
+.th2{font-family:Archivo,sans-serif;font-size:.62rem;letter-spacing:0;
+  text-transform:none;opacity:.75;font-weight:400}
 th{font-family:"DM Mono",monospace;font-size:.66rem;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);font-weight:400;
   border-bottom:1px solid var(--rule)}
@@ -220,13 +222,18 @@ rect,path,line{transition:none}
 </section>
 
 <section>
-  <h2>It holds for nine straight years</h2>
-  <p class="sub">One factory, run against SA Power Networks and against each of ElectraNet's
-  four connection points. Prices, weather and hardware are held fixed. Only the billing rule
-  moves.</p>
+  <h2>The billing rule decides it, in all nine years</h2>
+  <p class="sub"><b>Every number below is what the store saves</b>, compared with the same
+  factory with no store buying power as it uses it. A positive number means the store paid off;
+  a negative one means it cost more than it saved.</p>
+  <p class="sub">The first column is SA Power Networks, which watches only a four hour evening
+  window in summer. The next four are ElectraNet, which watches every hour of the year, at each
+  of the four places in South Australia a factory could physically connect. The last column is
+  how far ahead SA Power Networks finishes against the best of them.</p>
   <div class="scroll"><table>
-    <tr><th>Year</th><th>SA Power Networks</th><th>Para</th><th>Brinkworth</th>
-        <th>Ardrossan</th><th>Berri</th><th>Gap</th></tr>
+    <tr><th>Year</th><th>SA Power Networks<br><span class="th2">watches a window</span></th>
+        <th>Para<br><span class="th2">watches always</span></th><th>Brinkworth</th>
+        <th>Ardrossan</th><th>Berri</th><th>Gap vs best</th></tr>
     <tr><td>2017</td><td class="win">+22.5%</td><td class="lose">−2.0%</td><td class="lose">−7.5%</td><td class="lose">−12.3%</td><td class="lose">−14.6%</td><td>24.5</td></tr>
     <tr><td>2018</td><td class="win">+27.2%</td><td>+1.5%</td><td class="lose">−4.3%</td><td class="lose">−9.4%</td><td class="lose">−11.8%</td><td>25.7</td></tr>
     <tr><td>2019</td><td class="win">+36.3%</td><td>+9.9%</td><td>+4.0%</td><td class="lose">−1.3%</td><td class="lose">−3.8%</td><td>26.4</td></tr>
@@ -237,9 +244,11 @@ rect,path,line{transition:none}
     <tr><td>2024</td><td class="win">+54.2%</td><td>+27.2%</td><td>+20.9%</td><td>+15.4%</td><td>+12.8%</td><td>27.0</td></tr>
     <tr><td>2025</td><td class="win">+49.9%</td><td>+20.7%</td><td>+13.9%</td><td>+8.0%</td><td>+5.2%</td><td>29.2</td></tr>
   </table></div>
-  <p style="margin-top:1.2rem">The time-aware charge is worth <b>19 to 44 percentage points</b>
-  over the time-blind one, every year, with no currency, weather or market-design confound.
-  ElectraNet is outright negative in 15 of the 36 year-and-location combinations.</p>
+  <p style="margin-top:1.2rem">Watching a window instead of watching always is worth <b>19 to
+  44 percentage points</b>, in every one of the nine years. Nothing else differs between the
+  columns: same country, same prices, same weather, same battery, same currency. Connect to
+  ElectraNet instead and the store <b>loses money outright in 15 of the 36</b> year and location
+  combinations.</p>
 </section>
 
 <section>
