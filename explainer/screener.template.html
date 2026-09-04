@@ -108,6 +108,7 @@ table{border-collapse:collapse;width:100%;min-width:28rem;font-size:.86rem}
 th,td{padding:.42rem .85rem .42rem 0;text-align:right;
   border-bottom:1px solid var(--rule2);font-variant-numeric:tabular-nums}
 th:first-child,td:first-child{text-align:left}
+td .th2{display:block;margin-top:.1rem}
 .th2{font-family:Archivo,sans-serif;font-size:.62rem;letter-spacing:0;
   text-transform:none;opacity:.75;font-weight:400}
 th{font-family:"DM Mono",monospace;font-size:.66rem;letter-spacing:.08em;
@@ -184,7 +185,7 @@ rect,path,line{transition:none}
 <section>
   <h2>One week, one battery, two billing rules</h2>
   <p class="sub">Real South Australian prices, week beginning <span id="wkstart" class="mono"></span>.
-  A 10&nbsp;MW factory needing heat around the clock, with a 12-hour store that can charge at
+  A 10&nbsp;MW factory needing heat around the clock, with a thermal battery holding 12 hours of heat, which can charge at
   4× its average draw. Only the network's billing rule changes.</p>
 
   <p class="do">Two buttons below. Press one, then the other, and watch what happens in the
@@ -223,8 +224,8 @@ rect,path,line{transition:none}
 
 <section>
   <h2>The billing rule decides it, in all nine years</h2>
-  <p class="sub"><b>Every number below is what the store saves</b>, compared with the same
-  factory with no store buying power as it uses it. A positive number means the store paid off;
+  <p class="sub"><b>Every number below is what the battery saves</b>, compared with the same
+  factory with no battery, buying power as it uses it. A positive number means the battery paid off;
   a negative one means it cost more than it saved.</p>
   <p class="sub">The first column is SA Power Networks, which watches only a four hour evening
   window in summer. The next four are ElectraNet, which watches every hour of the year, at each
@@ -247,26 +248,30 @@ rect,path,line{transition:none}
   <p style="margin-top:1.2rem">Watching a window instead of watching always is worth <b>19 to
   44 percentage points</b>, in every one of the nine years. Nothing else differs between the
   columns: same country, same prices, same weather, same battery, same currency. Connect to
-  ElectraNet instead and the store <b>loses money outright in 15 of the 36</b> year and location
+  ElectraNet instead and the battery <b>loses money outright in 15 of the 36</b> year and location
   combinations.</p>
 </section>
 
 <section>
-  <h2>The same thing happens in Minnesota</h2>
-  <p class="sub">Minnesota runs the control case. Otter Tail's standard Schedule 632 bills the
-  monthly maximum whenever it falls, and a thermal battery loses money on it in every year
-  tested, at nine different pricing points.</p>
+  <h2>The pattern holds in three countries</h2>
+  <p class="sub">Each row is a different way of measuring your biggest burst. The last column is
+  what the battery saves against the same factory without one, from the first year tested to
+  the last, charging at four times its average draw throughout.</p>
   <div class="scroll"><table>
-    <tr><th>Market</th><th>Charge design</th><th>Years</th><th>Battery saves</th></tr>
-    <tr><td>Spain 6.3TD</td><td>banded by period</td><td>2018–2025</td><td class="win">+12.5% → +37.9%</td></tr>
-    <tr><td>South Australia</td><td>four-hour evening window</td><td>2017–2025</td><td class="win">+22.5% → +55.5%</td></tr>
-    <tr><td>MISO · Schedule 632</td><td>monthly maximum, time-blind</td><td>2018–2025</td><td class="lose">negative in 8 of 8 <span style="color:var(--muted)">(at 4×)</span></td></tr>
-    <tr class="hi"><td>MISO · under TMEP</td><td>billed on an agreed baseline</td><td>2018–2025</td><td class="win">positive in 8 of 8</td></tr>
+    <tr><th>Market</th><th>When it looks for your biggest burst</th><th>Years</th><th>Battery saves, first year to last</th></tr>
+    <tr><td>Spain <span class="th2">class 6.3TD</span></td><td>six separate bands through the day</td><td>2018–2025</td><td class="win">+12.5% → +37.9%</td></tr>
+    <tr><td>South Australia <span class="th2">SA Power Networks</span></td><td>4 hours each summer evening</td><td>2017–2025</td><td class="win">+22.5% → +55.5%</td></tr>
+    <tr><td>Minnesota <span class="th2">Otter Tail, standard</span></td><td>always, and bills the worst moment</td><td>2018–2025</td><td class="lose">loses money in all 8 years</td></tr>
+    <tr class="hi"><td>Minnesota <span class="th2">Otter Tail, under TMEP</span></td><td>never, a figure agreed up front</td><td>2018–2025</td><td class="win">saves money in all 8 years</td></tr>
   </table></div>
-  <p style="margin-top:1.2rem"><b>TMEP settles what is causing this.</b> Nothing about the
-  grid, the prices or the hardware changed in Minnesota. Otter Tail agreed to bill demand on a
-  contracted baseline instead of the metered peak, and the sign flipped. The tariff is filed
-  and approved.</p>
+  <p style="margin-top:1.2rem"><b>Minnesota is the row that settles the cause</b>, because the
+  same utility offers two tariffs on the same grid, to the same factory, in the same years.</p>
+  <p>Otter Tail Power's standard tariff bills whatever the meter recorded as your highest moment
+  that month. A battery loses money on it in all eight years, at all nine of the pricing points
+  across MISO that were tested. Its Thermal Market Energy Pricing tariff bills a figure agreed
+  in advance instead of the meter reading, and the same battery wins in all eight years.</p>
+  <p>Nothing changed but one sentence in the rate schedule. That tariff is already filed and
+  approved.</p>
 </section>
 
 <section>
@@ -355,7 +360,8 @@ rect,path,line{transition:none}
     on peak demand, and whether that peak is time-aware</b>. Treat it as a first screen rather
     than a bill. Real schedules carry bands, ratchets, riders and seasonal detail this flattens,
     and Spain's six-band structure in particular cannot be expressed in two dials.</p>
-    <p>It assumes one factory: 10 MW of heat continuously, a 12-hour store, 1%/day standby loss,
+    <p>It assumes one factory: 10 MW of heat continuously, a thermal battery holding 12 hours,
+    1%/day standby loss,
     each market's real forecast horizon. It prices <b>arbitrage only</b>, with no firmness, no
     reliability value and no capital cost of any kind, so nothing here is a payback figure.</p>
     <p><b>Two reasons its numbers can differ from the tables above.</b> This screener
