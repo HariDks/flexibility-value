@@ -154,10 +154,20 @@ and not specified by the tariff:
 **The headline is a fact about the tariff plus an assumption about a
 negotiation.** The mechanism is right; the baseline is where value is decided.
 
-**4. Flexibility value tracks intraday spread, not price level.** Spain's mean
-ran €34 (2020) to €168 (2022) — five-fold — while the saving moved 17.1% to
-16.8%. South Australia ran A$43 to A$156 with 39.0% and 45.6%. **A screening
-rule: look at how much the price moves within a day, not how high it is.**
+**4. Flexibility value tracks the depth of the cheap hours, not the price
+level and not the raw spread.** Spain's mean ran €34 (2020) to €168 (2022) —
+five-fold — while the saving moved 17.1% to 16.8%. South Australia ran A$43 to
+A$156 with 39.0% and 45.6%. So price *level* is irrelevant.
+
+Tested across the five NEM regions at one moment, raw peak-to-trough spread
+ranks them **wrong**: New South Wales has the largest mean daily spread of any
+region (A$431) and only the third-best saving. Rank correlation with the
+saving: price level −0.30, spread +0.50, cheap-hours gap +0.70, **that gap as a
+share of the mean price +0.90**.
+
+**The screening rule: how far the cheap hours sit below the day's average, as a
+fraction of that average.** Max minus min is set by spikes, and a battery never
+buys spikes. See `notes/nodes.md`.
 
 **5. Arbitrage storage stops at the forecast horizon — it does not taper.**
 Spain flat from 24h, South Australia from ~6h, MISO from 24h. **The limit is
@@ -250,6 +260,14 @@ publishes forecasts but no committable price at any horizon.
 11. *"MISO data stops at 2023."* Wrong twice — the monthly archives reach 2018.
 12. *"Same battery +50% on one network, −19% on another."* True only at 6×
     charge rate. **Use the 19–44 point gap instead.**
+13. *"Flexibility value tracks intraday spread."* Right that level does not
+    matter, wrong about the measure. Raw spread misranks the five NEM regions;
+    **the depth of the cheap hours relative to the daily mean is the predictor**
+    (+0.90 against +0.50).
+14. *"South Australia's saving is a market result."* Partly a South Australian
+    one. Holding the SAPN tariff fixed and swapping regions gives 22.6%
+    (Tasmania) to 49.9% (South Australia). The mechanism holds everywhere;
+    **SA is the top of a range, not a typical case.**
 
 ## 9. Which script produces what
 
@@ -262,5 +280,9 @@ publishes forecasts but no committable price at any horizon.
 | `analyse_wind.py` | TMEP's coincidence condition, both readings |
 | `analyse_robustness.py` | §6 — five robustness checks |
 | `analyse_horizon.py` | finding 7, visibility curves |
+| `analyse_nodes.py` | pricing-point sensitivity — 9 MISO points, 5 NEM regions |
+| `analyse_demand_profile.py` | weekends, turnarounds and shift patterns |
+| `analyse_firmness.py` | what capacity and demand-response products pay |
+| `analyse_connection_capex.py` | the connection-cost break-even |
 | `plot_step1.py`, `plot_all_markets.py` | data-quality inspection |
 | `fetch_*.py`, `load_*.py` | data collection and tidying, with checks |
