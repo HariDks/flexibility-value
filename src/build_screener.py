@@ -42,7 +42,8 @@ import pandas as pd
 from pathlib import Path
 
 from battery import schedule
-from tariff import (ES_ENERGY_EUR_MWH, ES_POWER_EUR_KW_YR, SA_RATES,
+from tariff import (ES_CARGOS_ENERGY, ES_CARGOS_POWER, ES_CLASSES,
+                    ES_ENERGY_EUR_MWH, ES_POWER_EUR_KW_YR, SA_RATES,
                     SA_PEAK_MONTHS, SA_PEAK_WINDOW,
                     MISO_CUSTOMER_USD_MONTH, MISO_DEMAND_USD_KW_MONTH,
                     MISO_ECO_USD_MWH, MISO_EITE_USD_MWH,
@@ -182,6 +183,40 @@ def run_market(key: str, cfg: dict) -> tuple[list[dict], dict]:
                              **stats(ch, pr, idx, key)))
             if rate == 4.0:
                 schedules[rk] = ch
+
+    # Spain is the one market where the precompute assumption needs care.
+    # A FLAT per-MWh charge is the same number added to every hour and cannot
+    # change which hours are cheapest. Spain's is BANDED, from 14.88 EUR/MWh in
+    # P1 down to 0.22 in P6, so it genuinely reorders the hours and the
+    # schedule depends on the tariff class. Each class therefore gets its own
+    # runs, scheduled against the price the operator actually faces.
+    #
+    # The strategy is different in kind too: hold the draw down in the
+    # expensive bands P1-P3 and let it run in the cheap P4-P6. No hour-window
+    # rule can express that.
+    if key == "spain":
+        per = spain_periods(idx)
+        cheap = np.isin(per, (4, 5, 6))
+        for cls, c in ES_CLASSES.items():
+            adder = np.array([(c["energy"][p] + ES_CARGOS_ENERGY[p]) * 1000
+                              for p in per])
+            eff = pr + adder
+            rows.append(dict(market=key, rule="spain_bands", es_class=cls,
+                             charge_rate=None, flexible=False, feasible=True,
+                             **stats(flat, pr, idx, key)))
+            for rate in RATES:
+                cap = np.where(cheap, rate, 1.0) * DEMAND
+                try:
+                    ch = schedule(eff, DEMAND, STORAGE_H * DEMAND, cap,
+                                  horizon=cfg["horizon"], loss_per_hour=LOSS)
+                except RuntimeError:
+                    rows.append(dict(market=key, rule="spain_bands",
+                                     es_class=cls, charge_rate=rate,
+                                     flexible=True, feasible=False))
+                    continue
+                rows.append(dict(market=key, rule="spain_bands", es_class=cls,
+                                 charge_rate=rate, flexible=True,
+                                 feasible=True, **stats(ch, pr, idx, key)))
 
     # One week, the same one for every rule, so the comparison is like for like.
     sel = pick_week(idx, pr)
@@ -346,6 +381,18 @@ def main() -> None:
         markets={k: {a: b for a, b in v.items()
                      if a not in ("stem", "col", "tz")}
                  for k, v in MARKETS.items()},
+        # Spain is billed on six time bands rather than one peak, so the
+        # screener cannot express it with a single capacity figure. The four
+        # published classes ship instead, and the page computes the real
+        # six-band sum. Class follows connection voltage, and the megawatt
+        # threshold at each voltage is set by the distributor's connection
+        # study rather than by any citable table, so all four are offered.
+        es_classes={name: dict(
+            voltage=c["voltage"],
+            power=[round(c["power"][p] + ES_CARGOS_POWER[p], 6)
+                   for p in range(1, 7)],
+            energy=[round((c["energy"][p] + ES_CARGOS_ENERGY[p]) * 1000, 4)
+                    for p in range(1, 7)]) for name, c in ES_CLASSES.items()},
         rules={k: dict(label=v["label"], example=v["example"],
                        hours=list(v["hours"]) if v["hours"] else None,
                        months=list(v["months"]) if v["months"] else None)

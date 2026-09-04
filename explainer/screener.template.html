@@ -297,9 +297,17 @@ rect,path,line{transition:none}
         <option value="window_season" selected>5pm to 9pm, summer only</option>
         <option value="window_year">5pm to 9pm, all year</option>
         <option value="baseline">Never. Billed on an agreed figure</option>
+        <option value="spain">Six time bands, Spanish style</option>
       </select>
-      <small class="hint">The hours it looks for your peak. The last option is how Otter Tail's
-      TMEP tariff works: demand is billed on a number agreed in advance.</small></div>
+      <small class="hint">The hours it looks for your peak. "Agreed figure" is how Otter Tail's
+      TMEP tariff works. "Six time bands" is Spain, which charges a separate rate for the most
+      power you draw in each of six periods of the day.</small></div>
+
+    <div id="clswrap" hidden><label for="cls">Spanish tariff class</label>
+      <select id="cls"></select>
+      <small class="hint">Class follows connection voltage. The megawatt threshold at each
+      voltage is set by the distributor's own connection study, so all four are offered rather
+      than one asserted.</small></div>
 
     <div><label for="read">How does it measure your peak?</label>
       <select id="read">
@@ -513,6 +521,8 @@ const PRESETS = {
                      cap:145.50, any:0},
   "Otter Tail TMEP": {mkt:"miso", cur:"USD", ener:6.23, meas:"baseline", read:"peak",
                       cap:145.50, any:0},
+  "Spain 6.3TD": {mkt:"spain", cur:"EUR", meas:"spain", cls:"6.3TD",
+                  ener:0, read:"peak", cap:0, any:0},
   "Energy-only": {mkt:"sa", cur:"AUD", ener:25.00, meas:"anytime", read:"peak",
                   cap:0, any:0},
 };
@@ -526,6 +536,13 @@ for (const [k, v] of Object.entries(DATA.markets)){
 }
 sel.value = "sa";
 
+const clsSel = $("cls");
+for (const [k, v] of Object.entries(DATA.es_classes)){
+  const o = document.createElement("option");
+  o.value = k; o.textContent = `${k}  (${v.voltage})`; clsSel.appendChild(o);
+}
+clsSel.value = "6.3TD";
+
 const pbox = $("presets");
 for (const name of Object.keys(PRESETS)){
   const b = document.createElement("button");
@@ -534,6 +551,7 @@ for (const name of Object.keys(PRESETS)){
   b.onclick = () => { const p = PRESETS[name];
     sel.value = p.mkt; $("ener").value = p.ener; $("meas").value = p.meas;
     $("read").value = p.read; $("cap").value = p.cap; $("any").value = p.any;
+    if (p.cls) $("cls").value = p.cls;
     loaded = name; score(); };
   pbox.appendChild(b);
 }
@@ -545,30 +563,54 @@ function billedPeak(r, meas, read){
 }
 
 function parts(r, cfg){
-  const power    = r.wholesale / r.mwh;                       // what the power cost
-  const energy   = cfg.ener;                                  // per MWh delivered
-  const capacity = (cfg.cap * 1000 * billedPeak(r, cfg.meas, cfg.read)
-                  + cfg.any * 1000 * r.peak_any) / r.mwh;     // on the peak
+  const power = r.wholesale / r.mwh;                          // what the power cost
+  let energy, capacity;
+  if (cfg.meas === "spain"){
+    // Six bands, each with its own rate on the power contracted in that band
+    // and on the energy taken in it. Contracted power must not decrease from
+    // P1 to P6, which is why contracting more in the cheap late bands is
+    // allowed and is what the battery exploits.
+    const c = DATA.es_classes[cfg.cls];
+    energy = r.es_energy.reduce((a, v, i) => a + v * c.energy[i], 0) / r.mwh;
+    capacity = r.es_contracted.reduce((a, v, i) => a + v * 1000 * c.power[i], 0)
+             / r.mwh;
+  } else {
+    energy = cfg.ener;
+    capacity = (cfg.cap * 1000 * billedPeak(r, cfg.meas, cfg.read)
+              + cfg.any * 1000 * r.peak_any) / r.mwh;
+  }
   return {power, energy, capacity, total: power + energy + capacity};
 }
 function bill(r, cfg){ return parts(r, cfg).total * r.mwh; }
 
-const PLAIN = {anytime:"with no window worth avoiding",
+const PLAIN = {spain_bands:"holding its draw down in the expensive daytime bands",
+               anytime:"with no window worth avoiding",
                window_season:"holding off between 5pm and 9pm in summer",
                window_year:"holding off between 5pm and 9pm all year"};
 
 function score(){
   const cfg = {mkt:sel.value, ener:+$("ener").value||0, meas:$("meas").value,
-               read:$("read").value, cap:+$("cap").value||0, any:+$("any").value||0};
+               read:$("read").value, cap:+$("cap").value||0, any:+$("any").value||0,
+               cls:$("cls").value};
+
+  // Spain's bands only exist for Spanish runs, and its rates are regulated
+  // rather than site-specific, so the free-entry fields have nothing to do.
+  const spainMode = cfg.meas === "spain";
+  if (spainMode && cfg.mkt !== "spain"){ sel.value = "spain"; cfg.mkt = "spain"; }
+  $("clswrap").hidden = !spainMode;
+  for (const id of ["ener","cap","any","read"])
+    $(id).closest("div").hidden = spainMode;
   const cur = DATA.markets[cfg.mkt].currency;
 
-  const base = DATA.runs.find(x => x.market===cfg.mkt && x.rule==="anytime"
-                                && !x.flexible);
+  const usable = r => r.market === cfg.mkt
+        && (spainMode ? r.rule === "spain_bands" && r.es_class === cfg.cls
+                      : r.rule !== "spain_bands");
+  const base = DATA.runs.find(x => usable(x) && !x.flexible);
   const inflex = bill(base, cfg) / base.mwh;
 
   let best = null;
   for (const r of DATA.runs){
-    if (r.market !== cfg.mkt || !r.flexible || !r.feasible) continue;
+    if (!usable(r) || !r.flexible || !r.feasible) continue;
     const v = bill(r, cfg) / r.mwh;
     if (!best || v < best.v) best = {v, rule:r.rule, rate:r.charge_rate};
   }
@@ -578,7 +620,7 @@ function score(){
   // stops the two sets of numbers looking like they disagree.
   let at4 = null;
   for (const r of DATA.runs){
-    if (r.market !== cfg.mkt || !r.flexible || !r.feasible || r.charge_rate !== 4) continue;
+    if (!usable(r) || !r.flexible || !r.feasible || r.charge_rate !== 4) continue;
     const v = bill(r, cfg) / r.mwh;
     if (at4 === null || v < at4) at4 = v;
   }
@@ -611,15 +653,16 @@ function score(){
   }
 
   // Which part of the bill did the damage?
-  const pf = parts(DATA.runs.find(x => x.market===cfg.mkt && x.flexible
-                     && x.feasible && x.rule===best.rule
-                     && x.charge_rate===best.rate), cfg);
+  const pf = parts(DATA.runs.find(x => usable(x) && x.flexible && x.feasible
+                     && x.rule===best.rule && x.charge_rate===best.rate), cfg);
   const pi = parts(base, cfg);
   const fmt = v => (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2);
   const cls = v => v > 0.005 ? "pos" : v < -0.005 ? "neg" : "";
   const rows = [["Power itself", pi.power, pf.power],
-                ["Energy charge", pi.energy, pf.energy],
-                ["Peak demand charge", pi.capacity, pf.capacity]];
+                [spainMode ? "Energy charge, six bands" : "Energy charge",
+                 pi.energy, pf.energy],
+                [spainMode ? "Contracted power, six bands" : "Peak demand charge",
+                 pi.capacity, pf.capacity]];
   $("split").innerHTML =
     `<tr><th>Part of the bill</th><th>Without storage</th><th>With a battery</th>
          <th>Change</th></tr>`
@@ -651,7 +694,12 @@ function score(){
   $("s-body").innerHTML =
     `The best the battery can do is charge at <b>${best.rate}×</b> its average draw, `
     + `<b>${PLAIN[best.rule]}</b>. `
-    + (cfg.meas === "baseline"
+    + (spainMode
+        ? `Spain charges for the most power you draw in each of six bands
+           separately, and the cheap night bands are charged at a fraction of
+           the daytime rate. The battery contracts its big draw where it is
+           almost free.`
+      : cfg.meas === "baseline"
         ? `Because demand is billed on an agreed baseline, charging harder costs nothing extra, which is exactly why the sign flips.`
         : cfg.meas === "anytime"
           ? `Every gulp sets the peak it is billed on, so the capacity charge claws back what the cheap power saves.`
