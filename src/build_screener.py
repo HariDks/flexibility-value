@@ -160,13 +160,12 @@ def run_market(key: str, cfg: dict) -> tuple[list[dict], dict]:
     idx, pr = s.index, s.to_numpy()
     flat = np.full(len(pr), DEMAND)
 
-    rows, profiles = [], {}
+    rows, schedules = [], {}
     for rk, rule in RULES.items():
         watched = watching(idx, rule)
 
         rows.append(dict(market=key, rule=rk, charge_rate=None, flexible=False,
-                         feasible=True,
-                         **stats(flat, pr, idx, key)))
+                         feasible=True, **stats(flat, pr, idx, key)))
 
         for rate in RATES:
             cap = (np.where(watched, 0.0, rate * DEMAND) if rule["hours"]
@@ -182,26 +181,46 @@ def run_market(key: str, cfg: dict) -> tuple[list[dict], dict]:
                              flexible=True, feasible=True,
                              **stats(ch, pr, idx, key)))
             if rate == 4.0:
-                profiles[rk] = week(idx, pr, ch, watched)
+                schedules[rk] = ch
+
+    # One week, the same one for every rule, so the comparison is like for like.
+    sel = pick_week(idx, pr)
+    profiles = {rk: dict(price=[round(float(x), 2) for x in pr[sel]],
+                         draw=[round(float(x), 2) for x in ch[sel]],
+                         watched=[bool(x) for x in
+                                  watching(idx, RULES[rk])[sel]])
+                for rk, ch in schedules.items()}
+    for prof in profiles.values():
+        prof["start"] = str(idx[sel][0])[:16]
     return rows, profiles
 
 
-def week(idx, pr, ch, watched) -> dict:
-    """One representative week for the chart.
+def pick_week(idx, pr) -> np.ndarray:
+    """Which week to draw, chosen by a stated rule rather than by eye.
 
-    Chosen by a stated rule rather than by eye — the week whose mean daily
-    spread is closest to the year's median — so nobody has to take on trust
-    that it is typical.
+    The week whose mean daily spread is closest to the year's median — so
+    nobody has to take on trust that it is typical.
+
+    **Restricted to the peak season.** A seasonal demand window only bites
+    inside its own months, so a week outside them shows two tariffs behaving
+    identically and demonstrates nothing. The first version of this picked a
+    July week in South Australia, where SA Power Networks' November-to-March
+    window does not apply at all.
     """
     day = pd.Series(pr, index=idx).groupby(idx.date)
     spread = day.max() - day.min()
-    wk = pd.to_datetime(spread.index).isocalendar().week
-    target = spread.groupby(wk).mean().sub(spread.median()).abs().idxmin()
-    sel = np.asarray(pd.to_datetime(idx.date).isocalendar().week == target)
-    return dict(start=str(idx[sel][0])[:16],
-                price=[round(float(x), 2) for x in pr[sel]],
-                draw=[round(float(x), 2) for x in ch[sel]],
-                watched=[bool(x) for x in watched[sel]])
+    weeks = pd.to_datetime(spread.index).isocalendar().week
+    months = pd.to_datetime(spread.index).month
+
+    season = RULES["window_season"]["months"]
+    in_season = set(weeks[np.isin(months, list(season))])
+    by_week = spread.groupby(weeks).mean()
+    candidates = by_week[by_week.index.isin(in_season)]
+    if candidates.empty:
+        candidates = by_week
+
+    target = candidates.sub(spread.median()).abs().idxmin()
+    return np.asarray(pd.to_datetime(idx.date).isocalendar().week == target)
 
 
 # --------------------------------------------------------------------- verify

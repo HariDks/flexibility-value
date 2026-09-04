@@ -1,0 +1,473 @@
+<title>A Battery Can Dodge a Window</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Archivo:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#FBFBFA; --surface:#FFFFFF; --ink:#101418; --ink2:#414A56;
+  --muted:#67707E; --rule:#E2E6EA; --rule2:#F0F2F5;
+  --draw:#1B4FA0; --draw2:#DCE6F5;
+  --win:#B8762A; --win2:#F7ECDC;
+  --good:#1B6E56; --bad:#A0382B;
+  --shadow:0 1px 2px rgba(16,20,24,.05),0 8px 24px rgba(16,20,24,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0D1014; --surface:#151920; --ink:#E9EDF2; --ink2:#BAC3CE;
+  --muted:#8C96A4; --rule:#252C35; --rule2:#1B212A;
+  --draw:#74A8EC; --draw2:#16253C;
+  --win:#DFA25C; --win2:#2E2416;
+  --good:#5FBF9C; --bad:#E08878;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  --paper:#0D1014; --surface:#151920; --ink:#E9EDF2; --ink2:#BAC3CE;
+  --muted:#8C96A4; --rule:#252C35; --rule2:#1B212A;
+  --draw:#74A8EC; --draw2:#16253C;
+  --win:#DFA25C; --win2:#2E2416;
+  --good:#5FBF9C; --bad:#E08878;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);
+  font-family:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:60rem;margin:0 auto;padding:2.5rem 1.4rem 5rem}
+h1,h2,h3{text-wrap:balance}
+.mono{font-family:"DM Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* masthead */
+.eyebrow{font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--win);margin:0 0 .7rem}
+h1{font-family:Spectral,Georgia,serif;font-weight:600;
+  font-size:clamp(2.1rem,5.5vw,3.3rem);line-height:1.05;letter-spacing:-.02em;margin:0}
+.lede{font-family:Spectral,Georgia,serif;font-size:1.16rem;color:var(--ink2);
+  margin:1rem 0 0;max-width:42rem}
+.lede b{color:var(--ink);font-weight:500}
+header{border-bottom:1px solid var(--rule);padding-bottom:2rem;margin-bottom:2.5rem}
+
+section{margin:0 0 4rem}
+h2{font-family:Spectral,Georgia,serif;font-weight:600;font-size:1.75rem;
+  letter-spacing:-.012em;margin:0 0 .35rem}
+.sub{color:var(--muted);font-size:.94rem;margin:0 0 1.5rem;max-width:44rem}
+p{max-width:44rem}
+
+/* the switch */
+.switch{display:flex;gap:0;border:1px solid var(--rule);border-radius:3px;
+  overflow:hidden;background:var(--surface);width:fit-content;max-width:100%;
+  flex-wrap:wrap;box-shadow:var(--shadow)}
+.switch button{font:500 .88rem/1.3 Archivo,sans-serif;background:transparent;
+  color:var(--muted);border:0;padding:.75rem 1.1rem;cursor:pointer;text-align:left}
+.switch button small{display:block;font-family:"DM Mono",monospace;
+  font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin-top:.2rem}
+.switch button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.switch button:focus-visible{outline:2px solid var(--draw);outline-offset:-2px}
+
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:1.4rem;margin-top:1rem;box-shadow:var(--shadow)}
+.chartwrap{overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:34rem}
+.legend{display:flex;gap:1.4rem;flex-wrap:wrap;margin:.9rem 0 0;
+  font-family:"DM Mono",monospace;font-size:.7rem;color:var(--muted)}
+.legend i{display:inline-block;width:.8rem;height:.8rem;margin-right:.35rem;
+  vertical-align:-.1rem;border-radius:1px}
+
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+  gap:1.2rem;margin:1.4rem 0 0;padding-top:1.2rem;border-top:1px solid var(--rule2)}
+.readout div{min-width:0}
+.readout dt{font-family:"DM Mono",monospace;font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 .25rem}
+.readout dd{margin:0;font-family:"DM Mono",monospace;font-size:1.5rem;
+  font-variant-numeric:tabular-nums;color:var(--ink);line-height:1.1}
+.readout dd small{display:block;font-size:.7rem;color:var(--muted);
+  letter-spacing:0;margin-top:.3rem;font-family:Archivo,sans-serif}
+.big{font-size:2.4rem!important}
+.pos{color:var(--good)!important}.neg{color:var(--bad)!important}
+
+/* tables */
+.scroll{overflow-x:auto;margin:1rem 0 0}
+table{border-collapse:collapse;width:100%;min-width:28rem;font-size:.86rem}
+th,td{padding:.42rem .85rem .42rem 0;text-align:right;
+  border-bottom:1px solid var(--rule2);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+th{font-family:"DM Mono",monospace;font-size:.66rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;
+  border-bottom:1px solid var(--rule)}
+td{font-family:"DM Mono",monospace;color:var(--ink2)}
+td:first-child{font-family:Archivo,sans-serif;color:var(--ink)}
+tr.hi td{color:var(--ink);font-weight:500}
+.win{color:var(--good)}.lose{color:var(--bad)}
+
+/* screener */
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));
+  gap:1.1rem 1.5rem;margin:0 0 1.4rem}
+label{display:block;font-family:"DM Mono",monospace;font-size:.66rem;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 .35rem}
+input,select{width:100%;font:400 .92rem/1.4 "DM Mono",monospace;
+  background:var(--paper);color:var(--ink);border:1px solid var(--rule);
+  border-radius:2px;padding:.5rem .6rem}
+select{font-family:Archivo,sans-serif}
+input:focus,select:focus{outline:2px solid var(--draw);outline-offset:-1px}
+.presets{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1.4rem}
+.presets button{font:500 .78rem/1 Archivo,sans-serif;background:var(--draw2);
+  color:var(--draw);border:1px solid var(--draw);padding:.5rem .8rem;
+  border-radius:2px;cursor:pointer}
+.presets button:hover{background:var(--draw);color:var(--surface)}
+.presets button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+.verdict{border-left:3px solid var(--draw);padding:.2rem 0 .2rem 1.1rem;margin:1.4rem 0 0}
+.verdict p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink2)}
+.verdict .head{font-family:Spectral,Georgia,serif;font-size:1.3rem;
+  color:var(--ink);margin:0;font-weight:500}
+
+.caveat{background:var(--win2);border-radius:3px;padding:1.1rem 1.2rem;margin:1.6rem 0 0}
+.caveat h3{font-family:"DM Mono",monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--win);margin:0 0 .5rem;font-weight:500}
+.caveat p{margin:0 0 .5rem;font-size:.88rem;color:var(--ink2);max-width:46rem}
+.caveat p:last-child{margin-bottom:0}
+
+footer{border-top:1px solid var(--rule);margin-top:1rem;padding-top:1.5rem;
+  font-family:"DM Mono",monospace;font-size:.72rem;color:var(--muted);line-height:1.9}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+rect,path,line{transition:none}
+</style>
+
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Flexibility-value · 25 market-years · published data only</p>
+  <h1>A battery can dodge a window.<br>It cannot dodge&nbsp;“whenever.”</h1>
+  <p class="lede">Whether a flexible industrial load saves money has almost nothing to do with
+  how <em>big</em> its network charge is. It depends on <b>whether the charge knows what time it
+  is</b> — and the cleanest proof sits inside one Australian state, where two network operators
+  bill the same factory two different ways.</p>
+</header>
+
+<section>
+  <h2>One week, one battery, two billing rules</h2>
+  <p class="sub">Real South Australian prices, week beginning <span id="wkstart" class="mono"></span>.
+  A 10&nbsp;MW factory needing heat around the clock, with a 12-hour store that can charge at
+  4× its average draw. Only the network's billing rule changes.</p>
+
+  <div class="switch" role="group" aria-label="Billing rule">
+    <button id="b-win" aria-pressed="true">By the clock
+      <small>SA Power Networks · 17–21, Nov–Mar</small></button>
+    <button id="b-any" aria-pressed="false">Your worst moment
+      <small>ElectraNet · any hour, all year</small></button>
+  </div>
+
+  <div class="panel">
+    <div class="chartwrap"><svg id="chart" viewBox="0 0 1000 250" role="img"
+      aria-label="Hourly electricity price and battery draw over one week"></svg></div>
+    <div class="legend">
+      <span><i style="background:var(--draw)"></i>what the battery buys, MW</span>
+      <span><i style="background:var(--ink2)"></i>wholesale price</span>
+      <span><i style="background:var(--win2);border:1px solid var(--win)"></i>hours the network is watching</span>
+    </div>
+    <dl class="readout">
+      <div><dt>Drawn while watched</dt><dd id="r-inwin">—<small id="r-inwin-s"></small></dd></div>
+      <div><dt>Billed peak demand</dt><dd id="r-peak">—<small id="r-peak-s"></small></dd></div>
+      <div><dt>Saving over the year</dt><dd id="r-save" class="big">—<small>vs buying as it burns</small></dd></div>
+    </dl>
+  </div>
+
+  <p style="margin-top:1.4rem">Flip it and the machine stops gulping. Under a windowed charge the
+  battery simply sits out four hours an evening and keeps every bit of its advantage. Under a
+  worst-moment charge there is nowhere to hide — <b>every gulp sets the number it gets billed
+  on</b> — so it flattens out and slowly turns back into the ordinary factory it was supposed
+  to beat.</p>
+</section>
+
+<section>
+  <h2>It holds for nine straight years</h2>
+  <p class="sub">Same battery, same state, same prices. SA Power Networks against each of
+  ElectraNet's four connection points. Nothing varies but the billing rule.</p>
+  <div class="scroll"><table>
+    <tr><th>Year</th><th>SA Power Networks</th><th>Para</th><th>Brinkworth</th>
+        <th>Ardrossan</th><th>Berri</th><th>Gap</th></tr>
+    <tr><td>2017</td><td class="win">+22.5%</td><td class="lose">−2.0%</td><td class="lose">−7.5%</td><td class="lose">−12.3%</td><td class="lose">−14.6%</td><td>24.5</td></tr>
+    <tr><td>2018</td><td class="win">+27.2%</td><td>+1.5%</td><td class="lose">−4.3%</td><td class="lose">−9.4%</td><td class="lose">−11.8%</td><td>25.7</td></tr>
+    <tr><td>2019</td><td class="win">+36.3%</td><td>+9.9%</td><td>+4.0%</td><td class="lose">−1.3%</td><td class="lose">−3.8%</td><td>26.4</td></tr>
+    <tr><td>2020</td><td class="win">+39.0%</td><td class="lose">−5.5%</td><td class="lose">−14.8%</td><td class="lose">−22.7%</td><td class="lose">−26.4%</td><td>44.5</td></tr>
+    <tr><td>2021</td><td class="win">+52.3%</td><td>+10.3%</td><td>+1.3%</td><td class="lose">−6.5%</td><td class="lose">−10.2%</td><td>42.0</td></tr>
+    <tr><td>2022</td><td class="win">+45.6%</td><td>+26.4%</td><td>+21.9%</td><td>+17.9%</td><td>+16.0%</td><td>19.2</td></tr>
+    <tr><td>2023</td><td class="win">+55.5%</td><td>+23.9%</td><td>+16.8%</td><td>+10.5%</td><td>+7.5%</td><td>31.6</td></tr>
+    <tr><td>2024</td><td class="win">+54.2%</td><td>+27.2%</td><td>+20.9%</td><td>+15.4%</td><td>+12.8%</td><td>27.0</td></tr>
+    <tr><td>2025</td><td class="win">+49.9%</td><td>+20.7%</td><td>+13.9%</td><td>+8.0%</td><td>+5.2%</td><td>29.2</td></tr>
+  </table></div>
+  <p style="margin-top:1.2rem">The time-aware charge is worth <b>19 to 44 percentage points</b>
+  over the time-blind one, every year, with no currency, weather or market-design confound.
+  ElectraNet is outright negative in 15 of 36 year-locations.</p>
+</section>
+
+<section>
+  <h2>And it is not an Australian quirk</h2>
+  <p class="sub">Minnesota runs the control case. Otter Tail's standard Schedule 632 bills the
+  monthly maximum whenever it falls — and a thermal battery loses money on it in every year
+  tested, at nine different pricing points.</p>
+  <div class="scroll"><table>
+    <tr><th>Market</th><th>Charge design</th><th>Years</th><th>Flexibility worth</th></tr>
+    <tr><td>Spain 6.3TD</td><td>banded by period</td><td>2018–2025</td><td class="win">+12.5% → +37.9%</td></tr>
+    <tr><td>South Australia</td><td>four-hour evening window</td><td>2017–2025</td><td class="win">+22.5% → +55.5%</td></tr>
+    <tr><td>MISO · Schedule 632</td><td>monthly maximum, time-blind</td><td>2018–2025</td><td class="lose">negative in 8 of 8 <span style="color:var(--muted)">(at 4×)</span></td></tr>
+    <tr class="hi"><td>MISO · under TMEP</td><td>billed on an agreed baseline</td><td>2018–2025</td><td class="win">positive in 8 of 8</td></tr>
+  </table></div>
+  <p style="margin-top:1.2rem"><b>TMEP is the proof the mechanism is the tariff and nothing
+  else.</b> Same grid, same prices, same hardware, same year — Otter Tail simply agreed to bill
+  demand on a contracted baseline rather than the metered peak, and the sign flips. It is a
+  filed, approved tariff, not a proposal.</p>
+</section>
+
+<section>
+  <h2>Try it against a rate you actually care about</h2>
+  <p class="sub">Set the two things the study says decide the answer, and see where your tariff
+  lands. Every figure below is computed from the same model that produces the study's published
+  numbers — the schedules are precomputed in Python, not re-implemented here.</p>
+
+  <div class="presets" id="presets"></div>
+
+  <div class="controls">
+    <div><label for="mkt">Price environment</label><select id="mkt"></select></div>
+    <div><label for="ener">Energy charge, per MWh</label><input id="ener" type="number" step="0.01" value="25"></div>
+    <div><label for="meas">Peak measured</label><select id="meas">
+      <option value="anytime">Any hour, all year</option>
+      <option value="window_season" selected>17:00–21:00, peak season</option>
+      <option value="window_year">17:00–21:00, all year</option>
+      <option value="baseline">An agreed baseline (TMEP-style)</option>
+    </select></div>
+    <div><label for="read">Read as</label><select id="read">
+      <option value="peakavg" selected>Highest daily average</option>
+      <option value="peak">Highest single instant</option>
+    </select></div>
+    <div><label for="cap">Capacity charge, per kW-year</label><input id="cap" type="number" step="0.01" value="63.40"></div>
+    <div><label for="any">Second charge on anytime peak, per kW-year</label><input id="any" type="number" step="0.01" value="10.00"></div>
+  </div>
+
+  <div class="panel">
+    <dl class="readout">
+      <div><dt>Buying as it burns</dt><dd id="s-inflex">—<small>per MWh of heat</small></dd></div>
+      <div><dt>With storage</dt><dd id="s-flex">—<small id="s-flex-s"></small></dd></div>
+      <div><dt>Flexibility is worth</dt><dd id="s-save" class="big">—<small>of the inflexible bill</small></dd></div>
+    </dl>
+    <div class="verdict">
+      <p class="head" id="s-head">—</p>
+      <p id="s-body"></p>
+    </div>
+  </div>
+
+  <div class="caveat">
+    <h3>What this does and does not do</h3>
+    <p>It models the two structural choices the study is about — <b>how much of your bill rides
+    on peak demand, and whether that peak is time-aware</b>. It is a screening tool, not a
+    billing engine. Real schedules carry bands, ratchets, riders and seasonal detail this
+    flattens, and Spain's six-band structure in particular cannot be expressed in two dials.</p>
+    <p>It assumes one factory: 10 MW of heat continuously, a 12-hour store, 1%/day standby loss,
+    each market's real forecast horizon. It prices <b>arbitrage only</b> — no firmness, no
+    reliability value, and no capital cost of any kind, so it is not a payback calculation.</p>
+    <p><b>Two reasons its numbers can differ from the tables above.</b> This screener
+    <em>optimises</em> the charge rate across 1× to 8×, while the study fixes it at 4× — so it
+    will often find a gentler, better-paying strategy that the study does not report. And for
+    MISO the study's inflexible buyer takes utility-supplied energy, which is priced differently
+    from the wholesale market both buyers use here.</p>
+    <p>The published figures in the sections above come from the full tariffs in
+    <span class="mono">tariff.py</span>, not from this. The build refuses to ship if the
+    statistics behind this screener cannot reproduce those tariffs exactly.</p>
+  </div>
+</section>
+
+<footer>
+  Prices: OMIE (Spain), AEMO (NEM), MISO market reports and monthly archives.<br>
+  Tariffs: CNMC and BOE, SA Power Networks, ElectraNet, Otter Tail Power — every rate cited inline.<br>
+  25 market-years · 44 logged decisions · 16 corrections on the record.
+</footer>
+</div>
+
+<script>
+const DATA = /*DATA*/;
+const D = DATA.demand_mw;
+
+/* ---------------------------------------------------------------- the switch */
+let rule = "window_season";
+const SAVE = { window_season: 49.9, anytime: 20.7 };
+
+function chart(){
+  const w = DATA.weeks.sa[rule];
+  const n = w.price.length, W = 1000, H = 250;
+  const L = 46, R = 40, T = 14, B = 26;
+  const iw = W - L - R, ih = H - T - B;
+  const pmin = Math.min(0, ...w.price), pmax = Math.max(...w.price);
+  const dmax = Math.max(10, ...w.draw);
+  const x = i => L + (i / n) * iw;
+  const yp = v => T + ih - ((v - pmin) / (pmax - pmin || 1)) * ih;
+  const yd = v => T + ih - (v / dmax) * ih;
+  let s = "";
+
+  // hours the network is watching
+  let i = 0;
+  while (i < n){
+    if (w.watched[i]){
+      let j = i; while (j < n && w.watched[j]) j++;
+      s += `<rect x="${x(i).toFixed(1)}" y="${T}" width="${(x(j)-x(i)).toFixed(1)}"
+        height="${ih}" fill="var(--win2)" stroke="var(--win)" stroke-width=".5"/>`;
+      i = j;
+    } else i++;
+  }
+  // day gridlines
+  for (let d = 0; d <= n/24; d++)
+    s += `<line x1="${x(d*24).toFixed(1)}" y1="${T}" x2="${x(d*24).toFixed(1)}"
+      y2="${T+ih}" stroke="var(--rule)" stroke-width=".5"/>`;
+  // what the battery buys
+  const bw = Math.max(1.2, iw/n - .6);
+  w.draw.forEach((v, k) => { if (v > .01)
+    s += `<rect x="${x(k).toFixed(1)}" y="${yd(v).toFixed(1)}" width="${bw.toFixed(1)}"
+      height="${(T+ih-yd(v)).toFixed(1)}" fill="var(--draw)" opacity=".85"/>`; });
+  // price
+  s += `<path d="${w.price.map((v,k)=>`${k?"L":"M"}${x(k+.5).toFixed(1)},${yp(v).toFixed(1)}`).join("")}"
+    fill="none" stroke="var(--ink2)" stroke-width="1.3" stroke-linejoin="round"/>`;
+  // axes
+  s += `<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--rule)"/>`;
+  s += `<text x="6" y="${T+8}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${dmax.toFixed(0)} MW</text>`;
+  s += `<text x="6" y="${T+ih}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">0</text>`;
+  s += `<text x="${W-R+4}" y="${yp(pmax).toFixed(1)}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${pmax.toFixed(0)}</text>`;
+  s += `<text x="${W-R+4}" y="${yp(pmin).toFixed(1)}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${pmin.toFixed(0)}</text>`;
+  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  for (let d = 0; d < n/24; d++)
+    s += `<text x="${(x(d*24+12)).toFixed(1)}" y="${H-8}" fill="var(--muted)" font-size="10"
+      text-anchor="middle" font-family="DM Mono, monospace">${days[d%7]}</text>`;
+  document.getElementById("chart").innerHTML = s;
+}
+
+function row(m, r, rate){
+  return DATA.runs.find(x => x.market===m && x.rule===r && x.charge_rate===rate);
+}
+
+function paintSwitch(){
+  const w = DATA.weeks.sa[rule];
+  const inwin = w.draw.reduce((a,v,k)=> a + (w.watched[k] ? v : 0), 0);
+  const r = row("sa", rule, 4);
+  document.getElementById("wkstart").textContent = w.start.slice(0,10);
+  document.getElementById("r-inwin").textContent = inwin.toFixed(0) + " MWh";
+  document.getElementById("r-inwin-s").textContent =
+    inwin < 1 ? "it sits the window out entirely" : "straight through the window";
+  // Each network bills what IT measures: SAPN the daily average inside its
+  // window, ElectraNet the highest instant at any time.
+  const billed = rule === "window_season" ? r.peakavg_window_season : r.peak_any;
+  document.getElementById("r-peak").textContent = billed.toFixed(1) + " MW";
+  document.getElementById("r-peak-s").textContent = rule === "window_season"
+    ? "highest daily average, 17\u201321 Nov\u2013Mar"
+    : "highest single instant, any hour";
+  const sv = SAVE[rule];
+  const el = document.getElementById("r-save");
+  el.textContent = "+" + sv.toFixed(1) + "%";
+  el.className = "big pos";
+  document.getElementById("b-win").setAttribute("aria-pressed", rule==="window_season");
+  document.getElementById("b-any").setAttribute("aria-pressed", rule==="anytime");
+  chart();
+}
+document.getElementById("b-win").onclick = () => { rule="window_season"; paintSwitch(); };
+document.getElementById("b-any").onclick = () => { rule="anytime"; paintSwitch(); };
+
+/* ------------------------------------------------------------------ screener */
+const PRESETS = {
+  "SA Power Networks": {mkt:"sa", ener:25.00, meas:"window_season", read:"peakavg",
+                        cap:63.40, any:10.00},
+  "ElectraNet": {mkt:"sa", ener:25.00, meas:"anytime", read:"peak", cap:10.00, any:0},
+  "Otter Tail 632": {mkt:"miso", ener:6.23, meas:"anytime", read:"peak", cap:145.50, any:0},
+  "Otter Tail TMEP": {mkt:"miso", ener:6.23, meas:"baseline", read:"peak", cap:145.50, any:0},
+  "Energy-only": {mkt:"sa", ener:25.00, meas:"anytime", read:"peak", cap:0, any:0},
+};
+
+const $ = id => document.getElementById(id);
+const sel = $("mkt");
+for (const [k, v] of Object.entries(DATA.markets)){
+  const o = document.createElement("option");
+  o.value = k; o.textContent = v.label; sel.appendChild(o);
+}
+sel.value = "sa";
+
+const pbox = $("presets");
+for (const name of Object.keys(PRESETS)){
+  const b = document.createElement("button");
+  b.textContent = name;
+  b.onclick = () => { const p = PRESETS[name];
+    sel.value = p.mkt; $("ener").value = p.ener; $("meas").value = p.meas;
+    $("read").value = p.read; $("cap").value = p.cap; $("any").value = p.any;
+    score(); };
+  pbox.appendChild(b);
+}
+
+function billedPeak(r, meas, read){
+  if (meas === "baseline") return D;              // agreed, not metered
+  if (meas === "anytime")  return r.peak_any;
+  return r[`${read}_${meas}`];
+}
+
+function bill(r, cfg){
+  return r.wholesale
+       + cfg.ener * r.mwh
+       + cfg.cap * 1000 * billedPeak(r, cfg.meas, cfg.read)
+       + cfg.any * 1000 * r.peak_any;
+}
+
+function score(){
+  const cfg = {mkt:sel.value, ener:+$("ener").value||0, meas:$("meas").value,
+               read:$("read").value, cap:+$("cap").value||0, any:+$("any").value||0};
+  const cur = DATA.markets[cfg.mkt].currency;
+
+  const base = DATA.runs.find(x => x.market===cfg.mkt && x.rule==="anytime"
+                                && !x.flexible);
+  const inflex = bill(base, cfg) / base.mwh;
+
+  let best = null;
+  for (const r of DATA.runs){
+    if (r.market !== cfg.mkt || !r.flexible || !r.feasible) continue;
+    const v = bill(r, cfg) / r.mwh;
+    if (!best || v < best.v) best = {v, rule:r.rule, rate:r.charge_rate};
+  }
+  const save = 100 * (inflex - best.v) / inflex;
+
+  // The study fixes the charge rate at 4x; this optimises it. Showing both
+  // stops the two sets of numbers looking like they disagree.
+  let at4 = null;
+  for (const r of DATA.runs){
+    if (r.market !== cfg.mkt || !r.flexible || !r.feasible || r.charge_rate !== 4) continue;
+    const v = bill(r, cfg) / r.mwh;
+    if (at4 === null || v < at4) at4 = v;
+  }
+  const save4 = at4 === null ? null : 100 * (inflex - at4) / inflex;
+
+  $("s-inflex").textContent = inflex.toFixed(2);
+  $("s-flex").textContent = best.v.toFixed(2);
+  $("s-flex-s").textContent = cur + " per MWh of heat";
+  const e = $("s-save");
+  e.textContent = (save >= 0 ? "+" : "") + save.toFixed(1) + "%";
+  e.className = "big " + (save >= 0 ? "pos" : "neg");
+
+  const avoids = best.rule !== "anytime";
+  $("s-head").textContent = save >= 15
+    ? "Flexibility pays here."
+    : save > 0 ? "Flexibility barely pays here." : "Flexibility is penalised here.";
+  $("s-body").innerHTML =
+    `The best the battery can do is charge at <b>${best.rate}×</b> its average draw, `
+    + (avoids ? `<b>holding off during ${DATA.rules[best.rule].label.toLowerCase()}</b>. `
+              : `<b>with no window worth avoiding</b>. `)
+    + (cfg.meas === "baseline"
+        ? `Because demand is billed on an agreed baseline, charging harder costs nothing extra — which is exactly why the sign flips.`
+        : cfg.meas === "anytime"
+          ? `Every gulp sets the peak it is billed on, so the capacity charge claws back what the cheap power saves.`
+          : `The window is avoidable, so the capacity charge lands on almost nothing.`)
+    + (save4 === null || Math.abs(save4 - save) < 0.05 ? ""
+       : ` <span style="color:var(--muted)">At the study's fixed 4× base case it would be
+           ${save4 >= 0 ? "+" : ""}${save4.toFixed(1)}% instead.</span>`);
+}
+
+["mkt","ener","meas","read","cap","any"].forEach(id =>
+  $(id).addEventListener("input", score));
+
+paintSwitch();
+score();
+</script>
