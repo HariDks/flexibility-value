@@ -193,7 +193,51 @@ def run_nem(year: int = 2025) -> None:
         print(f"\n  Range across regions: {min(out.values()):.1f}% "
               f"to {max(out.values()):.1f}%. South Australia is "
               f"{'the highest' if out.get('SA1') == max(out.values()) else 'not the highest'}.")
+        screening_rule(out, year)
     print()
+
+
+def screening_rule(saving: dict[str, float], year: int) -> None:
+    """Which price statistic actually predicts the saving?
+
+    The study proposes a screening rule — look at how much the price moves
+    within a day, not how high it is. Five regions at one moment is the only
+    cross-section available to test *which* measure of movement, so four
+    candidates are ranked against the savings above.
+
+    Five points is a tiebreaker, not evidence, and the printed output says so.
+    """
+    rows = []
+    for r, sv in saving.items():
+        f = P / (f"prices_sa_{year}.csv" if r == "SA1"
+                 else f"prices_nem_{r}_{year}.csv")
+        d = pd.read_csv(f)
+        d["ts"] = pd.to_datetime(d["ts"], utc=True).dt.tz_convert(
+            "Australia/Adelaide")
+        s = d.set_index("ts")["price_aud_mwh"]
+        g = s.groupby(s.index.date)
+        # What the battery actually captures: the day's mean less the mean of
+        # its six cheapest hours. Max-minus-min is set by spikes, and a battery
+        # never buys spikes.
+        cheap6 = g.apply(lambda x: x.nsmallest(6).mean())
+        gap = (g.mean() - cheap6).mean()
+        rows.append({"region": r, "saving": sv, "mean price": s.mean(),
+                     "spread (max-min)": (g.max() - g.min()).mean(),
+                     "cheap-hours gap": gap,
+                     "gap as % of mean": 100 * gap / g.mean().mean()})
+    df = pd.DataFrame(rows).sort_values("saving", ascending=False)
+
+    print("\n\n  Which statistic predicts the saving?\n")
+    print("  " + df.to_string(index=False,
+                              float_format=lambda x: f"{x:8.1f}"
+                              ).replace("\n", "\n  "))
+    print("\n  Spearman rank correlation with the saving:")
+    for c in ("mean price", "spread (max-min)", "cheap-hours gap",
+              "gap as % of mean"):
+        print(f"    {c:<20}{df['saving'].corr(df[c], method='spearman'):>+6.2f}")
+    print("\n  Raw spread ranks them wrong — New South Wales has the largest")
+    print("  spread of any region and only the third-best saving. Five points")
+    print("  is a tiebreaker between candidate rules, not evidence for one.")
 
 
 def main() -> None:
