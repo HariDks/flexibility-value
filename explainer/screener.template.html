@@ -73,6 +73,12 @@ svg{display:block;width:100%;height:auto;min-width:34rem}
 .toc b{color:var(--ink);font-weight:600}
 .do{font-family:"DM Mono",monospace;font-size:.74rem;letter-spacing:.06em;
   text-transform:uppercase;color:var(--win);margin:0 0 .7rem;max-width:38rem;line-height:1.6}
+.howto{font-size:.92rem;color:var(--ink2);margin:0 0 1.6rem;max-width:46rem;
+  border-left:2px solid var(--rule);padding-left:1rem}
+.howto b{color:var(--ink)}
+.hint{display:block;margin:.4rem 0 0;font-size:.76rem;line-height:1.5;color:var(--muted)}
+.hint b{color:var(--ink2);font-weight:600}
+.controls > div{min-width:0}
 .reading{font-size:.95rem;color:var(--ink2);margin:.9rem 0 0;max-width:46rem}
 .reading b{color:var(--ink);font-weight:600}
 .legend{display:flex;gap:1.4rem;flex-wrap:wrap;margin:.9rem 0 0;
@@ -242,35 +248,63 @@ rect,path,line{transition:none}
 </section>
 
 <section>
-  <h2>Try it against a rate you actually care about</h2>
-  <p class="sub">Set the two things the study says decide the answer, and see where your tariff
-  lands. Every figure below is computed from the same model that produces the study's published
-  numbers. The schedules are precomputed in Python, not re-implemented here.</p>
+  <h2>Try it on a tariff you actually care about</h2>
+  <p class="sub">If you know the network tariff at a site, put its numbers in here and see
+  whether a thermal battery would save money there or lose it. Every figure is computed from
+  the same model that produces the study's published numbers.</p>
 
+  <p class="do">Start here. Press a real tariff to load it, then change anything you like.</p>
   <div class="presets" id="presets"></div>
 
+  <p class="howto"><b>What you are setting.</b> A network bill has two parts. One is charged on
+  every unit of energy you take, and a battery cannot avoid it. The other is charged on your
+  peak demand, and that is the one that decides everything: if the network only watches certain
+  hours, a battery skips them, and if it watches all the time, it cannot.</p>
+
   <div class="controls">
-    <div><label for="mkt">Price environment</label><select id="mkt"></select></div>
-    <div><label for="ener">Energy charge, per MWh</label><input id="ener" type="number" step="0.01" value="25"></div>
-    <div><label for="meas">Peak measured</label><select id="meas">
-      <option value="anytime">Any hour, all year</option>
-      <option value="window_season" selected>17:00–21:00, peak season</option>
-      <option value="window_year">17:00–21:00, all year</option>
-      <option value="baseline">An agreed baseline (TMEP-style)</option>
-    </select></div>
-    <div><label for="read">Read as</label><select id="read">
-      <option value="peakavg" selected>Highest daily average</option>
-      <option value="peak">Highest single instant</option>
-    </select></div>
-    <div><label for="cap">Capacity charge, per kW-year</label><input id="cap" type="number" step="0.01" value="63.40"></div>
-    <div><label for="any">Second charge on anytime peak, per kW-year</label><input id="any" type="number" step="0.01" value="10.00"></div>
+    <div><label for="mkt">Which market's prices?</label>
+      <select id="mkt"></select>
+      <small class="hint">Where the electricity itself is bought. Real 2025 hourly prices.</small></div>
+
+    <div><label for="ener">Charge per unit of energy</label>
+      <input id="ener" type="number" step="0.01" value="25">
+      <small class="hint">Per MWh delivered, whenever you take it. Both buyers pay this, so it
+      changes the bill but not the answer.</small></div>
+
+    <div><label for="cap">Charge on your peak demand</label>
+      <input id="cap" type="number" step="0.01" value="63.40">
+      <small class="hint">Per kW of peak, per year. If your bill quotes a monthly rate, multiply
+      by 12. <b>This is the one that punishes a battery.</b></small></div>
+
+    <div><label for="meas">When does the network watch?</label>
+      <select id="meas">
+        <option value="anytime">Every hour of the year</option>
+        <option value="window_season" selected>5pm to 9pm, summer only</option>
+        <option value="window_year">5pm to 9pm, all year</option>
+        <option value="baseline">Never. Billed on an agreed figure</option>
+      </select>
+      <small class="hint">The hours it looks for your peak. The last option is how Otter Tail's
+      TMEP tariff works: demand is billed on a number agreed in advance.</small></div>
+
+    <div><label for="read">How does it measure your peak?</label>
+      <select id="read">
+        <option value="peakavg" selected>Average across those hours</option>
+        <option value="peak">Your single highest moment</option>
+      </select>
+      <small class="hint">Averaging is gentler. SA Power Networks averages; most others take the
+      single highest moment.</small></div>
+
+    <div><label for="any">A second peak charge, any hour</label>
+      <input id="any" type="number" step="0.01" value="10.00">
+      <small class="hint">Some networks bill a windowed peak <em>and</em> an all-hours peak.
+      Leave at 0 if yours does not.</small></div>
   </div>
 
   <div class="panel">
     <dl class="readout">
-      <div><dt>Buying as it burns</dt><dd><span id="s-inflex">—</span><small>per MWh of heat</small></dd></div>
-      <div><dt>With storage</dt><dd><span id="s-flex">—</span><small id="s-flex-s"></small></dd></div>
-      <div><dt>Flexibility is worth</dt><dd><span id="s-save" class="big">—</span><small>of the inflexible bill</small></dd></div>
+      <div><dt>Without storage</dt><dd><span id="s-inflex">—</span><small>cost of heat if it buys power as it uses it</small></dd></div>
+      <div><dt>With a thermal battery</dt><dd><span id="s-flex">—</span><small id="s-flex-s"></small></dd></div>
+      <div><dt>The battery saves</dt><dd><span id="s-save" class="big">—</span><small>off the bill, every year</small></dd></div>
     </dl>
     <div class="verdict">
       <p class="head" id="s-head">—</p>
@@ -449,6 +483,10 @@ function bill(r, cfg){
        + cfg.any * 1000 * r.peak_any;
 }
 
+const PLAIN = {anytime:"with no window worth avoiding",
+               window_season:"holding off between 5pm and 9pm in summer",
+               window_year:"holding off between 5pm and 9pm all year"};
+
 function score(){
   const cfg = {mkt:sel.value, ener:+$("ener").value||0, meas:$("meas").value,
                read:$("read").value, cap:+$("cap").value||0, any:+$("any").value||0};
@@ -478,19 +516,17 @@ function score(){
 
   $("s-inflex").textContent = inflex.toFixed(2);
   $("s-flex").textContent = best.v.toFixed(2);
-  $("s-flex-s").textContent = cur + " per MWh of heat";
+  $("s-flex-s").textContent = "same heat, bought at better times (" + cur + "/MWh)";
   const e = $("s-save");
   e.textContent = (save >= 0 ? "+" : "") + save.toFixed(1) + "%";
   e.className = "big " + (save >= 0 ? "pos" : "neg");
 
-  const avoids = best.rule !== "anytime";
   $("s-head").textContent = save >= 15
     ? "Flexibility pays here."
     : save > 0 ? "Flexibility barely pays here." : "Flexibility is penalised here.";
   $("s-body").innerHTML =
     `The best the battery can do is charge at <b>${best.rate}×</b> its average draw, `
-    + (avoids ? `<b>holding off during ${DATA.rules[best.rule].label.toLowerCase()}</b>. `
-              : `<b>with no window worth avoiding</b>. `)
+    + `<b>${PLAIN[best.rule]}</b>. `
     + (cfg.meas === "baseline"
         ? `Because demand is billed on an agreed baseline, charging harder costs nothing extra, which is exactly why the sign flips.`
         : cfg.meas === "anytime"
