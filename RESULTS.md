@@ -201,21 +201,31 @@ October 2021, 5-minute since, both handled):
 | 2024 | A$100.1 | 25.7% | 54.2% |
 | 2025 | A$86.7 | 29.7% | 49.9% |
 
-**MISO — 3 years without an account.** MISO's public market reports carry a
-retention window of roughly two years; their own wording is that reports
-"remain available on this page until they expire". Probing their server
-directly confirms it — `20230612_da_expost_lmp.csv` returns 1 MB,
-`20220612` and `20190612` return 404. It is not a limitation of the
-`gridstatus` library, which was the first route tried.
+**MISO — 8 years** (2018-2025). The daily report URLs only serve about two
+years, but the older data is published as **monthly zips** under the same path,
+`YYYYMM_da_expost_lmp_csv.zip`, with no account required. The first attempt used
+the `gridstatus` library, concluded from its failure that the data did not
+exist, and was wrong.
 
-**Older MISO data does exist**, in two places, both requiring free
-registration: the **Market Report Archives** (behind
-`misoenergy.org/account/login`) and the new **MISO Data Exchange API**, which
-replaces the file downloads from December 2025. Neither could be reached here.
+| Year | Mean price | Standard tariff @1.5x | Standard @4x | TMEP @4x |
+|---|---|---|---|---|
+| 2018 | $26.97 | +12.6% | −49.4% | +30.6% |
+| 2019 | $22.53 | +18.0% | −45.0% | +34.9% |
+| 2020 | $17.49 | +26.0% | −36.7% | +43.1% |
+| 2021 | $37.32 | −0.6% | −59.1% | +20.8% |
+| 2022 | $45.24 | −9.6% | −63.8% | +16.1% |
+| 2023 | $28.48 | +12.9% | −46.8% | +33.1% |
+| 2024 | $27.28 | +14.5% | −45.7% | +34.1% |
+| 2025 | $41.16 | −2.2% | −59.3% | +20.6% |
 
-So the defensible statement is: *MISO publishes about two years openly, and the
-archive needs an account — hence three years for MISO against eight and nine
-for the other two, and the trend argument leans on those.*
+**A genuinely flexible battery loses under the standard tariff in 8 years out of
+8, and wins under TMEP in 8 out of 8.** The gradient — more flexibility costing
+more — holds in every year without exception. Only the *level* moves with the
+wholesale price: at a barely-flexible 1.5x the standard tariff ranges from +26%
+to −10% across the eight years.
+
+This is the strongest form of the argument, and it needed the long series to
+make: two years could have been coincidence.
 
 ### What the long series shows
 
