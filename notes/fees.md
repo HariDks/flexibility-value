@@ -563,3 +563,61 @@ hours of information. Only 3.9 points is the scheduling rule being simple.
 So the large-tank weakness is mostly **a finding, not an error**: storage
 duration is capped by available information in Spain too, at 24 hours rather than
 South Australia's six. It is an independent argument for the 12-hour base case.
+
+---
+
+## South Australia's forecast horizon, measured rather than assumed
+
+The horizon parameter used elsewhere gives the battery **perfect prices inside a
+truncated window**. That is not what an operator has. A forecast is not a price,
+and the difference is the largest single judgment in this study.
+
+So it was measured. `fetch_aemo_predispatch.py` pulls AEMO's published
+pre-dispatch forecasts — half-hourly projections out to ~40 hours, refreshed
+every 30 minutes — for four weeks spread across September to December 2025.
+74,592 forecasts, paired with the price that actually occurred.
+
+### Raw forecast accuracy
+
+| Horizon | Median abs. error | \|err\| > $50 |
+|---|---|---|
+| 0–2h | $11.3 | 14.7% |
+| 4–6h | $16.1 | 17.8% |
+| 8–12h | $17.8 | 18.6% |
+| 18–24h | $22.7 | 26.2% |
+| 24–40h | $24.4 | 31.1% |
+
+Error roughly **doubles** across 40 hours — it degrades gradually, with no cliff.
+
+### The test that matters: schedule on forecasts, pay actuals
+
+4 contiguous blocks, 640 hours, identical sample throughout:
+
+| Basis | Saving | Share of perfect captured |
+|---|---|---|
+| perfect knowledge | 89.8% | — |
+| real forecast, 2h ahead | *infeasible* | — |
+| real forecast, 4h ahead | *infeasible* | — |
+| real forecast, 6h ahead | 33.0% | **37%** |
+| real forecast, 8h ahead | 48.4% | **54%** |
+| real forecast, 12h ahead | 72.1% | **80%** |
+
+Below about 5 hours the peak-window strategy cannot be executed at all — there
+is not enough lead time to fill before the blackout. Price-following alone is
+feasible there and captures 7% at 2h and 22% at 4h.
+
+### What this changes
+
+**The horizon parameter overstates what a lead time delivers**, because it
+assumes perfect prices within the window. Real forecasts at 6 hours capture
+only 37% of the theoretical maximum; at 12 hours, 80%.
+
+**So South Australia's headline should be read down.** The reported 49.9% at a
+6-hour horizon assumes perfect foresight within six hours. With the forecasts
+AEMO actually publishes, six hours of lead time delivers roughly a third of
+what perfect knowledge would.
+
+**Caveats.** 640 hours across four weeks, spring into summer. Forecast quality
+may differ in other seasons, and AEMO's own accuracy may improve. The direction
+is not in doubt: this is a discount on the South Australian figure, not a
+premium.
