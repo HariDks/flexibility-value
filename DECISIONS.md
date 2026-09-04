@@ -6,7 +6,7 @@
 - **[T] Tested** — swept across a range, so no single value is claimed
 - **[J] Judgment** — my call. These are the ones to be able to defend
 
-Counts: **10 published, 15 tested, 19 judgment.**
+Counts: **10 published, 16 tested, 18 judgment.**
 
 Nearly half are judgment calls. Most are about *scope and framing* rather
 than about numbers — but they are still mine, and the honest count matters
@@ -32,10 +32,18 @@ wind-driven rather than solar — so the comparison tests what is general.
 Ended at 25 market-years. A single year would have presented a trend as a
 market property — Spain's saving runs 12.5% to 37.9% across eight years.
 
-**4. Price storage as an arbitrage asset only. [J]**
-Reliability value, curtailment ride-through and multi-day firming are not
-modelled. Stated explicitly because Antora's product is built for the second
-problem, and the two need different answers.
+**4. Price storage as an arbitrage asset only. [T]**
+The firming case is now priced too, from published auctions. The physics needs
+no simulation — an N-hour tank rides through an N-hour interruption — so the
+question is who pays for depth, and the answer is nobody past four hours.
+Arbitrage pays up to the forecast horizon and exactly zero after it. MISO's
+capacity auction pays $217/MW-day (2025/26) and $126.19 (2026/27), worth
+$9.04 and $5.26 per MWh of heat, and **requires only four consecutive hours** —
+so a 100-hour tank earns what a 4-hour tank earns. Spain's SRAD pays €56.43/MW
+per assigned hour over 4,371 hours, but only for metered reduction, and the
+battery is drawing its full rating in just 32.6% of the risk hours, putting the
+realistic value at €9-15/MWh rather than €28. The NEM has no capacity market at
+all. **The 24-to-164-hour wedge is unpaid everywhere.** See `notes/firmness.md`.
 
 **5. Operating cost only, no capital. [J]**
 Connection capex scales with charge rate and would push against fast charging.
