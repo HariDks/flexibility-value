@@ -103,15 +103,15 @@ footer b{color:var(--ink2);font-weight:500}
     --good:#15604A; --bad:#93301F;
   }
   @page{margin:15mm 14mm}
-  body{background:#fff;color:#111;font-size:9.3pt;line-height:1.42}
+  body{background:#fff;color:#111;font-size:8.9pt;line-height:1.4}
   .page{max-width:none;padding:0}
   p{margin:0 0 .55rem}
   .head{margin-bottom:1rem;padding-bottom:.7rem}
-  h2{margin:1.15rem 0 .5rem;padding-top:.5rem;font-size:1.05rem;
+  h2{margin:1rem 0 .45rem;padding-top:.45rem;font-size:1.02rem;
      page-break-after:avoid}
-  h3{margin:.85rem 0 .35rem;font-size:.94rem;page-break-after:avoid}
+  h3{margin:.7rem 0 .3rem;font-size:.92rem;page-break-after:avoid}
   .figbox{margin:.7rem 0 .8rem;page-break-inside:avoid}
-  svg.fig{max-height:50mm}
+  svg.fig{max-height:43mm}
   figcaption{font-size:.67rem;margin-top:.3rem}
   .tw{margin:.55rem 0 .7rem;page-break-inside:avoid}
   table{font-size:.7rem} th,td{padding:.22rem .5rem .22rem 0}
@@ -182,7 +182,15 @@ nine for South Australia, and eight for Minnesota, all ending in 2025. The netwo
 tariffs are published too, each taken straight from the operator's own schedule.</p>
 
 <p>Tariffs are held at their 2025 values across every price year, so that only prices
-vary. The trends below are therefore statements about prices, not about tariff reform.</p>
+vary. The trends below are therefore statements about prices alone.</p>
+
+<p>The battery follows a deliberately simple rule: when the store is about to run dry, go
+back and buy in the cheapest hour that could still be holding heat. That rule was checked
+against the exact optimum, solved as a linear program, and it comes out <b>1.5% worse and
+always in the same direction</b>. <b>Every saving reported here is therefore a floor, never
+a best case.</b> The charge rate of four times average draw is also not a free choice:
+below it the battery gives up real savings, and above it the extra connection needed stops
+paying for itself.</p>
 
 <p>Three things are deliberately left out. What the battery costs to build. What it is
 worth to have heat available when the grid fails. And any income beyond buying power at
@@ -398,21 +406,21 @@ price Europe actually charges.</figcaption></figure>
 beat gas. By 2025 the battery wins even if carbon costs nothing at all. Europe actually
 charges &euro;75.</p>
 
-<p>The two spikes are the European energy crisis, and they are worth understanding rather
-than removing. Gas more than doubled in 2022, which should have favoured the battery. It did
+<p>The two spikes are the European energy crisis, and they are worth understanding
+instead of removing. Gas more than doubled in 2022, which should have favoured the battery. It did
 the opposite, because the wholesale electricity the battery buys more than doubled too.
 Spain's average price ran &euro;168 per MWh that year against &euro;65 in 2025. <b>An energy
 crisis is not a one-way bet on storage, because both fuels are in it.</b></p>
 
 <p>The honest qualification is that 2025 is the best year in the series. Ignoring carbon
 and comparing fuel cost alone, the battery beat gas in only two of the eight Spanish
-years. <b>The trend is the finding, not the single year.</b></p>
+years. <b>The trend is what to quote, not the single year.</b></p>
 
 <h2>What would change this</h2>
 
-<p>Three assumptions could move these numbers. Each was tested the same way: re-run the
-entire model across a range of values for that assumption and record how far the answer
-travels. Nothing below is an estimate of uncertainty. They are measured spreads.</p>
+<p>Three assumptions could move these numbers. Each was tested by re-running the whole model
+across a range of values and recording how far the answer travels, so these are measured
+spreads, not estimates of uncertainty.</p>
 
 <h3>How far ahead an Australian operator can see</h3>
 
@@ -428,15 +436,14 @@ useful sight was assumed.</p>
 </tbody></table></div>
 
 <p><b>Twenty-three points rest on that one assumption.</b> Tested against the forecasts
-Australia actually published rather than an assumed number, the battery captured 37% of
-what perfect knowledge would give at six hours, and 80% at twelve. So the assumption is
+Australia actually published, the battery captured 37% of what perfect knowledge would give
+at six hours, and 80% at twelve. So the assumption is
 bounded by evidence without being settled by it.</p>
 
 <h3>What figure Otter Tail agrees to bill</h3>
 
-<p>Its Thermal Market Energy Pricing tariff bills demand on a number set in the service
-agreement, and the tariff itself does not say what that number is. Ten megawatts was
-assumed, the factory's steady load.</p>
+<p>TMEP bills demand on a number set in the service agreement, and the tariff itself does not
+say what that number is. Ten megawatts was assumed, the factory's steady load.</p>
 
 <div class="tw"><table>
 <thead><tr><th>Agreed figure</th><th>10 MW</th><th>15 MW</th><th>20 MW</th><th>40 MW</th></tr></thead>
@@ -448,7 +455,7 @@ assumed, the factory's steady load.</p>
 agreement at all. <b>The mechanism is the finding; the agreed number is where the value
 is really decided,</b> which is itself the useful point for anyone negotiating one.</p>
 
-<h3>South Australia is the best of five, not a typical one</h3>
+<h3>South Australia is the best of the five Australian regions</h3>
 
 <p>Holding the same tariff fixed and swapping in each Australian region's prices:</p>
 
@@ -460,7 +467,7 @@ is really decided,</b> which is itself the useful point for anyone negotiating o
 </tbody></table></div>
 
 <p>The mechanism holds everywhere. The size of the win does not, so South Australian
-figures should be read as the top of a range rather than as a headline.</p>
+figures should be read as the top of a range, not as a headline.</p>
 
 <div class="method">Produced by <code>analyse_robustness.py</code>,
 <code>analyse_forecast_skill.py</code> and <code>analyse_nodes.py</code>. Every figure in
@@ -470,22 +477,27 @@ this memo regenerates from published data by running the scripts in the reposito
 
 <h3>A screening test that costs nothing</h3>
 
-<p>Before modelling a new market, read how its network measures peak demand. If it looks
-only during stated hours, a flexible load will pay there. If it looks at any moment, it
-will not, and no amount of cheap power rescues it. Across three countries and 25 years,
-that predicted the sign of the answer every time.</p>
+<p>Before modelling a new market, read how its network measures peak demand. Across three
+countries and 25 years, that alone predicted the sign of the answer every time, before any
+price data was touched.</p>
 
 <p>Where prices do matter, what matters is not their level but how far the cheapest hours
 sit below the daily average as a share of it. Tested across five Australian regions, that
 ranked them correctly where the more obvious measure, the gap between the day's highest
 and lowest price, ranked them wrong.</p>
 
-<h3>Treat TMEP as a template rather than a one-off</h3>
+<p>One thing to check alongside it. A charge on peak demand is a fixed cost, so it falls
+hardest on plants that do not run flat out. Tested against a two-week maintenance shutdown,
+a five-day week and a day-shift pattern, the saving held everywhere, but <b>at 48%
+utilisation the same capacity charge costs 2.1 times more per unit of heat</b>, in all three
+markets. Any load that runs intermittently is being taxed for reasons unrelated to what it
+costs the network to serve.</p>
 
-<p>It is filed, approved and operating at one utility. It turns eight losing years into
-eight winning ones without changing a single physical thing. Any utility serving a large
-flexible load could write the same sentence, and this analysis puts a number on what that
-sentence is worth.</p>
+<h3>Treat TMEP as a template</h3>
+
+<p>It is filed, approved and already operating. Any utility serving a large flexible load
+could write the same sentence into its own schedule, and the finding above puts a number on
+what that sentence is worth.</p>
 
 <h3>The gap worth arguing about is duration</h3>
 
@@ -515,8 +527,11 @@ schedules, Otter Tail Power's Minnesota rate summary and riders. Every rate cite
 in the code.<br>
 <b>Gas and carbon.</b> Eurostat, the AER's STTM register, and the EIA. EU ETS and
 Australia's Safeguard prescribed unit price.<br><br>
-<b>44 decisions logged, 18 of them judgment calls. 16 claims made during the work and
-later overturned, kept on the record.</b>
+<b>Model.</b> Every tariff here is also available as a working model, which takes a rate
+schedule and returns whether a flexible load wins or loses on it, and which part of the bill
+decided.<br><br>
+<b>44 decisions logged, 18 of them judgment calls. 16 claims made during the work and later
+overturned, kept on the record.</b>
 </footer>
 
 </div>
