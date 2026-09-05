@@ -95,7 +95,8 @@ footer b{color:var(--ink2);font-weight:600}
   h2{margin:.9rem 0 .4rem}
   .figbox{margin:.6rem 0 .7rem;page-break-inside:avoid}
   svg.fig{max-height:47mm}
-  .p1 svg.fig{max-height:33mm}
+  .p1 svg.fig{max-height:25mm}
+  .p1 p{margin:0 0 .42rem}
   .p1 figcaption{font-size:.66rem;margin-top:.25rem}
   .p1 .figbox{margin:.45rem 0 .55rem}
   .p1 .next{padding:.5rem .75rem;font-size:.78rem;margin-top:.7rem}
@@ -129,12 +130,10 @@ biggest burst of power the factory ever draws.</p>
 
 <p class="lead">A thermal battery wins the first bill by buying in short hard bursts, which
 is exactly what the second bill punishes. Across three markets and 25 years of published
-prices, <b>it was always the second bill that decided whether the battery saved money or
-lost it.</b></p>
-
-<p class="lead">And what decided that bill was which hours the network watches when it looks
-for your biggest burst. Some watch only certain hours, so a battery puts its bursts
-elsewhere. Others watch every hour of the year, and it cannot.</p>
+prices, <b>it was always the second bill that decided whether the battery saved money or lost
+it</b>, and what decided that bill was which hours the network watches when it looks for your
+biggest burst. Some watch only certain hours, so a battery puts its bursts elsewhere. Others
+watch every hour of the year, and it cannot.</p>
 
 <div class="figbox"><svg viewBox="0 0 640 250" class="fig" role="img" aria-label="SA Power Networks against the ElectraNet range, 2017 to 2025">
 <line x1="42" y1="220.0" x2="626" y2="220.0" stroke="var(--rule)" stroke-width="0.5"/>
@@ -176,10 +175,9 @@ elsewhere. Others watch every hour of the year, and it cannot.</p>
 <text x="115.0" y="81.3" class="lab" fill="var(--good)">SA Power Networks</text>
 <text x="334.0" y="190.1" class="lab" fill="var(--bad)">ElectraNet, range across its four sites</text>
 </svg>
-<figcaption><b>Figure 1.</b> One factory, one state, one set of prices, nine years. Green is
-SA Power Networks, which looks for your biggest burst only on summer evenings. The red band
-covers ElectraNet's four connection points, which look at any moment. Each value is what the
-battery saved against the same factory without one.</figcaption></div>
+<figcaption><b>Figure 1.</b> One factory, one state, nine years. Green is SA Power Networks,
+which looks for your biggest burst only on summer evenings. The red band covers ElectraNet's
+four connection points, which look at any moment.</figcaption></div>
 
 <p><b>South Australia proves it on its own</b>, because two network companies there bill the
 same factory two different ways. The one watching only summer evenings beat the one watching
@@ -192,23 +190,31 @@ tested. Under its Thermal Market Energy Pricing tariff, which bills demand on a 
 in advance instead of the metered peak, the same battery wins in <b>all eight years</b>.
 That tariff is filed and approved.</p>
 
-<p class="thin"><b>Where this is weakest.</b> Three assumptions could move these numbers, all
-measured rather than hedged. Australian price visibility is assumed at six hours; at
-twenty-four the saving runs 49.9% to 73.1%, so <b>23 points rest on it</b>. TMEP's agreed
-baseline is not written in the tariff: 10 MW gives +20.6%, 20 MW gives &minus;6.0%. And South
-Australia is the best of five Australian regions, 22.6% in Tasmania against 49.9% there, so
-read it as the top of a range.</p>
+<p><b>But none of this pays for depth.</b> Buying at better times pays up to the day-ahead
+horizon and <b>nothing after it</b>. Nor does anything else: MISO's capacity auction pays $217
+per MW-day but asks for only four consecutive hours, so a hundred-hour battery earns what a
+four-hour one earns, and Australia has no capacity market at all. Riding through the worst
+stretch of a year takes 99 to 164 hours. <b>Everything between 24 and 164 hours is unpaid by
+every market examined here.</b></p>
 
-<p class="thin"><b>What I would ask you.</b> What it costs a customer when heat stops, the
-missing term in every firmness number here. What baseline demand is realistically achievable
-in a TMEP negotiation. And whether the right benchmark is a gas boiler or an inflexible
-electric one.</p>
+<p class="thin"><b>Where this is weakest.</b> Three assumptions could move these numbers, and
+the largest is worth 23 percentage points. All three are on page 5 with their measured
+ranges, rather than hedged in words.</p>
 
-<p class="next"><b>That is the whole argument.</b> What follows is evidence, and none of it
-is required. <b>Page 2</b> South Australia year by year. <b>Page 3</b> why some tariffs
-reward a flexible load and others punish it. <b>Page 4</b> the comparison against gas.
-<b>Page 5</b> method, full ranges and sources. A working model of every tariff here, which
-you can point at a rate of your own, is linked separately.</p>
+<p class="thin"><b>Where public data runs out.</b> Three things could not be settled from
+published sources, and each one caps a result above. <b>What it costs a customer when heat
+stops</b>, which is the missing term in the paragraph before this one. <b>What baseline
+demand is realistically achievable</b> in a TMEP negotiation, since that is where the value
+is actually decided. And <b>whether the reference point should be a gas boiler or an
+inflexible electric heater</b>, because this reports both and they answer different
+questions. Those are the three things I would want from you.</p>
+
+<p class="next"><b>That is the argument, and none of what follows is required.</b>
+<b>Page 2</b> South Australia year by year. <b>Page 3</b> why some tariffs reward a flexible
+load and others punish it, including one that looks time-aware and still loses money on its
+own. <b>Page 4</b> the comparison against gas, where the carbon price a battery needs has
+fallen from &euro;101 a tonne to below zero in eight years. <b>Page 5</b> method, the full
+ranges, and where the duration numbers above come from.</p>
 </div>
 
 <h2 class="sec">Page 2. South Australia, year by year</h2>
@@ -418,6 +424,15 @@ with no agreement at all.</p>
 <th>New South<br>Wales</th><th>Queensland</th><th>Tasmania</th></tr></thead>
 <tbody><tr><td>Saving</td><td class="win"><b>49.9%</b></td><td>43.7%</td><td>42.5%</td><td>40.8%</td><td><b>22.6%</b></td></tr>
 </tbody></table></div>
+
+<p class="thin"><b>Where the duration numbers come from.</b> Buying at better times was
+tested at tank sizes from 4 to 168 hours: the saving stops rising at each market's forecast
+horizon and is flat thereafter, so depth beyond roughly 24 hours earns nothing from price
+shifting. The $217 per MW-day is MISO's 2025/26 Planning Resource Auction, annualised for
+Local Resource Zones 1 to 7; the 2026/27 auction cleared $126.19. MISO's own documentation
+puts the minimum runtime for a load-modifying resource at four consecutive hours. The 99 to
+164 hours is the 99th percentile stretch with no cheap power available, measured across the
+three markets.</p>
 
 <footer>
 <b>Prices.</b> OMIE for Spain, AEMO for the Australian regions, MISO market reports and
