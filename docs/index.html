@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>What Is Flexibility Worth?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:wght@400;500;600&family=Archivo:wght@400;500;600&family=DM+Mono:wght@400&display=swap">
+<style>
+:root{--paper:#FCFCFB;--ink:#12161A;--ink2:#39424E;--muted:#6A7381;
+  --rule:#DFE3E8;--key:#1B4FA0;--key2:#E7EEF9}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0E1115;--ink:#E9EDF2;--ink2:#BEC7D2;--muted:#8D97A5;
+  --rule:#252C35;--key:#78ABEE;--key2:#16233A}}
+:root[data-theme="dark"]{--paper:#0E1115;--ink:#E9EDF2;--ink2:#BEC7D2;
+  --muted:#8D97A5;--rule:#252C35;--key:#78ABEE;--key2:#16233A}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);margin:0;
+  font-family:Spectral,Georgia,serif;font-size:1.02rem;line-height:1.6}
+.wrap{max-width:40rem;margin:0 auto;padding:4rem 1.5rem 6rem}
+.eyebrow{font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 .8rem}
+h1{font-family:Archivo,sans-serif;font-weight:600;font-size:clamp(1.8rem,5vw,2.5rem);
+  line-height:1.12;letter-spacing:-.02em;margin:0 0 1rem;text-wrap:balance}
+p{margin:0 0 1rem;color:var(--ink2)}
+p b{color:var(--ink);font-weight:600}
+.links{display:grid;gap:.9rem;margin:2.4rem 0 0}
+a.card{display:block;text-decoration:none;border:1px solid var(--rule);
+  border-radius:3px;padding:1.1rem 1.2rem;color:inherit;background:var(--paper)}
+a.card:hover{border-color:var(--key);background:var(--key2)}
+a.card b{display:block;font-family:Archivo,sans-serif;font-size:1.02rem;
+  color:var(--ink);margin-bottom:.2rem}
+a.card span{font-size:.9rem;color:var(--muted)}
+footer{margin-top:2.6rem;padding-top:1.2rem;border-top:1px solid var(--rule);
+  font-family:Archivo,sans-serif;font-size:.8rem;color:var(--muted);line-height:1.7}
+footer a{color:var(--key)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<p class="eyebrow">Flexibility-value</p>
+<h1>What is a thermal battery's flexibility actually worth?</h1>
+
+<p>A factory making heat from electricity pays two bills: one for the power, and one to the
+network for delivering it. The second is usually set by the single biggest burst of power the
+factory ever draws, and a battery gets cheap power by drawing in bursts.</p>
+
+<p><b>Across three electricity markets and 25 years of published prices, it was always that
+second bill that decided whether the battery saved money or lost it.</b> What mattered was
+which hours the network watches when it looks for your biggest burst.</p>
+
+<div class="links">
+  <a class="card" href="memo.html"><b>The memo</b>
+    <span>Five pages. The finding, the evidence, and where it is weakest.</span></a>
+  <a class="card" href="simulator.html"><b>Tariff simulator</b>
+    <span>Flip one switch and watch a battery stop gulping. Then try your own rate.</span></a>
+  <a class="card" href="memo.pdf"><b>Memo as PDF</b>
+    <span>Same document, for printing or sending.</span></a>
+  <a class="card" href="https://github.com/HariDks/flexibility-value"><b>The code</b>
+    <span>Every figure regenerates from published data. 44 decisions logged, 16 corrections
+    kept on the record.</span></a>
+</div>
+
+<footer>
+Prices from OMIE, AEMO and MISO. Tariffs from CNMC and the BOE, SA Power Networks,
+ElectraNet and Otter Tail Power. Every rate cited inline in the code.<br>
+Hari Dharshini Koundinya Swaminathen, September 2026.
+</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,746 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>A Battery Can Dodge a Window</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,500;0,600;1,400&family=Archivo:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --paper:#FBFBFA; --surface:#FFFFFF; --ink:#101418; --ink2:#414A56;
+  --muted:#67707E; --rule:#E2E6EA; --rule2:#F0F2F5;
+  --draw:#1B4FA0; --draw2:#DCE6F5;
+  --win:#B8762A; --win2:#F7ECDC;
+  --good:#1B6E56; --bad:#A0382B;
+  --shadow:0 1px 2px rgba(16,20,24,.05),0 8px 24px rgba(16,20,24,.06);
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#0D1014; --surface:#151920; --ink:#E9EDF2; --ink2:#BAC3CE;
+  --muted:#8C96A4; --rule:#252C35; --rule2:#1B212A;
+  --draw:#74A8EC; --draw2:#16253C;
+  --win:#DFA25C; --win2:#2E2416;
+  --good:#5FBF9C; --bad:#E08878;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.3);
+}}
+:root[data-theme="dark"]{
+  --paper:#0D1014; --surface:#151920; --ink:#E9EDF2; --ink2:#BAC3CE;
+  --muted:#8C96A4; --rule:#252C35; --rule2:#1B212A;
+  --draw:#74A8EC; --draw2:#16253C;
+  --win:#DFA25C; --win2:#2E2416;
+  --good:#5FBF9C; --bad:#E08878;
+  --shadow:0 1px 2px rgba(0,0,0,.35),0 8px 24px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);
+  font-family:Archivo,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  line-height:1.55;-webkit-font-smoothing:antialiased}
+.wrap{max-width:60rem;margin:0 auto;padding:2.5rem 1.4rem 5rem}
+h1,h2,h3{text-wrap:balance}
+.mono{font-family:"DM Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+
+/* masthead */
+.eyebrow{font-family:"DM Mono",monospace;font-size:.7rem;letter-spacing:.15em;
+  text-transform:uppercase;color:var(--win);margin:0 0 .7rem}
+h1{font-family:Spectral,Georgia,serif;font-weight:600;
+  font-size:clamp(2.1rem,5.5vw,3.3rem);line-height:1.05;letter-spacing:-.02em;margin:0}
+.lede{font-family:Spectral,Georgia,serif;font-size:1.1rem;color:var(--ink2);
+  margin:.85rem 0 0;max-width:42rem}
+.lede.first{margin-top:1.2rem}
+.lede b{color:var(--ink);font-weight:500}
+header{border-bottom:1px solid var(--rule);padding-bottom:2rem;margin-bottom:2.5rem}
+
+section{margin:0 0 4rem}
+h2{font-family:Spectral,Georgia,serif;font-weight:600;font-size:1.75rem;
+  letter-spacing:-.012em;margin:0 0 .35rem}
+.sub{color:var(--muted);font-size:.94rem;margin:0 0 1.5rem;max-width:44rem}
+p{max-width:44rem}
+
+/* the switch */
+.switch{display:flex;gap:0;border:1px solid var(--rule);border-radius:3px;
+  overflow:hidden;background:var(--surface);width:fit-content;max-width:100%;
+  flex-wrap:wrap;box-shadow:var(--shadow)}
+.switch button{font:500 .88rem/1.3 Archivo,sans-serif;background:transparent;
+  color:var(--muted);border:0;padding:.75rem 1.1rem;cursor:pointer;text-align:left}
+.switch button small{display:block;font-family:"DM Mono",monospace;
+  font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;opacity:.75;margin-top:.2rem}
+.switch button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.switch button:focus-visible{outline:2px solid var(--draw);outline-offset:-2px}
+
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:3px;
+  padding:1.4rem;margin-top:1rem;box-shadow:var(--shadow)}
+.chartwrap{overflow-x:auto}
+svg{display:block;width:100%;height:auto;min-width:34rem;cursor:crosshair}
+.toc{margin:1.4rem 0 0;padding:0 0 0 1.2rem;max-width:42rem;color:var(--ink2);font-size:.95rem}
+.toc li{margin:.3rem 0}
+.toc b{color:var(--ink);font-weight:600}
+.do{font-family:"DM Mono",monospace;font-size:.74rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--win);margin:0 0 .7rem;max-width:38rem;line-height:1.6}
+.howto{font-size:.92rem;color:var(--ink2);margin:0 0 1.6rem;max-width:46rem;
+  border-left:2px solid var(--rule);padding-left:1rem}
+.howto b{color:var(--ink)}
+.hint{display:block;margin:.4rem 0 0;font-size:.76rem;line-height:1.5;color:var(--muted)}
+.hint b{color:var(--ink2);font-weight:600}
+.controls > div{min-width:0}
+.hover{font-size:.76rem;color:var(--muted);margin:.6rem 0 0;min-height:1.2em;
+  letter-spacing:.02em}
+.hover b{color:var(--ink);font-weight:500}
+.reading{font-size:.95rem;color:var(--ink2);margin:.9rem 0 0;max-width:46rem}
+.reading b{color:var(--ink);font-weight:600}
+.legend{display:flex;gap:.9rem 1.3rem;flex-wrap:wrap;margin:.9rem 0 0;
+  font-family:"DM Mono",monospace;font-size:.7rem;color:var(--muted)}
+.legend i{display:inline-block;width:.8rem;height:.8rem;margin-right:.35rem;
+  vertical-align:-.1rem;border-radius:1px}
+
+.readout{display:grid;grid-template-columns:repeat(auto-fit,minmax(9.5rem,1fr));
+  gap:1.2rem;margin:1.4rem 0 0;padding-top:1.2rem;border-top:1px solid var(--rule2)}
+.readout div{min-width:0}
+.readout dt{font-family:"DM Mono",monospace;font-size:.66rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);margin:0 0 .25rem}
+.readout dd{margin:0;font-family:"DM Mono",monospace;font-size:1.5rem;
+  font-variant-numeric:tabular-nums;color:var(--ink);line-height:1.1}
+.readout dd small{display:block;font-size:.7rem;color:var(--muted);
+  letter-spacing:0;margin-top:.3rem;font-family:Archivo,sans-serif}
+.readout dd span{display:block}
+.big{font-size:2.4rem!important;line-height:1.05}
+.pos{color:var(--good)!important}.neg{color:var(--bad)!important}
+
+/* tables */
+.scroll{overflow-x:auto;margin:1rem 0 0}
+table{border-collapse:collapse;width:100%;min-width:28rem;font-size:.86rem}
+th,td{padding:.42rem .85rem .42rem 0;text-align:right;
+  border-bottom:1px solid var(--rule2);font-variant-numeric:tabular-nums}
+th:first-child,td:first-child{text-align:left}
+td .th2{display:block;margin-top:.1rem}
+.th2{font-family:Archivo,sans-serif;font-size:.62rem;letter-spacing:0;
+  text-transform:none;opacity:.75;font-weight:400}
+th{font-family:"DM Mono",monospace;font-size:.66rem;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);font-weight:400;
+  border-bottom:1px solid var(--rule)}
+td{font-family:"DM Mono",monospace;color:var(--ink2)}
+td:first-child{font-family:Archivo,sans-serif;color:var(--ink)}
+tr.hi td{color:var(--ink);font-weight:500}
+.win{color:var(--good)}.lose{color:var(--bad)}
+
+/* screener */
+.controls{display:grid;grid-template-columns:repeat(auto-fit,minmax(13rem,1fr));
+  gap:1.1rem 1.5rem;margin:0 0 1.4rem}
+label{display:block;font-family:"DM Mono",monospace;font-size:.66rem;
+  letter-spacing:.09em;text-transform:uppercase;color:var(--muted);margin:0 0 .35rem}
+input,select{width:100%;font:400 .92rem/1.4 "DM Mono",monospace;
+  background:var(--paper);color:var(--ink);border:1px solid var(--rule);
+  border-radius:2px;padding:.5rem .6rem}
+select{font-family:Archivo,sans-serif}
+input:focus,select:focus{outline:2px solid var(--draw);outline-offset:-1px}
+.presets{display:flex;gap:.5rem;flex-wrap:wrap;margin:0 0 1.4rem}
+.presets button{font:500 .78rem/1 Archivo,sans-serif;background:var(--draw2);
+  color:var(--draw);border:1px solid var(--draw);padding:.5rem .8rem;
+  border-radius:2px;cursor:pointer}
+.presets button:hover{background:var(--draw);color:var(--surface)}
+.presets button.on{background:var(--draw);color:var(--surface)}
+.presets button:focus-visible{outline:2px solid var(--ink);outline-offset:2px}
+
+.combo{font-size:.86rem;color:var(--muted);margin:0 0 1rem;max-width:46rem;line-height:1.6}
+.combo b{color:var(--ink2);font-weight:600}
+.combo.warn{color:var(--win);background:var(--win2);padding:.75rem .9rem;border-radius:3px}
+.combo.warn b{color:var(--win)}
+#split{margin-top:1.6rem}
+.diag{font-size:.9rem;color:var(--ink2);margin:.9rem 0 0;max-width:46rem}
+.diag b{color:var(--ink);font-weight:600}
+.verdict{border-left:3px solid var(--draw);padding:.2rem 0 .2rem 1.1rem;margin:1.4rem 0 0}
+.verdict p{margin:.4rem 0 0;font-size:.95rem;color:var(--ink2)}
+.verdict .head{font-family:Spectral,Georgia,serif;font-size:1.3rem;
+  color:var(--ink);margin:0;font-weight:500}
+
+.caveat{background:var(--win2);border-radius:3px;padding:1.1rem 1.2rem;margin:1.6rem 0 0}
+.caveat h3{font-family:"DM Mono",monospace;font-size:.68rem;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--win);margin:0 0 .5rem;font-weight:500}
+.caveat p{margin:0 0 .5rem;font-size:.88rem;color:var(--ink2);max-width:46rem}
+.caveat p:last-child{margin-bottom:0}
+
+footer{border-top:1px solid var(--rule);margin-top:1rem;padding-top:1.5rem;
+  font-family:"DM Mono",monospace;font-size:.72rem;color:var(--muted);line-height:1.9}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+rect,path,line{transition:none}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <p class="eyebrow">Flexibility-value · 25 market-years · published data only</p>
+  <h1>Same battery, same state,<br>two very different bills</h1>
+  <p class="lede first">A factory pays for electricity twice. Once for the power itself, and once to
+  the network company for delivering it. <b>That second bill is usually set by the single
+  biggest burst of power the factory ever draws.</b></p>
+  <p class="lede">That is a problem for a thermal battery, because drawing in big bursts is
+  exactly how it buys cheap electricity in the first place.</p>
+  <p class="lede">But networks do not all measure that burst the same way. Some only look during
+  set hours, say 5pm to 9pm in summer, so a battery can simply not charge then. Others look at
+  every hour of the year, and a battery has no way around it. <b>That one difference decides whether
+  a battery saves the factory anything at all.</b></p>
+  <ol class="toc">
+    <li><b>Flip a switch</b> and watch a thermal battery change how it buys, on one real week of prices.</li>
+    <li><b>Check it holds</b> across nine years and three electricity markets.</li>
+    <li><b>Test your own tariff</b> in the screener at the bottom.</li>
+  </ol>
+</header>
+
+<section>
+  <h2>One week, one battery, two billing rules</h2>
+  <p class="sub">Real South Australian prices, week beginning <span id="wkstart" class="mono"></span>.
+  A 10&nbsp;MW factory needing heat around the clock, with a thermal battery holding 12 hours of heat, which can charge at
+  4× its average draw. Only the network's billing rule changes.</p>
+
+  <p class="do">Two buttons below. Press one, then the other, and watch what happens in the
+  shaded evening hours.</p>
+  <div class="switch" role="group" aria-label="Billing rule">
+    <button id="b-win" aria-pressed="true">By the clock
+      <small>SA Power Networks · 17–21, Nov–Mar</small></button>
+    <button id="b-any" aria-pressed="false">Your worst moment
+      <small>ElectraNet · any hour, all year</small></button>
+  </div>
+
+  <div class="panel">
+    <div class="chartwrap"><svg id="chart" viewBox="0 0 1000 330" role="img"
+      aria-label="Hourly electricity price and battery draw over one week"></svg></div>
+    <p class="hover mono" id="hover"></p>
+    <p class="reading" id="reading"></p>
+    <div class="legend">
+      <span><i style="background:var(--draw)"></i>what the battery buys, MW</span>
+      <span><i style="background:var(--ink2)"></i>wholesale price</span>
+      <span><i style="background:var(--win);opacity:.4"></i>state of charge, MWh of heat stored</span>
+      <span><i style="background:var(--win2);border:1px solid var(--win)"></i>hours the network is watching</span>
+    </div>
+    <dl class="readout">
+      <div><dt>Drawn while watched</dt><dd><span id="r-inwin">—</span><small id="r-inwin-s"></small></dd></div>
+      <div><dt>Billed peak demand</dt><dd><span id="r-peak">—</span><small id="r-peak-s"></small></dd></div>
+      <div><dt>Saving over the year</dt><dd><span id="r-save" class="big">—</span><small>vs buying as it burns</small></dd></div>
+    </dl>
+  </div>
+
+  <p style="margin-top:1.4rem">Under a charge that only looks during set hours, the battery
+  sits out four hours an evening and keeps every bit of its advantage. Under a charge that looks
+  all the time, every gulp sets the number it gets billed on. So it stops gulping, and most of
+  what it was saving goes with it.</p>
+  <p><b>A battery can dodge a window. It cannot dodge "whenever."</b></p>
+</section>
+
+<section>
+  <h2>The billing rule decides it, in all nine years</h2>
+  <p class="sub"><b>Every number below is what the battery saves</b>, compared with the same
+  factory with no battery, buying power as it uses it. A positive number means the battery paid off;
+  a negative one means it cost more than it saved.</p>
+  <p class="sub">The first column is SA Power Networks, which watches only a four hour evening
+  window in summer. The next four are ElectraNet, which watches every hour of the year, at each
+  of the four places in South Australia a factory could physically connect. The last column is
+  how far ahead SA Power Networks finishes against the best of them.</p>
+  <div class="scroll"><table>
+    <tr><th>Year</th><th>SA Power Networks<br><span class="th2">watches a window</span></th>
+        <th>Para<br><span class="th2">watches always</span></th><th>Brinkworth</th>
+        <th>Ardrossan</th><th>Berri</th><th>Gap vs best</th></tr>
+    <tr><td>2017</td><td class="win">+22.5%</td><td class="lose">−2.0%</td><td class="lose">−7.5%</td><td class="lose">−12.3%</td><td class="lose">−14.6%</td><td>24.5</td></tr>
+    <tr><td>2018</td><td class="win">+27.2%</td><td>+1.5%</td><td class="lose">−4.3%</td><td class="lose">−9.4%</td><td class="lose">−11.8%</td><td>25.7</td></tr>
+    <tr><td>2019</td><td class="win">+36.3%</td><td>+9.9%</td><td>+4.0%</td><td class="lose">−1.3%</td><td class="lose">−3.8%</td><td>26.4</td></tr>
+    <tr><td>2020</td><td class="win">+39.0%</td><td class="lose">−5.5%</td><td class="lose">−14.8%</td><td class="lose">−22.7%</td><td class="lose">−26.4%</td><td>44.5</td></tr>
+    <tr><td>2021</td><td class="win">+52.3%</td><td>+10.3%</td><td>+1.3%</td><td class="lose">−6.5%</td><td class="lose">−10.2%</td><td>42.0</td></tr>
+    <tr><td>2022</td><td class="win">+45.6%</td><td>+26.4%</td><td>+21.9%</td><td>+17.9%</td><td>+16.0%</td><td>19.2</td></tr>
+    <tr><td>2023</td><td class="win">+55.5%</td><td>+23.9%</td><td>+16.8%</td><td>+10.5%</td><td>+7.5%</td><td>31.6</td></tr>
+    <tr><td>2024</td><td class="win">+54.2%</td><td>+27.2%</td><td>+20.9%</td><td>+15.4%</td><td>+12.8%</td><td>27.0</td></tr>
+    <tr><td>2025</td><td class="win">+49.9%</td><td>+20.7%</td><td>+13.9%</td><td>+8.0%</td><td>+5.2%</td><td>29.2</td></tr>
+  </table></div>
+  <p style="margin-top:1.2rem">Watching a window instead of watching always is worth <b>19 to
+  44 percentage points</b>, in every one of the nine years. Nothing else differs between the
+  columns: same country, same prices, same weather, same battery, same currency. Connect to
+  ElectraNet instead and the battery <b>loses money outright in 15 of the 36</b> year and location
+  combinations.</p>
+</section>
+
+<section>
+  <h2>The pattern holds in three countries</h2>
+  <p class="sub">Each row is a different way of measuring your biggest burst. The last column is
+  what the battery saves against the same factory without one, from the first year tested to
+  the last, charging at four times its average draw throughout. South Australia peaked higher
+  along the way, at 55.5% in 2023.</p>
+  <div class="scroll"><table>
+    <tr><th>Market</th><th>When it looks for your biggest burst</th><th>Years</th><th>Battery saves, first year to last</th></tr>
+    <tr><td>Spain <span class="th2">class 6.3TD</span></td><td>six separate bands through the day</td><td>2018–2025</td><td class="win">+12.5% → +37.9%</td></tr>
+    <tr><td>South Australia <span class="th2">SA Power Networks</span></td><td>4 hours each summer evening</td><td>2017–2025</td><td class="win">+22.5% → +49.9%</td></tr>
+    <tr><td>Minnesota <span class="th2">Otter Tail, standard</span></td><td>always, and bills the worst moment</td><td>2018–2025</td><td class="lose">loses money in all 8 years</td></tr>
+    <tr class="hi"><td>Minnesota <span class="th2">Otter Tail, under TMEP</span></td><td>never, a figure agreed up front</td><td>2018–2025</td><td class="win">saves money in all 8 years</td></tr>
+  </table></div>
+  <p style="margin-top:1.2rem"><b>Minnesota is the row that settles the cause</b>, because the
+  same utility offers two tariffs on the same grid, to the same factory, in the same years.</p>
+  <p>Otter Tail Power's standard tariff bills whatever the meter recorded as your highest moment
+  that month. A battery loses money on it in every one of the eight years, and in all 36
+  combinations when nine MISO pricing points are checked across four of them. Its Thermal Market Energy Pricing tariff bills a figure agreed
+  in advance instead of the meter reading, and the same battery wins in all eight years.</p>
+  <p>Nothing changed but one sentence in the rate schedule. That tariff is already filed and
+  approved.</p>
+</section>
+
+<section>
+  <h2>Tariff simulator</h2>
+  <p class="sub">If you know the network tariff at a site, put its numbers in here and see
+  whether a thermal battery would save money there or lose it, <b>and which part of the bill
+  decided it</b>. Every figure is computed from the same model that produces the study's
+  published numbers.</p>
+
+  <p class="do">Start here. Press a real tariff to load it, then change anything you like.</p>
+  <div class="presets" id="presets"></div>
+
+  <p class="howto"><b>What you are setting.</b> A network bill has two parts. One is charged on
+  every unit of energy you take, and a battery cannot avoid it. The other is charged on your
+  peak demand, and that is the one that decides everything: if the network only watches certain
+  hours, a battery skips them, and if it watches all the time, it cannot.</p>
+
+  <div class="controls">
+    <div><label for="mkt">Which market's prices?</label>
+      <select id="mkt"></select>
+      <small class="hint">Where the electricity itself is bought. Real 2025 hourly prices.</small></div>
+
+    <div><label for="ener">Charge per unit of energy</label>
+      <input id="ener" type="number" step="0.01" value="25">
+      <small class="hint">Per MWh delivered, whenever you take it. Both buyers pay this, so it
+      changes the bill but not the answer.</small></div>
+
+    <div><label for="cap">Charge on your peak demand</label>
+      <input id="cap" type="number" step="0.01" value="63.40">
+      <small class="hint">Per kW of peak, per year. If your bill quotes a monthly rate multiply
+      by 12, and if it quotes a daily rate per MW multiply by 0.365.
+      <b>This is the one that punishes a battery.</b></small></div>
+
+    <div><label for="meas">When does the network watch?</label>
+      <select id="meas">
+        <option value="anytime">Every hour of the year</option>
+        <option value="window_season" selected>5pm to 9pm, summer only</option>
+        <option value="window_year">5pm to 9pm, all year</option>
+        <option value="baseline">Never. Billed on an agreed figure</option>
+        <option value="spain">Six time bands, Spanish style</option>
+      </select>
+      <small class="hint">The hours it looks for your peak. "Agreed figure" is how Otter Tail's
+      TMEP tariff works. "Six time bands" is Spain, which charges a separate rate for the most
+      power you draw in each of six periods of the day.</small></div>
+
+    <div id="clswrap" hidden><label for="cls">Spanish tariff class</label>
+      <select id="cls"></select>
+      <small class="hint">Class follows connection voltage. The megawatt threshold at each
+      voltage is set by the distributor's own connection study, so all four are offered rather
+      than one asserted.</small></div>
+
+    <div><label for="read">How does it measure your peak?</label>
+      <select id="read">
+        <option value="peakavg" selected>Average across those hours</option>
+        <option value="peak">Your single highest moment</option>
+      </select>
+      <small class="hint">Averaging is gentler. SA Power Networks averages; most others take the
+      single highest moment.</small></div>
+
+    <div><label for="any">A second peak charge, any hour</label>
+      <input id="any" type="number" step="0.01" value="10.00">
+      <small class="hint">Some networks bill a windowed peak <em>and</em> an all-hours peak.
+      Leave at 0 if yours does not.</small></div>
+  </div>
+
+  <p class="combo" id="combo"></p>
+
+  <div class="panel">
+    <dl class="readout">
+      <div><dt>Without storage</dt><dd><span id="s-inflex">—</span><small>cost of heat if it buys power as it uses it</small></dd></div>
+      <div><dt>With a thermal battery</dt><dd><span id="s-flex">—</span><small id="s-flex-s"></small></dd></div>
+      <div><dt>The battery saves</dt><dd><span id="s-save" class="big">—</span><small>off the bill, every year</small></dd></div>
+    </dl>
+    <div class="scroll"><table id="split"></table></div>
+    <p class="diag" id="diag"></p>
+
+    <div class="verdict">
+      <p class="head" id="s-head">—</p>
+      <p id="s-body"></p>
+    </div>
+  </div>
+
+  <div class="caveat">
+    <h3>What this does and does not do</h3>
+    <p>It models the two structural choices the study is about: <b>how much of your bill rides
+    on peak demand, and whether that peak is time-aware</b>. Treat it as a first screen rather
+    than a bill. Real schedules carry bands, ratchets, riders and seasonal detail this flattens,
+    and Spain's six-band structure in particular cannot be expressed in two dials.</p>
+    <p>It assumes one factory: 10 MW of heat continuously, a thermal battery holding 12 hours,
+    1%/day standby loss,
+    each market's real forecast horizon. It prices <b>arbitrage only</b>, with no firmness, no
+    reliability value and no capital cost of any kind, so nothing here is a payback figure.</p>
+    <p><b>Two reasons its numbers can differ from the tables above.</b> This screener
+    <em>optimises</em> the charge rate across 1× to 8×, while the study fixes it at 4×, so it
+    will often find a gentler, better-paying strategy that the study does not report. And for
+    MISO the study's inflexible buyer takes utility-supplied energy, which is priced differently
+    from the wholesale market both buyers use here.</p>
+    <p>The published figures in the sections above are computed from the full tariffs in
+    <span class="mono">tariff.py</span>. The build refuses to ship if the statistics behind this
+    screener cannot reproduce those tariffs exactly.</p>
+  </div>
+</section>
+
+<footer>
+  Prices: OMIE (Spain), AEMO (NEM), MISO market reports and monthly archives.<br>
+  Tariffs: CNMC and BOE, SA Power Networks, ElectraNet Prescribed Transmission Service<br>
+  Price Schedule 2025-26 (ex GST), Otter Tail Power. Every rate cited inline in tariff.py.<br>
+  25 market-years · 44 logged decisions · 16 corrections on the record.
+</footer>
+</div>
+
+<script>
+const DATA = {"year":2025,"demand_mw":10.0,"storage_hours":12.0,"standby_loss_per_day":0.01,"charge_rates":[1.0,1.5,2.0,3.0,4.0,6.0,8.0],"markets":{"spain":{"currency":"EUR","horizon":24,"label":"Spain","note":"day-ahead market, 24h visibility"},"miso":{"currency":"USD","horizon":24,"label":"MISO (Minnesota)","note":"day-ahead market, 24h visibility"},"sa":{"currency":"AUD","horizon":6,"label":"South Australia","note":"no day-ahead market, 6h visibility"},"nsw":{"currency":"AUD","horizon":6,"label":"New South Wales","note":"no day-ahead market, 6h"},"qld":{"currency":"AUD","horizon":6,"label":"Queensland","note":"no day-ahead market, 6h"},"vic":{"currency":"AUD","horizon":6,"label":"Victoria","note":"no day-ahead market, 6h"},"tas":{"currency":"AUD","horizon":6,"label":"Tasmania","note":"no day-ahead market, 6h"}},"es_classes":{"6.1TD":{"voltage":"1-30 kV","power":[24.847302,13.10353,5.124783,3.737698,0.498418,0.25866],"energy":[29.686,13.807,5.759,3.255,0.453,0.236]},"6.2TD":{"voltage":"30-45 kV","power":[17.798615,10.015668,2.909969,1.940481,0.487731,0.249028],"energy":[17.352,8.753,3.312,1.735,0.394,0.227]},"6.3TD":{"voltage":"30-72.5 kV","power":[11.969624,7.091851,2.546771,1.808994,0.473785,0.236279],"energy":[14.876,7.383,2.964,1.579,0.386,0.222]},"6.4TD":{"voltage":">72.5 kV","power":[7.768462,4.529595,1.38527,1.093534,0.448232,0.209555],"energy":[10.526,5.482,2.321,1.197,0.367,0.211]}},"rules":{"anytime":{"label":"Any hour, all year","example":"ElectraNet, Otter Tail Schedule 632","hours":null,"months":null},"window_season":{"label":"17:00-21:00, peak season only","example":"SA Power Networks","hours":[17,18,19,20],"months":[1,2,3,11,12]},"window_year":{"label":"17:00-21:00, all year","example":"many US commercial tariffs","hours":[17,18,19,20],"months":null}},"runs":[{"market":"spain","rule":"anytime","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"anytime","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"anytime","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87684.996,"wholesale":4331865.83,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.669,"peak_window_season":15.0,"peakavg_window_season":11.25,"peak_window_year":15.0,"peakavg_window_year":15.0,"es_contracted":[15.0,15.0,15.0,15.0,15.0,15.0],"es_energy":[6751.222,9224.931,9212.206,10520.651,4452.608,47523.378]},{"market":"spain","rule":"anytime","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87729.703,"wholesale":3687808.52,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.928,"peak_window_season":20.0,"peakavg_window_season":15.0,"peak_window_year":20.0,"peakavg_window_year":20.0,"es_contracted":[20.0,20.0,20.0,20.0,20.0,20.0],"es_energy":[7070.475,9433.354,9801.335,11918.498,5370.464,44135.576]},{"market":"spain","rule":"anytime","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87789.345,"wholesale":3027393.22,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":13.7641,"peak_window_season":30.0,"peakavg_window_season":15.0,"peak_window_year":30.0,"peakavg_window_year":24.9654,"es_contracted":[30.0,30.0,30.0,30.0,30.0,30.0],"es_energy":[6945.629,10611.409,9717.469,13772.066,7651.602,39091.17]},{"market":"spain","rule":"anytime","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87797.242,"wholesale":2906601.54,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":13.7828,"peak_window_season":40.0,"peakavg_window_season":12.5314,"peak_window_year":40.0,"peakavg_window_year":25.0304,"es_contracted":[40.0,40.0,40.0,40.0,40.0,40.0],"es_energy":[6687.666,11102.646,9127.601,13309.891,8691.855,38877.583]},{"market":"spain","rule":"anytime","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87799.212,"wholesale":2837710.76,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":13.7967,"peak_window_season":10.0502,"peakavg_window_season":7.5377,"peak_window_year":60.0,"peakavg_window_year":22.5377,"es_contracted":[60.0,60.0,60.0,60.0,60.0,60.0],"es_energy":[6051.69,11478.463,8591.461,13232.5,9397.226,39047.872]},{"market":"spain","rule":"anytime","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87798.323,"wholesale":2814628.21,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":13.7964,"peak_window_season":10.0502,"peakavg_window_season":7.5377,"peak_window_year":80.0,"peakavg_window_year":27.5377,"es_contracted":[80.0,80.0,80.0,80.0,80.0,80.0],"es_energy":[5739.639,11668.253,8231.243,13352.045,9687.411,39119.731]},{"market":"spain","rule":"window_season","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"window_season","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"spain","rule":"window_season","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87685.113,"wholesale":4369144.6,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.669,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":15.0,"peakavg_window_year":15.0,"es_contracted":[15.0,15.0,15.0,15.0,15.0,15.0],"es_energy":[6927.214,8846.979,9186.72,10520.707,4452.608,47750.886]},{"market":"spain","rule":"window_season","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87726.985,"wholesale":3708897.73,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.928,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":20.0,"peakavg_window_year":20.0,"es_contracted":[20.0,20.0,20.0,20.0,20.0,20.0],"es_energy":[7140.351,9243.432,9590.458,11918.498,5370.464,44463.781]},{"market":"spain","rule":"window_season","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87786.388,"wholesale":3039141.71,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":13.7641,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":30.0,"peakavg_window_year":24.9654,"es_contracted":[30.0,30.0,30.0,30.0,30.0,30.0],"es_energy":[6974.638,10411.394,9596.854,13772.066,7651.602,39379.834]},{"market":"spain","rule":"window_season","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87795.069,"wholesale":2914528.06,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":13.7828,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":40.0,"peakavg_window_year":25.0304,"es_contracted":[40.0,40.0,40.0,40.0,40.0,40.0],"es_energy":[6687.666,10991.644,9038.15,13309.891,8691.855,39075.862]},{"market":"spain","rule":"window_season","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87797.5,"wholesale":2843712.73,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":13.783,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0,"peakavg_window_year":22.5377,"es_contracted":[60.0,60.0,60.0,60.0,60.0,60.0],"es_energy":[6052.202,11367.796,8531.159,13232.5,9397.226,39216.615]},{"market":"spain","rule":"window_season","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87796.599,"wholesale":2820586.79,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":13.7953,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":80.0,"peakavg_window_year":27.5377,"es_contracted":[80.0,80.0,80.0,80.0,80.0,80.0],"es_energy":[5749.131,11547.65,8170.942,13352.045,9687.411,39289.421]},{"market":"spain","rule":"window_year","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"window_year","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"spain","rule":"window_year","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87681.069,"wholesale":4752382.16,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.4818,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0,"es_contracted":[15.0,15.0,15.0,15.0,15.0,15.0],"es_energy":[6281.328,9121.482,7688.62,9980.807,4818.528,49790.304]},{"market":"spain","rule":"window_year","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87702.966,"wholesale":4034964.04,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.5,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0,"es_contracted":[20.0,20.0,20.0,20.0,20.0,20.0],"es_energy":[6551.792,8893.566,8126.105,10172.405,4333.293,49625.805]},{"market":"spain","rule":"window_year","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87756.366,"wholesale":3307478.22,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":12.5218,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0,"es_contracted":[30.0,30.0,30.0,30.0,30.0,30.0],"es_energy":[6633.25,9969.732,8807.778,11612.408,6030.602,44702.596]},{"market":"spain","rule":"window_year","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87772.777,"wholesale":3101962.15,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.9386,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0,"es_contracted":[40.0,40.0,40.0,40.0,40.0,40.0],"es_energy":[6368.732,10640.885,8296.776,11965.613,7478.917,43021.853]},{"market":"spain","rule":"window_year","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87778.148,"wholesale":2995983.41,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":13.7732,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0,"es_contracted":[60.0,60.0,60.0,60.0,60.0,60.0],"es_energy":[5611.225,11206.023,7676.428,11876.376,8854.69,42553.407]},{"market":"spain","rule":"window_year","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87776.932,"wholesale":2972455.71,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":13.7953,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0,"es_contracted":[80.0,80.0,80.0,80.0,80.0,80.0],"es_energy":[5297.603,11396.401,7356.268,11945.37,9145.234,42636.055]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87680.544,"wholesale":4688087.57,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.875,"peak_window_season":15.0,"peakavg_window_season":11.25,"peak_window_year":15.0,"peakavg_window_year":15.0,"es_contracted":[10.0,10.0,10.0,15.0,15.0,15.0],"es_energy":[5035.261,8065.623,7242.441,11116.667,4477.293,51743.26]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87716.283,"wholesale":4194400.97,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.9423,"peak_window_season":20.0,"peakavg_window_season":15.0,"peak_window_year":20.0,"peakavg_window_year":20.0,"es_contracted":[10.0,10.0,10.0,20.0,20.0,20.0],"es_energy":[3728.86,6922.957,6555.747,11733.409,5400.753,53374.557]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87764.388,"wholesale":3630045.22,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":14.1824,"peak_window_season":30.0,"peakavg_window_season":15.0,"peak_window_year":30.0,"peakavg_window_year":20.0565,"es_contracted":[10.0,10.0,10.0,30.0,30.0,30.0],"es_energy":[2956.4,5571.521,5683.287,13678.219,7741.269,52133.693]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87781.087,"wholesale":3386313.11,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":13.7955,"peak_window_season":40.0,"peakavg_window_season":12.5314,"peak_window_year":40.0,"peakavg_window_year":19.9675,"es_contracted":[10.0,10.0,10.0,40.0,40.0,40.0],"es_energy":[2887.865,5478.006,5472.375,14589.773,9373.246,49979.822]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87785.447,"wholesale":3294339.4,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":14.1919,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":60.0,"peakavg_window_year":22.5377,"es_contracted":[10.0,10.0,10.0,60.0,60.0,60.0],"es_energy":[2877.063,5398.895,5422.523,14101.412,9916.909,50068.646]},{"market":"spain","rule":"spain_bands","es_class":"6.1TD","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87785.845,"wholesale":3265299.02,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":14.2015,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":80.0,"peakavg_window_year":25.0251,"es_contracted":[10.0,10.0,10.0,80.0,80.0,80.0],"es_energy":[2848.641,5358.79,5392.327,13870.756,10157.047,50158.285]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87678.607,"wholesale":4689515.28,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.875,"peak_window_season":15.0,"peakavg_window_season":11.25,"peak_window_year":15.0,"peakavg_window_year":15.0,"es_contracted":[10.0,10.0,10.0,15.0,15.0,15.0],"es_energy":[5302.751,8016.412,7267.891,11291.875,4457.548,51342.131]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87714.135,"wholesale":4192082.42,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.5215,"peak_window_season":20.0,"peakavg_window_season":15.0,"peak_window_year":20.0,"peakavg_window_year":20.0,"es_contracted":[10.0,10.0,10.0,20.0,20.0,20.0],"es_energy":[4226.602,6962.449,6597.016,12004.237,5380.929,52542.902]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87761.797,"wholesale":3629407.54,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":14.1843,"peak_window_season":30.0,"peakavg_window_season":15.0,"peak_window_year":30.0,"peakavg_window_year":20.0565,"es_contracted":[10.0,10.0,10.0,30.0,30.0,30.0],"es_energy":[3574.63,5874.456,5806.202,13899.004,7730.875,50876.63]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87779.121,"wholesale":3387499.86,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":13.7962,"peak_window_season":40.0,"peakavg_window_season":12.5314,"peak_window_year":40.0,"peakavg_window_year":19.9675,"es_contracted":[10.0,10.0,10.0,40.0,40.0,40.0],"es_energy":[3515.018,5735.617,5654.056,15090.917,9093.227,48690.285]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87782.832,"wholesale":3298991.13,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":14.1919,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":60.0,"peakavg_window_year":22.5377,"es_contracted":[10.0,10.0,10.0,60.0,60.0,60.0],"es_energy":[3485.21,5636.297,5614.06,14512.231,9677.005,48858.029]},{"market":"spain","rule":"spain_bands","es_class":"6.2TD","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87783.041,"wholesale":3272151.44,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":14.2015,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":80.0,"peakavg_window_year":25.0251,"es_contracted":[10.0,10.0,10.0,80.0,80.0,80.0],"es_energy":[3475.535,5586.667,5613.997,14191.496,10007.156,48908.19]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87677.947,"wholesale":4689791.49,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.875,"peak_window_season":15.0,"peakavg_window_season":11.25,"peak_window_year":15.0,"peakavg_window_year":15.0,"es_contracted":[10.0,10.0,10.0,15.0,15.0,15.0],"es_energy":[5357.989,8039.993,7277.808,11311.906,4457.548,51232.703]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87713.524,"wholesale":4192984.26,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.5215,"peak_window_season":20.0,"peakavg_window_season":15.0,"peak_window_year":20.0,"peakavg_window_year":20.0,"es_contracted":[10.0,10.0,10.0,20.0,20.0,20.0],"es_energy":[4297.743,7022.121,6597.802,12014.179,5380.929,52400.75]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87760.643,"wholesale":3630682.65,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":14.1843,"peak_window_season":30.0,"peakavg_window_season":15.0,"peak_window_year":30.0,"peakavg_window_year":20.0565,"es_contracted":[10.0,10.0,10.0,30.0,30.0,30.0],"es_energy":[3693.005,5984.88,5865.059,13939.03,7720.879,50557.79]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87778.402,"wholesale":3388620.26,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":13.7962,"peak_window_season":40.0,"peakavg_window_season":12.5314,"peak_window_year":40.0,"peakavg_window_year":19.9675,"es_contracted":[10.0,10.0,10.0,40.0,40.0,40.0],"es_energy":[3623.783,5796.121,5694.405,15120.5,9083.219,48460.374]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87782.046,"wholesale":3300500.46,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":13.7967,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":60.0,"peakavg_window_year":22.5377,"es_contracted":[10.0,10.0,10.0,60.0,60.0,60.0],"es_energy":[3594.664,5705.26,5644.347,14542.231,9666.997,48628.547]},{"market":"spain","rule":"spain_bands","es_class":"6.3TD","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87782.26,"wholesale":3273870.91,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":13.7964,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":80.0,"peakavg_window_year":25.0251,"es_contracted":[10.0,10.0,10.0,80.0,80.0,80.0],"es_energy":[3575.492,5655.243,5644.284,14221.496,9997.147,48688.597]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":5719208.93,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0,"es_contracted":[10.0,10.0,10.0,10.0,10.0,10.0],"es_energy":[8010.0,9920.0,8630.0,10510.0,4690.0,45840.0]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87676.992,"wholesale":4691240.66,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.875,"peak_window_season":15.0,"peakavg_window_season":11.25,"peak_window_year":15.0,"peakavg_window_year":15.0,"es_contracted":[10.0,10.0,10.0,15.0,15.0,15.0],"es_energy":[5491.65,8045.001,7302.835,11341.998,4452.421,51043.087]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87712.528,"wholesale":4194892.33,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.5215,"peak_window_season":20.0,"peakavg_window_season":15.0,"peak_window_year":20.0,"peakavg_window_year":20.0,"es_contracted":[10.0,10.0,10.0,20.0,20.0,20.0],"es_energy":[4468.159,7051.099,6618.595,12064.034,5380.929,52129.712]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87759.622,"wholesale":3631570.59,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":14.1843,"peak_window_season":30.0,"peakavg_window_season":15.0,"peak_window_year":30.0,"peakavg_window_year":20.0565,"es_contracted":[10.0,10.0,10.0,30.0,30.0,30.0],"es_energy":[3934.796,6072.464,5955.152,13949.515,7720.879,50126.816]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87777.233,"wholesale":3391053.44,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":13.7868,"peak_window_season":40.0,"peakavg_window_season":12.5314,"peak_window_year":40.0,"peakavg_window_year":19.9675,"es_contracted":[10.0,10.0,10.0,40.0,40.0,40.0],"es_energy":[3806.343,5911.705,5734.564,15212.314,9002.221,48110.086]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87781.148,"wholesale":3301824.34,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":13.7967,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":60.0,"peakavg_window_year":22.5377,"es_contracted":[10.0,10.0,10.0,60.0,60.0,60.0],"es_energy":[3777.099,5801.378,5675.209,14612.533,9607.122,48307.806]},{"market":"spain","rule":"spain_bands","es_class":"6.4TD","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87781.32,"wholesale":3275730.53,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":13.7964,"peak_window_season":10.0502,"peakavg_window_season":10.0,"peak_window_year":80.0,"peakavg_window_year":25.0251,"es_contracted":[10.0,10.0,10.0,80.0,80.0,80.0],"es_energy":[3767.424,5761.604,5674.61,14351.894,9877.219,48348.569]},{"market":"miso","rule":"anytime","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":3605679.1,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"miso","rule":"anytime","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":3605679.1,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"miso","rule":"anytime","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87707.856,"wholesale":2858220.28,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":13.125,"peak_window_season":15.0,"peakavg_window_season":15.0,"peak_window_year":15.0,"peakavg_window_year":15.0},{"market":"miso","rule":"anytime","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87756.438,"wholesale":2608330.41,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":14.1902,"peak_window_season":20.0,"peakavg_window_season":12.6686,"peak_window_year":20.0,"peakavg_window_year":12.6686},{"market":"miso","rule":"anytime","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87802.771,"wholesale":2402734.08,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":15.0257,"peak_window_season":30.0,"peakavg_window_season":12.5084,"peak_window_year":30.0,"peakavg_window_year":12.5084},{"market":"miso","rule":"anytime","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87815.227,"wholesale":2336205.9,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":15.0255,"peak_window_season":40.0,"peakavg_window_season":10.0063,"peak_window_year":40.0,"peakavg_window_year":10.0063},{"market":"miso","rule":"anytime","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87821.151,"wholesale":2296091.0,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":15.0253,"peak_window_season":60.0,"peakavg_window_season":15.0,"peak_window_year":60.0,"peakavg_window_year":15.0},{"market":"miso","rule":"anytime","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87822.615,"wholesale":2280920.92,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":15.03,"peak_window_season":60.2384,"peakavg_window_season":15.0596,"peak_window_year":60.2384,"peakavg_window_year":15.0596},{"market":"miso","rule":"window_season","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":3605679.1,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"miso","rule":"window_season","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"miso","rule":"window_season","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87708.399,"wholesale":2878015.91,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":12.2917,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":15.0,"peakavg_window_year":8.7936},{"market":"miso","rule":"window_season","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87756.702,"wholesale":2615562.5,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":13.7692,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":20.0,"peakavg_window_year":10.0},{"market":"miso","rule":"window_season","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87803.222,"wholesale":2405587.01,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":15.0257,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":30.0,"peakavg_window_year":10.0439},{"market":"miso","rule":"window_season","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87815.757,"wholesale":2338030.99,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":15.0255,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":30.1006,"peakavg_window_year":7.5252},{"market":"miso","rule":"window_season","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87821.451,"wholesale":2297392.23,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":15.0253,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":10.0838,"peakavg_window_year":5.0251},{"market":"miso","rule":"window_season","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87822.988,"wholesale":2282055.78,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":15.03,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":10.0502,"peakavg_window_year":5.0251},{"market":"miso","rule":"window_year","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":3605679.1,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"miso","rule":"window_year","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"miso","rule":"window_year","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87709.07,"wholesale":2883295.36,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":12.1001,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"miso","rule":"window_year","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87756.847,"wholesale":2616970.64,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":13.7692,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"miso","rule":"window_year","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87803.008,"wholesale":2406495.88,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":15.0257,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"miso","rule":"window_year","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87815.565,"wholesale":2338507.91,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":15.0255,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"miso","rule":"window_year","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87821.295,"wholesale":2297649.05,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":15.0253,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"miso","rule":"window_year","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87822.853,"wholesale":2282282.6,"peak_any":80.0,"monthly_peaks":[80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0,80.0],"peak_anytime":80.0,"peakavg_anytime":15.03,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"sa","rule":"anytime","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":7598220.08,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"sa","rule":"anytime","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":7598220.08,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"sa","rule":"anytime","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87646.04,"wholesale":4240428.57,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":12.0886,"peak_window_season":15.0,"peakavg_window_season":15.0,"peak_window_year":15.0,"peakavg_window_year":15.0},{"market":"sa","rule":"anytime","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87665.562,"wholesale":3156207.26,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.0931,"peak_window_season":20.0,"peakavg_window_season":20.0,"peak_window_year":20.0,"peakavg_window_year":20.0},{"market":"sa","rule":"anytime","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87675.366,"wholesale":2644475.97,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":12.0956,"peak_window_season":30.0,"peakavg_window_season":20.0325,"peak_window_year":30.0,"peakavg_window_year":20.0325},{"market":"sa","rule":"anytime","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87677.792,"wholesale":2494712.72,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0964,"peak_window_season":40.0,"peakavg_window_season":20.0262,"peak_window_year":40.0,"peakavg_window_year":20.0262},{"market":"sa","rule":"anytime","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87682.658,"wholesale":2318891.42,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0973,"peak_window_season":60.0,"peakavg_window_season":20.0262,"peak_window_year":60.0,"peakavg_window_year":20.0262},{"market":"sa","rule":"anytime","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87682.679,"wholesale":2318265.24,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0999,"peak_window_season":60.0629,"peakavg_window_season":20.0262,"peak_window_year":60.0629,"peakavg_window_year":20.0262},{"market":"sa","rule":"window_season","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":7598220.08,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"sa","rule":"window_season","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"sa","rule":"window_season","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"sa","rule":"window_season","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"sa","rule":"window_season","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"sa","rule":"window_season","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87673.596,"wholesale":2685725.04,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0964,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":40.0,"peakavg_window_year":17.523},{"market":"sa","rule":"window_season","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87678.691,"wholesale":2496911.19,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0977,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0,"peakavg_window_year":20.0262},{"market":"sa","rule":"window_season","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87678.713,"wholesale":2496217.59,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.1003,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0629,"peakavg_window_year":20.0262},{"market":"sa","rule":"window_year","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":7598220.08,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"sa","rule":"window_year","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"sa","rule":"window_year","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"sa","rule":"window_year","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"sa","rule":"window_year","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"sa","rule":"window_year","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87672.15,"wholesale":2767111.3,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0964,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"sa","rule":"window_year","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87677.52,"wholesale":2570443.06,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0977,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"sa","rule":"window_year","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87677.544,"wholesale":2569713.66,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.1003,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"nsw","rule":"anytime","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":9051565.84,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"nsw","rule":"anytime","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":9051565.84,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"nsw","rule":"anytime","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87641.555,"wholesale":5586012.8,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.459,"peak_window_season":15.0,"peakavg_window_season":15.0,"peak_window_year":15.0,"peakavg_window_year":15.0},{"market":"nsw","rule":"anytime","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87662.073,"wholesale":4718677.88,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.0917,"peak_window_season":20.0,"peakavg_window_season":15.0366,"peak_window_year":20.0,"peakavg_window_year":15.0366},{"market":"nsw","rule":"anytime","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87672.179,"wholesale":4338756.62,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":12.0961,"peak_window_season":30.0,"peakavg_window_season":20.0199,"peak_window_year":30.0,"peakavg_window_year":20.0199},{"market":"nsw","rule":"anytime","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87674.427,"wholesale":4245961.21,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0957,"peak_window_season":40.0,"peakavg_window_season":20.023,"peak_window_year":40.0,"peakavg_window_year":20.023},{"market":"nsw","rule":"anytime","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87679.526,"wholesale":4122643.79,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0966,"peak_window_season":60.0,"peakavg_window_season":20.0262,"peak_window_year":60.0,"peakavg_window_year":20.0262},{"market":"nsw","rule":"anytime","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87679.548,"wholesale":4122228.46,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0966,"peak_window_season":60.0629,"peakavg_window_season":20.0262,"peak_window_year":60.0629,"peakavg_window_year":20.0262},{"market":"nsw","rule":"window_season","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":9051565.84,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"nsw","rule":"window_season","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_season","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_season","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_season","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_season","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87670.86,"wholesale":4388510.14,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0963,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":40.0,"peakavg_window_year":15.0094},{"market":"nsw","rule":"window_season","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87676.059,"wholesale":4230843.87,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0973,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0,"peakavg_window_year":17.5209},{"market":"nsw","rule":"window_season","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87676.081,"wholesale":4230392.76,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0973,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0629,"peakavg_window_year":17.521},{"market":"nsw","rule":"window_year","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":9051565.84,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"nsw","rule":"window_year","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_year","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_year","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_year","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"nsw","rule":"window_year","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87669.854,"wholesale":4420016.96,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0963,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"nsw","rule":"window_year","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87675.111,"wholesale":4261379.7,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0973,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"nsw","rule":"window_year","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87675.134,"wholesale":4260925.4,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0973,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"qld","rule":"anytime","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":7436302.87,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"qld","rule":"anytime","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":7436302.87,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"qld","rule":"anytime","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87643.092,"wholesale":4648716.79,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.0464,"peak_window_season":15.0,"peakavg_window_season":15.0,"peak_window_year":15.0,"peakavg_window_year":15.0},{"market":"qld","rule":"anytime","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87664.015,"wholesale":3851643.43,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":11.674,"peak_window_season":20.0,"peakavg_window_season":15.0,"peak_window_year":20.0,"peakavg_window_year":15.0126},{"market":"qld","rule":"anytime","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87672.883,"wholesale":3587824.84,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":12.0957,"peak_window_season":30.0,"peakavg_window_season":12.5367,"peak_window_year":30.0,"peakavg_window_year":15.0168},{"market":"qld","rule":"anytime","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87674.844,"wholesale":3524424.23,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.097,"peak_window_season":40.0,"peakavg_window_season":12.5241,"peak_window_year":40.0,"peakavg_window_year":12.5241},{"market":"qld","rule":"anytime","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87679.349,"wholesale":3441690.04,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0977,"peak_window_season":60.0,"peakavg_window_season":15.0,"peak_window_year":60.0,"peakavg_window_year":15.0},{"market":"qld","rule":"anytime","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87679.369,"wholesale":3441407.8,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0977,"peak_window_season":60.0629,"peakavg_window_season":15.0157,"peak_window_year":60.0629,"peakavg_window_year":15.0157},{"market":"qld","rule":"window_season","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":7436302.87,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"qld","rule":"window_season","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"qld","rule":"window_season","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"qld","rule":"window_season","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"qld","rule":"window_season","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"qld","rule":"window_season","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87673.75,"wholesale":3545176.9,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.097,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":40.0,"peakavg_window_year":12.521},{"market":"qld","rule":"window_season","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87678.351,"wholesale":3460925.92,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0977,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0,"peakavg_window_year":15.0},{"market":"qld","rule":"window_season","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87678.371,"wholesale":3460641.31,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0977,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0629,"peakavg_window_year":15.0157},{"market":"qld","rule":"window_year","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":7436302.87,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"qld","rule":"window_year","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"qld","rule":"window_year","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"qld","rule":"window_year","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"qld","rule":"window_year","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"qld","rule":"window_year","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87673.428,"wholesale":3559135.03,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.097,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"qld","rule":"window_year","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87677.999,"wholesale":3474594.5,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0977,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"qld","rule":"window_year","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87678.019,"wholesale":3474306.06,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0977,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"vic","rule":"anytime","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":6823889.05,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"vic","rule":"anytime","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":6823889.05,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"vic","rule":"anytime","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87644.356,"wholesale":4109527.88,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.8808,"peak_window_season":15.0,"peakavg_window_season":15.0,"peak_window_year":15.0,"peakavg_window_year":15.0},{"market":"vic","rule":"anytime","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87664.599,"wholesale":3239860.8,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.0929,"peak_window_season":20.0,"peakavg_window_season":20.0,"peak_window_year":20.0,"peakavg_window_year":20.0},{"market":"vic","rule":"anytime","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87673.62,"wholesale":2894431.75,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":12.0996,"peak_window_season":30.0,"peakavg_window_season":22.522,"peak_window_year":30.0,"peakavg_window_year":22.522},{"market":"vic","rule":"anytime","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87675.498,"wholesale":2804341.89,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.1001,"peak_window_season":40.0,"peakavg_window_season":22.5231,"peak_window_year":40.0,"peakavg_window_year":22.5231},{"market":"vic","rule":"anytime","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87680.048,"wholesale":2682755.65,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.1001,"peak_window_season":60.0,"peakavg_window_season":22.5314,"peak_window_year":60.0,"peakavg_window_year":22.5314},{"market":"vic","rule":"anytime","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87680.069,"wholesale":2682329.32,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.1001,"peak_window_season":60.0629,"peakavg_window_season":22.5314,"peak_window_year":60.0629,"peakavg_window_year":22.5314},{"market":"vic","rule":"window_season","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":6823889.05,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"vic","rule":"window_season","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"vic","rule":"window_season","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"vic","rule":"window_season","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"vic","rule":"window_season","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"vic","rule":"window_season","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87670.563,"wholesale":2985797.57,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.1001,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":40.0,"peakavg_window_year":17.5147},{"market":"vic","rule":"window_season","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87675.51,"wholesale":2851420.23,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.1001,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0,"peakavg_window_year":15.0157},{"market":"vic","rule":"window_season","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87675.533,"wholesale":2850925.32,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.1001,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0629,"peakavg_window_year":15.0157},{"market":"vic","rule":"window_year","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":6823889.05,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"vic","rule":"window_year","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"vic","rule":"window_year","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"vic","rule":"window_year","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"vic","rule":"window_year","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"vic","rule":"window_year","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87669.1,"wholesale":3035178.33,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0984,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"vic","rule":"window_year","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87674.163,"wholesale":2898107.41,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0987,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"vic","rule":"window_year","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87674.187,"wholesale":2897590.21,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0987,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"tas","rule":"anytime","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":8410969.61,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"tas","rule":"anytime","charge_rate":1.0,"flexible":true,"feasible":true,"mwh":87600.0,"wholesale":8410969.61,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"tas","rule":"anytime","charge_rate":1.5,"flexible":true,"feasible":true,"mwh":87641.874,"wholesale":7007511.77,"peak_any":15.0,"monthly_peaks":[15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0,15.0],"peak_anytime":15.0,"peakavg_anytime":11.6674,"peak_window_season":15.0,"peakavg_window_season":15.0,"peak_window_year":15.0,"peakavg_window_year":15.0},{"market":"tas","rule":"anytime","charge_rate":2.0,"flexible":true,"feasible":true,"mwh":87660.767,"wholesale":6539174.29,"peak_any":20.0,"monthly_peaks":[20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0,20.0],"peak_anytime":20.0,"peakavg_anytime":12.095,"peak_window_season":20.0,"peakavg_window_season":17.5126,"peak_window_year":20.0,"peakavg_window_year":17.5126},{"market":"tas","rule":"anytime","charge_rate":3.0,"flexible":true,"feasible":true,"mwh":87674.319,"wholesale":6239192.18,"peak_any":30.0,"monthly_peaks":[30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0,30.0],"peak_anytime":30.0,"peakavg_anytime":12.0985,"peak_window_season":30.0,"peakavg_window_season":17.522,"peak_window_year":30.0,"peakavg_window_year":17.522},{"market":"tas","rule":"anytime","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87677.436,"wholesale":6146383.9,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0989,"peak_window_season":40.0,"peakavg_window_season":20.0,"peak_window_year":40.0,"peakavg_window_year":20.0},{"market":"tas","rule":"anytime","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87685.047,"wholesale":6015362.32,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0992,"peak_window_season":60.0,"peakavg_window_season":20.0251,"peak_window_year":60.0,"peakavg_window_year":20.0251},{"market":"tas","rule":"anytime","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87685.079,"wholesale":6014901.83,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0992,"peak_window_season":60.0629,"peakavg_window_season":20.0251,"peak_window_year":60.0629,"peakavg_window_year":20.0251},{"market":"tas","rule":"window_season","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":8410969.61,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"tas","rule":"window_season","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"tas","rule":"window_season","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"tas","rule":"window_season","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"tas","rule":"window_season","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"tas","rule":"window_season","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87674.825,"wholesale":6205949.05,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0989,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":40.0,"peakavg_window_year":17.521},{"market":"tas","rule":"window_season","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87682.522,"wholesale":6069005.11,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0992,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0,"peakavg_window_year":17.5209},{"market":"tas","rule":"window_season","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87682.555,"wholesale":6068510.78,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0992,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":60.0629,"peakavg_window_year":17.521},{"market":"tas","rule":"window_year","charge_rate":null,"flexible":false,"feasible":true,"mwh":87600.0,"wholesale":8410969.61,"peak_any":10.0,"monthly_peaks":[10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0,10.0],"peak_anytime":10.0,"peakavg_anytime":10.0,"peak_window_season":10.0,"peakavg_window_season":10.0,"peak_window_year":10.0,"peakavg_window_year":10.0},{"market":"tas","rule":"window_year","charge_rate":1.0,"flexible":true,"feasible":false},{"market":"tas","rule":"window_year","charge_rate":1.5,"flexible":true,"feasible":false},{"market":"tas","rule":"window_year","charge_rate":2.0,"flexible":true,"feasible":false},{"market":"tas","rule":"window_year","charge_rate":3.0,"flexible":true,"feasible":false},{"market":"tas","rule":"window_year","charge_rate":4.0,"flexible":true,"feasible":true,"mwh":87674.054,"wholesale":6247928.8,"peak_any":40.0,"monthly_peaks":[40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0,40.0],"peak_anytime":40.0,"peakavg_anytime":12.0966,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"tas","rule":"window_year","charge_rate":6.0,"flexible":true,"feasible":true,"mwh":87681.504,"wholesale":6104807.91,"peak_any":60.0,"monthly_peaks":[60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0,60.0],"peak_anytime":60.0,"peakavg_anytime":12.0983,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0},{"market":"tas","rule":"window_year","charge_rate":8.0,"flexible":true,"feasible":true,"mwh":87681.537,"wholesale":6104282.72,"peak_any":60.0629,"monthly_peaks":[60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629,60.0629],"peak_anytime":60.0629,"peakavg_anytime":12.0984,"peak_window_season":0.0,"peakavg_window_season":0.0,"peak_window_year":0.0,"peakavg_window_year":0.0}],"weeks":{"miso":{"anytime":{"price":[27.27,25.37,24.69,26.0,26.87,40.17,53.49,49.43,47.13,43.14,45.68,41.34,43.39,41.82,47.34,72.21,117.09,109.05,96.77,88.46,74.79,61.3,50.83,51.12,46.09,40.99,36.5,34.71,34.49,38.31,55.71,45.1,36.76,34.88,33.42,30.87,26.48,25.0,25.32,35.94,44.56,40.42,42.11,39.71,37.96,34.54,32.93,32.43,26.06,28.02,32.76,33.58,38.13,52.32,71.36,54.99,40.42,35.4,33.37,30.8,29.81,28.93,28.22,33.44,38.55,35.42,38.27,36.02,32.7,29.31,25.21,16.57,14.78,16.14,8.06,8.96,12.98,30.93,38.12,42.8,41.72,35.24,36.84,36.64,35.75,36.62,37.14,38.95,48.22,50.43,45.47,46.48,44.3,39.03,34.98,37.78,29.8,31.71,27.86,28.43,36.65,42.03,61.88,64.48,53.34,42.04,38.89,37.32,34.42,34.57,35.49,48.85,65.91,55.01,50.32,40.37,38.18,34.38,30.42,35.38,31.05,30.75,27.91,27.02,27.08,28.32,30.01,35.37,33.18,32.27,33.28,30.12,28.04,26.1,27.5,34.36,55.91,40.4,36.06,38.69,37.41,40.32,42.39,33.1,31.06,34.3,34.32,31.58,34.23,38.76,46.38,43.74,35.29,29.49,31.4,33.53,28.95,26.97,28.49,41.6,59.58,57.04,49.06,50.14,44.98,36.44,31.87,32.85],"draw":[10.0,40.0,40.0,40.0,40.0,10.13,0.0,0.0,0.0,0.0,0.0,40.0,0.0,30.59,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.0,30.07,40.0,0.0,0.0,0.0,0.0,0.0,10.0,10.23,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,30.23,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.1,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,30.29,10.06,40.0,40.0,40.0,19.77,0.0,0.0,0.0,40.0,0.0,0.0,0.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.0,0.0,40.0,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,10.52,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,40.0,0.0,0.0,0.03,30.18,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,10.34,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,0.0,0.0,30.11,0.0,0.0,0.0,0.0,0.0,30.24,0.0,0.0,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"soc":[0.0,30.0,59.99,89.96,119.92,120.0,109.95,99.9,89.86,79.82,69.79,99.76,89.72,110.28,100.23,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,20.07,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.23,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.1,30.1,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,20.29,20.34,50.33,80.31,110.28,120.0,109.95,99.9,89.86,119.82,109.77,99.73,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,10.0,0.0,30.0,59.99,89.96,119.92,109.87,99.83,89.79,79.75,69.72,59.69,49.66,39.64,69.62,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,30.0,19.99,9.98,0.0,20.18,50.17,80.15,70.12,60.09,50.06,40.04,30.03,20.01,20.34,50.33,80.31,110.28,100.23,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,50.0,39.98,29.97,50.06,40.04,30.03,20.01,10.0,0.0,20.24,10.23,0.23,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0],"watched":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"start":"2025-12-15 00:00"},"window_season":{"price":[27.27,25.37,24.69,26.0,26.87,40.17,53.49,49.43,47.13,43.14,45.68,41.34,43.39,41.82,47.34,72.21,117.09,109.05,96.77,88.46,74.79,61.3,50.83,51.12,46.09,40.99,36.5,34.71,34.49,38.31,55.71,45.1,36.76,34.88,33.42,30.87,26.48,25.0,25.32,35.94,44.56,40.42,42.11,39.71,37.96,34.54,32.93,32.43,26.06,28.02,32.76,33.58,38.13,52.32,71.36,54.99,40.42,35.4,33.37,30.8,29.81,28.93,28.22,33.44,38.55,35.42,38.27,36.02,32.7,29.31,25.21,16.57,14.78,16.14,8.06,8.96,12.98,30.93,38.12,42.8,41.72,35.24,36.84,36.64,35.75,36.62,37.14,38.95,48.22,50.43,45.47,46.48,44.3,39.03,34.98,37.78,29.8,31.71,27.86,28.43,36.65,42.03,61.88,64.48,53.34,42.04,38.89,37.32,34.42,34.57,35.49,48.85,65.91,55.01,50.32,40.37,38.18,34.38,30.42,35.38,31.05,30.75,27.91,27.02,27.08,28.32,30.01,35.37,33.18,32.27,33.28,30.12,28.04,26.1,27.5,34.36,55.91,40.4,36.06,38.69,37.41,40.32,42.39,33.1,31.06,34.3,34.32,31.58,34.23,38.76,46.38,43.74,35.29,29.49,31.4,33.53,28.95,26.97,28.49,41.6,59.58,57.04,49.06,50.14,44.98,36.44,31.87,32.85],"draw":[10.0,40.0,40.0,40.0,40.0,10.13,0.0,0.0,0.0,0.0,0.0,40.0,0.0,30.59,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.0,30.07,40.0,0.0,0.0,0.0,0.0,0.0,10.0,10.23,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,30.23,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.1,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,30.29,10.06,40.0,40.0,40.0,19.77,0.0,0.0,0.0,40.0,0.0,0.0,0.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.0,0.0,40.0,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,10.52,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,40.0,0.0,0.0,0.03,30.18,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,10.34,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,0.0,0.0,30.11,0.0,0.0,0.0,0.0,0.0,30.24,0.0,0.0,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"soc":[0.0,30.0,59.99,89.96,119.92,120.0,109.95,99.9,89.86,79.82,69.79,99.76,89.72,110.28,100.23,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,20.07,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.23,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.1,30.1,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,20.29,20.34,50.33,80.31,110.28,120.0,109.95,99.9,89.86,119.82,109.77,99.73,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,10.0,0.0,30.0,59.99,89.96,119.92,109.87,99.83,89.79,79.75,69.72,59.69,49.66,39.64,69.62,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,30.0,19.99,9.98,0.0,20.18,50.17,80.15,70.12,60.09,50.06,40.04,30.03,20.01,20.34,50.33,80.31,110.28,100.23,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,50.0,39.98,29.97,50.06,40.04,30.03,20.01,10.0,0.0,20.24,10.23,0.23,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0],"watched":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false],"start":"2025-12-15 00:00"},"window_year":{"price":[27.27,25.37,24.69,26.0,26.87,40.17,53.49,49.43,47.13,43.14,45.68,41.34,43.39,41.82,47.34,72.21,117.09,109.05,96.77,88.46,74.79,61.3,50.83,51.12,46.09,40.99,36.5,34.71,34.49,38.31,55.71,45.1,36.76,34.88,33.42,30.87,26.48,25.0,25.32,35.94,44.56,40.42,42.11,39.71,37.96,34.54,32.93,32.43,26.06,28.02,32.76,33.58,38.13,52.32,71.36,54.99,40.42,35.4,33.37,30.8,29.81,28.93,28.22,33.44,38.55,35.42,38.27,36.02,32.7,29.31,25.21,16.57,14.78,16.14,8.06,8.96,12.98,30.93,38.12,42.8,41.72,35.24,36.84,36.64,35.75,36.62,37.14,38.95,48.22,50.43,45.47,46.48,44.3,39.03,34.98,37.78,29.8,31.71,27.86,28.43,36.65,42.03,61.88,64.48,53.34,42.04,38.89,37.32,34.42,34.57,35.49,48.85,65.91,55.01,50.32,40.37,38.18,34.38,30.42,35.38,31.05,30.75,27.91,27.02,27.08,28.32,30.01,35.37,33.18,32.27,33.28,30.12,28.04,26.1,27.5,34.36,55.91,40.4,36.06,38.69,37.41,40.32,42.39,33.1,31.06,34.3,34.32,31.58,34.23,38.76,46.38,43.74,35.29,29.49,31.4,33.53,28.95,26.97,28.49,41.6,59.58,57.04,49.06,50.14,44.98,36.44,31.87,32.85],"draw":[10.0,40.0,40.0,40.0,40.0,10.13,0.0,0.0,0.0,0.0,0.0,40.0,0.0,30.59,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.0,30.07,40.0,0.0,0.0,0.0,0.0,0.0,10.0,10.23,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,30.23,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.1,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,30.29,10.06,40.0,40.0,40.0,19.77,0.0,0.0,0.0,40.0,0.0,0.0,0.5,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,20.0,0.0,40.0,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,10.52,0.0,0.0,0.0,0.0,0.0,0.0,0.0,10.0,40.0,0.0,0.0,0.03,30.18,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,10.34,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,40.0,0.0,0.0,30.11,0.0,0.0,0.0,0.0,0.0,30.24,0.0,0.0,40.0,40.0,40.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0],"soc":[0.0,30.0,59.99,89.96,119.92,120.0,109.95,99.9,89.86,79.82,69.79,99.76,89.72,110.28,100.23,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,20.07,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.23,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.1,30.1,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,20.29,20.34,50.33,80.31,110.28,120.0,109.95,99.9,89.86,119.82,109.77,99.73,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,10.0,0.0,30.0,59.99,89.96,119.92,109.87,99.83,89.79,79.75,69.72,59.69,49.66,39.64,69.62,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0,0.0,30.0,19.99,9.98,0.0,20.18,50.17,80.15,70.12,60.09,50.06,40.04,30.03,20.01,20.34,50.33,80.31,110.28,100.23,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,50.0,39.98,29.97,50.06,40.04,30.03,20.01,10.0,0.0,20.24,10.23,0.23,30.23,60.21,90.19,80.15,70.12,60.09,50.06,40.04,30.03,20.01,10.0,0.0],"watched":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false],"start":"2025-12-15 00:00"}},"sa":{"anytime":{"price":[-7.27,-5.54,-5.62,-7.26,-4.84,-2.51,-0.01,-7.26,-7.67,-13.02,-16.91,-14.87,-18.73,-14.59,-17.85,-62.1,-39.58,-44.55,-12.76,52.71,95.75,103.99,105.92,99.17,114.76,121.4,134.84,139.68,155.19,147.8,146.32,215.36,12.76,0.65,-4.7,-8.15,-7.93,-7.5,-9.4,-11.46,-10.95,-7.66,80.93,154.96,221.38,183.13,158.19,137.63,159.15,160.16,167.79,216.48,201.05,116.1,4.27,-7.92,-12.9,-26.98,-28.53,-28.18,-26.97,-30.88,-33.65,-21.17,-10.31,7.34,96.16,137.06,139.45,161.19,150.0,131.32,85.67,7.96,-7.74,-9.48,-8.14,-6.83,-10.25,-9.36,-8.56,-11.65,-12.45,-13.26,-10.57,-8.71,-6.31,-4.96,-12.85,8.6,103.42,138.01,139.3,129.14,111.34,133.27,156.1,151.86,155.1,168.42,148.61,94.97,62.24,48.52,9.43,-6.84,-11.32,-15.43,-14.49,-7.67,-2.33,19.55,44.45,120.12,143.15,123.6,86.02,103.15,142.56,168.41,131.61,83.46,82.91,63.02,54.25,78.67,9.32,32.55,94.64,-1.19,-9.1,-7.48,-8.88,-12.87,-12.91,-27.45,-20.31,-8.74,-19.67,-11.45,2.71,7.66,9.51,13.1,13.85,17.05,18.73,16.48,24.07,38.69,24.66,-14.95,-110.95,-151.67,-126.13,-71.93,-92.72,-106.25,-81.82,-63.13,-147.78,-44.56,75.75,103.01,134.76,129.78,130.73,133.77],"draw":[40.0,0.0,0.0,30.05,0.0,0.0,0.0,10.0,10.0,10.0,20.0,0.0,30.01,0.0,0.0,40.0,0.0,40.0,10.1,10.02,10.02,0.0,0.0,30.05,10.02,10.02,10.02,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,30.01,0.0,0.0,10.0,40.0,30.08,10.02,10.02,0.0,0.0,0.0,0.04,40.0,10.02,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,30.01,0.0,0.0,20.05,40.0,20.04,10.02,10.02,10.02,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,30.01,0.0,0.0,30.01,0.0,0.0,10.0,20.05,40.0,0.0,0.0,0.03,10.02,40.0,20.04,10.02,0.0,0.0,0.0,40.0,10.08,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,10.0,40.0,30.08,10.02,10.02,10.02,10.02,0.0,0.0,0.0,30.04,0.0,0.0,0.0,0.0,10.0,10.0,10.0,20.0,0.0,30.01,0.0,0.0,10.0,30.01,0.0,0.0,10.0,10.0,40.0,30.08,0.0,20.04,10.02,10.02,10.02,10.02,10.02,10.02,0.0,0.0,10.01,0.0,0.0,0.0,10.0,10.0,40.0,30.08,0.0,0.0,0.0,0.03,10.02,40.0,20.04,10.02,10.02,0.0,20.04,10.02,10.02],"soc":[30.0,19.99,9.98,30.03,20.01,10.0,0.0,0.0,0.0,0.0,10.0,0.0,20.01,10.0,0.0,30.0,19.99,49.98,50.06,50.06,50.06,40.04,30.03,50.06,50.06,50.06,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,0.0,30.0,50.06,50.06,50.06,40.04,30.03,20.01,10.05,40.04,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,10.05,40.04,50.06,50.06,50.06,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,20.01,10.0,0.0,0.0,10.05,40.04,30.03,20.01,10.03,10.05,40.04,50.06,50.06,40.04,30.03,20.01,50.0,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,30.0,50.06,50.06,50.06,50.06,50.06,40.04,30.03,20.01,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,10.0,0.0,20.01,10.0,0.0,0.0,20.01,10.0,0.0,0.0,0.0,30.0,50.06,40.04,50.06,50.06,50.06,50.06,50.06,50.06,50.06,40.04,30.03,30.03,20.01,10.0,0.0,0.0,0.0,30.0,50.06,40.04,30.03,20.01,10.03,10.05,40.04,50.06,50.06,50.06,40.04,50.06,50.06,50.06],"watched":[true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true,true],"start":"2025-12-01 00:00"},"window_season":{"price":[-7.27,-5.54,-5.62,-7.26,-4.84,-2.51,-0.01,-7.26,-7.67,-13.02,-16.91,-14.87,-18.73,-14.59,-17.85,-62.1,-39.58,-44.55,-12.76,52.71,95.75,103.99,105.92,99.17,114.76,121.4,134.84,139.68,155.19,147.8,146.32,215.36,12.76,0.65,-4.7,-8.15,-7.93,-7.5,-9.4,-11.46,-10.95,-7.66,80.93,154.96,221.38,183.13,158.19,137.63,159.15,160.16,167.79,216.48,201.05,116.1,4.27,-7.92,-12.9,-26.98,-28.53,-28.18,-26.97,-30.88,-33.65,-21.17,-10.31,7.34,96.16,137.06,139.45,161.19,150.0,131.32,85.67,7.96,-7.74,-9.48,-8.14,-6.83,-10.25,-9.36,-8.56,-11.65,-12.45,-13.26,-10.57,-8.71,-6.31,-4.96,-12.85,8.6,103.42,138.01,139.3,129.14,111.34,133.27,156.1,151.86,155.1,168.42,148.61,94.97,62.24,48.52,9.43,-6.84,-11.32,-15.43,-14.49,-7.67,-2.33,19.55,44.45,120.12,143.15,123.6,86.02,103.15,142.56,168.41,131.61,83.46,82.91,63.02,54.25,78.67,9.32,32.55,94.64,-1.19,-9.1,-7.48,-8.88,-12.87,-12.91,-27.45,-20.31,-8.74,-19.67,-11.45,2.71,7.66,9.51,13.1,13.85,17.05,18.73,16.48,24.07,38.69,24.66,-14.95,-110.95,-151.67,-126.13,-71.93,-92.72,-106.25,-81.82,-63.13,-147.78,-44.56,75.75,103.01,134.76,129.78,130.73,133.77],"draw":[40.0,0.0,0.0,30.05,0.0,0.0,0.0,10.0,10.0,10.0,20.0,0.0,30.01,0.0,0.0,40.0,30.08,0.0,0.0,0.0,0.0,10.03,10.02,40.0,20.04,10.02,10.02,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,30.01,0.0,0.0,10.0,40.0,30.08,0.0,0.0,0.0,0.0,0.0,20.05,40.0,10.02,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,30.01,0.0,0.0,20.05,40.0,20.04,10.02,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,30.01,0.0,0.0,30.01,0.0,0.0,10.0,20.05,40.0,0.0,0.0,0.03,10.02,40.0,0.0,0.0,0.0,0.0,20.05,40.0,20.04,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,10.0,40.0,30.08,10.02,10.02,10.02,10.02,0.0,0.0,0.0,0.0,30.03,0.0,0.0,0.0,10.0,10.0,10.0,20.0,0.0,30.01,0.0,0.0,10.0,30.01,0.0,0.0,10.0,10.0,40.0,30.08,0.0,0.0,0.0,0.0,40.0,20.08,10.02,10.02,0.0,0.0,10.01,0.0,0.0,0.0,10.0,10.0,40.0,30.08,0.0,0.0,0.0,0.03,10.02,40.0,0.0,0.0,0.0,0.0,40.0,30.08,10.02],"soc":[30.0,19.99,9.98,30.03,20.01,10.0,0.0,0.0,0.0,0.0,10.0,0.0,20.01,10.0,0.0,30.0,50.06,40.04,30.03,20.01,10.0,10.03,10.05,40.04,50.06,50.06,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,0.0,30.0,50.06,40.04,30.03,20.01,10.0,0.0,10.05,40.04,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,10.05,40.04,50.06,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,20.01,10.0,0.0,0.0,10.05,40.04,30.03,20.01,10.03,10.05,40.04,30.03,20.01,10.0,0.0,10.05,40.04,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,30.0,50.06,50.06,50.06,50.06,50.06,40.04,30.03,20.01,10.0,30.03,20.01,10.0,0.0,0.0,0.0,0.0,10.0,0.0,20.01,10.0,0.0,0.0,20.01,10.0,0.0,0.0,0.0,30.0,50.06,40.04,30.03,20.01,10.0,40.0,50.06,50.06,50.06,40.04,30.03,30.03,20.01,10.0,0.0,0.0,0.0,30.0,50.06,40.04,30.03,20.01,10.03,10.05,40.04,30.03,20.01,10.0,0.0,30.0,50.06,50.06],"watched":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false],"start":"2025-12-01 00:00"},"window_year":{"price":[-7.27,-5.54,-5.62,-7.26,-4.84,-2.51,-0.01,-7.26,-7.67,-13.02,-16.91,-14.87,-18.73,-14.59,-17.85,-62.1,-39.58,-44.55,-12.76,52.71,95.75,103.99,105.92,99.17,114.76,121.4,134.84,139.68,155.19,147.8,146.32,215.36,12.76,0.65,-4.7,-8.15,-7.93,-7.5,-9.4,-11.46,-10.95,-7.66,80.93,154.96,221.38,183.13,158.19,137.63,159.15,160.16,167.79,216.48,201.05,116.1,4.27,-7.92,-12.9,-26.98,-28.53,-28.18,-26.97,-30.88,-33.65,-21.17,-10.31,7.34,96.16,137.06,139.45,161.19,150.0,131.32,85.67,7.96,-7.74,-9.48,-8.14,-6.83,-10.25,-9.36,-8.56,-11.65,-12.45,-13.26,-10.57,-8.71,-6.31,-4.96,-12.85,8.6,103.42,138.01,139.3,129.14,111.34,133.27,156.1,151.86,155.1,168.42,148.61,94.97,62.24,48.52,9.43,-6.84,-11.32,-15.43,-14.49,-7.67,-2.33,19.55,44.45,120.12,143.15,123.6,86.02,103.15,142.56,168.41,131.61,83.46,82.91,63.02,54.25,78.67,9.32,32.55,94.64,-1.19,-9.1,-7.48,-8.88,-12.87,-12.91,-27.45,-20.31,-8.74,-19.67,-11.45,2.71,7.66,9.51,13.1,13.85,17.05,18.73,16.48,24.07,38.69,24.66,-14.95,-110.95,-151.67,-126.13,-71.93,-92.72,-106.25,-81.82,-63.13,-147.78,-44.56,75.75,103.01,134.76,129.78,130.73,133.77],"draw":[40.0,0.0,0.0,30.05,0.0,0.0,0.0,10.0,10.0,10.0,20.0,0.0,30.01,0.0,0.0,40.0,30.08,0.0,0.0,0.0,0.0,10.03,10.02,40.0,20.04,10.02,10.02,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,30.01,0.0,0.0,10.0,40.0,30.08,0.0,0.0,0.0,0.0,0.0,20.05,40.0,10.02,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,30.01,0.0,0.0,20.05,40.0,20.04,10.02,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,30.01,0.0,0.0,30.01,0.0,0.0,10.0,20.05,40.0,0.0,0.0,0.03,10.02,40.0,0.0,0.0,0.0,0.0,20.05,40.0,20.04,0.0,0.0,0.0,0.0,0.0,10.0,10.0,10.0,10.0,10.0,10.0,40.0,30.08,10.02,10.02,10.02,10.02,0.0,0.0,0.0,0.0,30.03,0.0,0.0,0.0,10.0,10.0,10.0,20.0,0.0,30.01,0.0,0.0,10.0,30.01,0.0,0.0,10.0,10.0,40.0,30.08,0.0,0.0,0.0,0.0,40.0,20.08,10.02,10.02,0.0,0.0,10.01,0.0,0.0,0.0,10.0,10.0,40.0,30.08,0.0,0.0,0.0,0.03,10.02,40.0,0.0,0.0,0.0,0.0,40.0,30.08,10.02],"soc":[30.0,19.99,9.98,30.03,20.01,10.0,0.0,0.0,0.0,0.0,10.0,0.0,20.01,10.0,0.0,30.0,50.06,40.04,30.03,20.01,10.0,10.03,10.05,40.04,50.06,50.06,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,0.0,30.0,50.06,40.04,30.03,20.01,10.0,0.0,10.05,40.04,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,10.05,40.04,50.06,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,20.01,10.0,0.0,20.01,10.0,0.0,0.0,10.05,40.04,30.03,20.01,10.03,10.05,40.04,30.03,20.01,10.0,0.0,10.05,40.04,50.06,40.04,30.03,20.01,10.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,30.0,50.06,50.06,50.06,50.06,50.06,40.04,30.03,20.01,10.0,30.03,20.01,10.0,0.0,0.0,0.0,0.0,10.0,0.0,20.01,10.0,0.0,0.0,20.01,10.0,0.0,0.0,0.0,30.0,50.06,40.04,30.03,20.01,10.0,40.0,50.06,50.06,50.06,40.04,30.03,30.03,20.01,10.0,0.0,0.0,0.0,30.0,50.06,40.04,30.03,20.01,10.03,10.05,40.04,30.03,20.01,10.0,0.0,30.0,50.06,50.06],"watched":[false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,false,true,true,true,true,false,false,false],"start":"2025-12-01 00:00"}}}};
+const D = DATA.demand_mw;
+
+/* ---------------------------------------------------------------- the switch */
+let rule = "window_season";
+const SAVE = { window_season: 49.9, anytime: 20.7 };
+
+function chart(){
+  const w = DATA.weeks.sa[rule];
+  const n = w.price.length, W = 1000, H = 330, TANK = 62, GAP = 16;
+  const L = 46, R = 48, T = 22, B = 26;
+  const mainH = H - T - B - TANK - GAP;
+  const iw = W - L - R, ih = mainH;
+  const pmin = Math.min(0, ...w.price), pmax = Math.max(...w.price);
+  const dmax = Math.max(10, ...w.draw);
+  const x = i => L + (i / n) * iw;
+  const yp = v => T + ih - ((v - pmin) / (pmax - pmin || 1)) * ih;
+  const yd = v => T + ih - (v / dmax) * ih;
+  let s = "";
+
+  // hours the network is watching
+  let i = 0;
+  while (i < n){
+    if (w.watched[i]){
+      let j = i; while (j < n && w.watched[j]) j++;
+      s += `<rect x="${x(i).toFixed(1)}" y="${T}" width="${(x(j)-x(i)).toFixed(1)}"
+        height="${ih}" fill="var(--win2)" stroke="var(--win)" stroke-width=".5"/>`;
+      i = j;
+    } else i++;
+  }
+  // day gridlines
+  for (let d = 0; d <= n/24; d++)
+    s += `<line x1="${x(d*24).toFixed(1)}" y1="${T}" x2="${x(d*24).toFixed(1)}"
+      y2="${T+ih}" stroke="var(--rule)" stroke-width=".5"/>`;
+  // what the battery buys
+  const bw = Math.max(1.2, iw/n - .6);
+  w.draw.forEach((v, k) => { if (v > .01)
+    s += `<rect x="${x(k).toFixed(1)}" y="${yd(v).toFixed(1)}" width="${bw.toFixed(1)}"
+      height="${(T+ih-yd(v)).toFixed(1)}" fill="var(--draw)" opacity=".85"/>`; });
+  // price
+  s += `<path d="${w.price.map((v,k)=>`${k?"L":"M"}${x(k+.5).toFixed(1)},${yp(v).toFixed(1)}`).join("")}"
+    fill="none" stroke="var(--ink2)" stroke-width="1.3" stroke-linejoin="round"/>`;
+  // axes
+  s += `<line x1="${L}" y1="${T+ih}" x2="${W-R}" y2="${T+ih}" stroke="var(--rule)"/>`;
+  s += `<text x="6" y="${T+8}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${dmax.toFixed(0)} MW</text>`;
+  s += `<text x="6" y="${T-3}" fill="var(--draw)" font-size="9"
+    font-family="DM Mono, monospace">DRAWN</text>`;
+  s += `<text x="${W-R+4}" y="${T-3}" fill="var(--ink2)" font-size="9"
+    font-family="DM Mono, monospace">A$/MWh</text>`;
+  s += `<text x="6" y="${T+ih}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">0</text>`;
+  s += `<text x="${W-R+4}" y="${yp(pmax).toFixed(1)}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${pmax.toFixed(0)}</text>`;
+  s += `<text x="${W-R+4}" y="${yp(pmin).toFixed(1)}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${pmin.toFixed(0)}</text>`;
+  // ---- heat sitting in the store
+  const tT = T + ih + GAP, smax = Math.max(1, ...w.soc);
+  const ys = v => tT + TANK - (Math.max(0, v) / smax) * TANK;
+  s += `<rect x="${L}" y="${tT}" width="${iw}" height="${TANK}" fill="var(--rule2)"/>`;
+  let area = `M${L},${tT+TANK}`;
+  w.soc.forEach((v,k) => { area += `L${x(k+.5).toFixed(1)},${ys(v).toFixed(1)}`; });
+  area += `L${(W-R)},${tT+TANK}Z`;
+  s += `<path d="${area}" fill="var(--win)" opacity=".28"/>`;
+  s += `<path d="${area.replace(/^M[\d.,]+/, "M"+L+","+(tT+TANK)).replace(/L[\d.]+,[\d.]+Z$/, "")}"
+    fill="none" stroke="var(--win)" stroke-width="1.1"/>`;
+  s += `<text x="6" y="${tT+11}" fill="var(--muted)" font-size="10"
+    font-family="DM Mono, monospace">${smax.toFixed(0)} MWh</text>`;
+  s += `<text x="6" y="${tT-4}" fill="var(--win)" font-size="9"
+    font-family="DM Mono, monospace">STATE OF CHARGE</text>`;
+  s += `<line x1="${L}" y1="${tT+TANK}" x2="${W-R}" y2="${tT+TANK}" stroke="var(--rule)"/>`;
+
+  const days = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  for (let d = 0; d < n/24; d++)
+    s += `<text x="${(x(d*24+12)).toFixed(1)}" y="${H-6}" fill="var(--muted)" font-size="10"
+      text-anchor="middle" font-family="DM Mono, monospace">${days[d%7]}</text>`;
+  s += `<line id="guide" x1="0" y1="${T}" x2="0" y2="${tT+TANK}" stroke="var(--ink)"
+    stroke-width=".8" opacity="0"/>`;
+  const el = document.getElementById("chart");
+  el.innerHTML = s;
+
+  // ---- hover: read any single hour off the chart
+  const guide = el.querySelector("#guide"), out = document.getElementById("hover");
+  const at = ev => {
+    const r = el.getBoundingClientRect();
+    const px = ((ev.touches ? ev.touches[0].clientX : ev.clientX) - r.left) / r.width * W;
+    const k = Math.round((px - L) / iw * n - .5);
+    if (k < 0 || k >= n){ guide.setAttribute("opacity","0"); out.textContent=""; return; }
+    guide.setAttribute("x1", x(k+.5)); guide.setAttribute("x2", x(k+.5));
+    guide.setAttribute("opacity",".45");
+    const hr = String(k % 24).padStart(2,"0");
+    out.innerHTML = `<b>${days[Math.floor(k/24)%7]} ${hr}:00</b> &nbsp; price
+      <b>${w.price[k].toFixed(0)}</b> &nbsp; bought <b>${w.draw[k].toFixed(0)} MW</b>
+      &nbsp; SoC <b>${w.soc[k].toFixed(0)} MWh</b>`
+      + (w.watched[k] ? ` &nbsp; <span style="color:var(--win)">network watching</span>` : "");
+  };
+  el.onmousemove = at; el.ontouchmove = at;
+  el.onmouseleave = () => { guide.setAttribute("opacity","0"); out.textContent=""; };
+}
+
+function row(m, r, rate){
+  return DATA.runs.find(x => x.market===m && x.rule===r && x.charge_rate===rate);
+}
+
+function paintSwitch(){
+  const w = DATA.weeks.sa[rule];
+  const inwin = w.draw.reduce((a,v,k)=> a + (w.watched[k] ? v : 0), 0);
+  const r = row("sa", rule, 4);
+  document.getElementById("wkstart").textContent = w.start.slice(0,10);
+  document.getElementById("r-inwin").textContent = inwin.toFixed(0) + " MWh";
+  document.getElementById("r-inwin-s").textContent =
+    inwin < 1 ? "it sits the window out entirely" : "straight through the window";
+  // Each network bills what IT measures: SAPN the daily average inside its
+  // window, ElectraNet the highest instant at any time.
+  const billed = rule === "window_season" ? r.peakavg_window_season : r.peak_any;
+  document.getElementById("r-peak").textContent = billed.toFixed(1) + " MW";
+  document.getElementById("r-peak-s").textContent = rule === "window_season"
+    ? "highest daily average, 17\u201321 Nov\u2013Mar"
+    : "highest single instant, any hour";
+  const sv = SAVE[rule];
+  const el = document.getElementById("r-save");
+  el.textContent = "+" + sv.toFixed(1) + "%";
+  el.className = "big pos";
+  document.getElementById("reading").innerHTML = rule === "window_season"
+    ? `The network only watches <b>17:00\u201321:00</b>, and only from November to March.
+       Those are the shaded columns. So the battery charges hard everywhere else and
+       <b>sits those four hours out completely</b>, running down the state of
+       charge it built up beforehand. Its billed peak is <b>zero</b>, and it keeps the whole benefit
+       of buying cheap.`
+    : `Now the network watches <b>every hour of the year</b>. There is nowhere to hide, so
+       the battery charges straight through the shaded hours, and
+       <b>every gulp sets the 40 MW peak it gets billed on</b>. The capacity
+       charge claws back most of what the cheap power saved.`;
+  document.getElementById("b-win").setAttribute("aria-pressed", rule==="window_season");
+  document.getElementById("b-any").setAttribute("aria-pressed", rule==="anytime");
+  chart();
+}
+document.getElementById("b-win").onclick = () => { rule="window_season"; paintSwitch(); };
+document.getElementById("b-any").onclick = () => { rule="anytime"; paintSwitch(); };
+
+/* ------------------------------------------------------------------ screener */
+const PRESETS = {
+  "SA Power Networks": {mkt:"sa", cur:"AUD", ener:25.00, meas:"window_season",
+                        read:"peakavg", cap:63.40, any:10.00},
+  "ElectraNet (Para)": {mkt:"sa", cur:"AUD", ener:31.56, meas:"anytime",
+                        read:"peak", cap:92.4, any:0},
+  "ElectraNet (Berri)": {mkt:"sa", cur:"AUD", ener:31.56, meas:"anytime",
+                         read:"peak", cap:149.72, any:0},
+  "Otter Tail 632": {mkt:"miso", cur:"USD", ener:6.23, meas:"anytime", read:"peak",
+                     cap:145.50, any:0},
+  "Otter Tail TMEP": {mkt:"miso", cur:"USD", ener:6.23, meas:"baseline", read:"peak",
+                      cap:145.50, any:0},
+  "Spain 6.3TD": {mkt:"spain", cur:"EUR", meas:"spain", cls:"6.3TD",
+                  ener:0, read:"peak", cap:0, any:0},
+  "Energy-only": {mkt:"sa", cur:"AUD", ener:25.00, meas:"anytime", read:"peak",
+                  cap:0, any:0},
+};
+let loaded = "SA Power Networks";   // which preset the numbers came from
+
+const $ = id => document.getElementById(id);
+const sel = $("mkt");
+for (const [k, v] of Object.entries(DATA.markets)){
+  const o = document.createElement("option");
+  o.value = k; o.textContent = v.label; sel.appendChild(o);
+}
+sel.value = "sa";
+
+const clsSel = $("cls");
+for (const [k, v] of Object.entries(DATA.es_classes)){
+  const o = document.createElement("option");
+  o.value = k; o.textContent = `${k}  (${v.voltage})`; clsSel.appendChild(o);
+}
+clsSel.value = "6.3TD";
+
+const pbox = $("presets");
+for (const name of Object.keys(PRESETS)){
+  const b = document.createElement("button");
+  b.textContent = name;
+  b.dataset.name = name;
+  b.onclick = () => { const p = PRESETS[name];
+    sel.value = p.mkt; $("ener").value = p.ener; $("meas").value = p.meas;
+    $("read").value = p.read; $("cap").value = p.cap; $("any").value = p.any;
+    if (p.cls) $("cls").value = p.cls;
+    loaded = name; score(); };
+  pbox.appendChild(b);
+}
+
+function billedPeak(r, meas, read){
+  if (meas === "baseline") return D;              // agreed, not metered
+  if (meas === "anytime")  return r.peak_any;
+  return r[`${read}_${meas}`];
+}
+
+function parts(r, cfg){
+  const power = r.wholesale / r.mwh;                          // what the power cost
+  let energy, capacity;
+  if (cfg.meas === "spain"){
+    // Six bands, each with its own rate on the power contracted in that band
+    // and on the energy taken in it. Contracted power must not decrease from
+    // P1 to P6, which is why contracting more in the cheap late bands is
+    // allowed and is what the battery exploits.
+    const c = DATA.es_classes[cfg.cls];
+    energy = r.es_energy.reduce((a, v, i) => a + v * c.energy[i], 0) / r.mwh;
+    capacity = r.es_contracted.reduce((a, v, i) => a + v * 1000 * c.power[i], 0)
+             / r.mwh;
+  } else {
+    energy = cfg.ener;
+    capacity = (cfg.cap * 1000 * billedPeak(r, cfg.meas, cfg.read)
+              + cfg.any * 1000 * r.peak_any) / r.mwh;
+  }
+  return {power, energy, capacity, total: power + energy + capacity};
+}
+function bill(r, cfg){ return parts(r, cfg).total * r.mwh; }
+
+const PLAIN = {spain_bands:"holding its draw down in the expensive daytime bands",
+               anytime:"with no window worth avoiding",
+               window_season:"holding off between 5pm and 9pm in summer",
+               window_year:"holding off between 5pm and 9pm all year"};
+
+function score(){
+  const cfg = {mkt:sel.value, ener:+$("ener").value||0, meas:$("meas").value,
+               read:$("read").value, cap:+$("cap").value||0, any:+$("any").value||0,
+               cls:$("cls").value};
+
+  // Spain's bands only exist for Spanish runs, and its rates are regulated
+  // rather than site-specific, so the free-entry fields have nothing to do.
+  const spainMode = cfg.meas === "spain";
+  if (spainMode && cfg.mkt !== "spain"){ sel.value = "spain"; cfg.mkt = "spain"; }
+  $("clswrap").hidden = !spainMode;
+  for (const id of ["ener","cap","any","read"])
+    $(id).closest("div").hidden = spainMode;
+  const cur = DATA.markets[cfg.mkt].currency;
+
+  const usable = r => r.market === cfg.mkt
+        && (spainMode ? r.rule === "spain_bands" && r.es_class === cfg.cls
+                      : r.rule !== "spain_bands");
+  const base = DATA.runs.find(x => usable(x) && !x.flexible);
+  const inflex = bill(base, cfg) / base.mwh;
+
+  let best = null;
+  for (const r of DATA.runs){
+    if (!usable(r) || !r.flexible || !r.feasible) continue;
+    const v = bill(r, cfg) / r.mwh;
+    if (!best || v < best.v) best = {v, rule:r.rule, rate:r.charge_rate};
+  }
+  const save = 100 * (inflex - best.v) / inflex;
+
+  // The study fixes the charge rate at 4x; this optimises it. Showing both
+  // stops the two sets of numbers looking like they disagree.
+  let at4 = null;
+  for (const r of DATA.runs){
+    if (!usable(r) || !r.flexible || !r.feasible || r.charge_rate !== 4) continue;
+    const v = bill(r, cfg) / r.mwh;
+    if (at4 === null || v < at4) at4 = v;
+  }
+  const save4 = at4 === null ? null : 100 * (inflex - at4) / inflex;
+
+  // Say plainly what combination is on screen, and refuse to pretend a
+  // cross-currency mix means anything.
+  const mname = DATA.markets[cfg.mkt].label;
+  const combo = $("combo");
+  const btns = pbox.querySelectorAll("button");
+  btns.forEach(b => b.classList.toggle("on", b.dataset.name === loaded));
+  if (loaded && PRESETS[loaded].cur !== cur){
+    combo.className = "combo warn";
+    combo.innerHTML = `<b>These numbers mix currencies.</b> You are applying
+      ${loaded}'s charges, which are in ${PRESETS[loaded].cur}, to ${mname}
+      prices in ${cur}. Convert the tariff first, or pick a market that uses
+      ${PRESETS[loaded].cur}.`;
+  } else if (loaded && PRESETS[loaded].mkt !== cfg.mkt){
+    combo.className = "combo";
+    combo.innerHTML = `Right now: <b>${loaded}'s tariff</b>, applied to
+      <b>${mname}</b> prices. Holding the tariff still and changing the market
+      is how you find out whether a result comes from the tariff or from the
+      market.`;
+  } else if (loaded){
+    combo.className = "combo";
+    combo.innerHTML = `Right now: <b>${loaded}</b>, on its own market.`;
+  } else {
+    combo.className = "combo";
+    combo.innerHTML = `Right now: <b>your own numbers</b>, on <b>${mname}</b> prices.`;
+  }
+
+  // Which part of the bill did the damage?
+  const pf = parts(DATA.runs.find(x => usable(x) && x.flexible && x.feasible
+                     && x.rule===best.rule && x.charge_rate===best.rate), cfg);
+  const pi = parts(base, cfg);
+  const fmt = v => (v >= 0 ? "+" : "\u2212") + Math.abs(v).toFixed(2);
+  const cls = v => v > 0.005 ? "pos" : v < -0.005 ? "neg" : "";
+  const rows = [["Power itself", pi.power, pf.power],
+                [spainMode ? "Energy charge, six bands" : "Energy charge",
+                 pi.energy, pf.energy],
+                [spainMode ? "Contracted power, six bands" : "Peak demand charge",
+                 pi.capacity, pf.capacity]];
+  $("split").innerHTML =
+    `<tr><th>Part of the bill</th><th>Without storage</th><th>With a battery</th>
+         <th>Change</th></tr>`
+    + rows.map(([n, a, b]) =>
+        `<tr><td>${n}</td><td>${a.toFixed(2)}</td><td>${b.toFixed(2)}</td>
+             <td class="${cls(a-b)}">${fmt(a-b)}</td></tr>`).join("")
+    + `<tr class="hi"><td>Total, per MWh of heat</td><td>${pi.total.toFixed(2)}</td>
+       <td>${pf.total.toFixed(2)}</td><td class="${cls(pi.total-pf.total)}">
+       ${fmt(pi.total - pf.total)}</td></tr>`;
+
+  const won = pi.power - pf.power, lost = pf.capacity - pi.capacity;
+  $("diag").innerHTML = lost > 0.005
+    ? `Buying at better times saves <b>${won.toFixed(2)} ${cur}</b> per MWh.
+       The peak demand charge takes <b>${lost.toFixed(2)}</b> of that back,
+       because charging harder raises the peak it is billed on.`
+    : `Buying at better times saves <b>${won.toFixed(2)} ${cur}</b> per MWh, and
+       the peak demand charge does not claw any of it back.`;
+
+  $("s-inflex").textContent = inflex.toFixed(2);
+  $("s-flex").textContent = best.v.toFixed(2);
+  $("s-flex-s").textContent = "same heat, bought at better times (" + cur + "/MWh)";
+  const e = $("s-save");
+  e.textContent = (save >= 0 ? "+" : "") + save.toFixed(1) + "%";
+  e.className = "big " + (save >= 0 ? "pos" : "neg");
+
+  $("s-head").textContent = save >= 15
+    ? "Flexibility pays here."
+    : save > 0 ? "Flexibility barely pays here." : "Flexibility is penalised here.";
+  $("s-body").innerHTML =
+    `The best the battery can do is charge at <b>${best.rate}×</b> its average draw, `
+    + `<b>${PLAIN[best.rule]}</b>. `
+    + (spainMode
+        ? `Spain charges for the most power you draw in each of six bands
+           separately, and the cheap night bands are charged at a fraction of
+           the daytime rate. The battery contracts its big draw where it is
+           almost free.`
+      : cfg.meas === "baseline"
+        ? `Because demand is billed on an agreed baseline, charging harder costs nothing extra, which is exactly why the sign flips.`
+        : cfg.meas === "anytime"
+          ? `Every gulp sets the peak it is billed on, so the capacity charge claws back what the cheap power saves.`
+          : `The window is avoidable, so the capacity charge lands on almost nothing.`)
+    + (save4 === null || Math.abs(save4 - save) < 0.05 ? ""
+       : ` <span style="color:var(--muted)">At the study's fixed 4× base case it would be
+           ${save4 >= 0 ? "+" : ""}${save4.toFixed(1)}% instead.</span>`);
+}
+
+["ener","meas","read","cap","any"].forEach(id =>
+  $(id).addEventListener("input", () => { loaded = null; score(); }));
+// Changing the market alone keeps the tariff, which is the whole point of
+// being able to hold one still and move the other.
+$("mkt").addEventListener("input", score);
+
+paintSwitch();
+score();
+</script>
+
+</body>
+</html>
