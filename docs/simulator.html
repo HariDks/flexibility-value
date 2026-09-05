@@ -180,8 +180,8 @@ rect,path,line{transition:none}
   exactly how it buys cheap electricity in the first place.</p>
   <p class="lede">But networks do not all measure that burst the same way. Some only look during
   set hours, say 5pm to 9pm in summer, so a battery can simply not charge then. Others look at
-  every hour of the year, and a battery has no way around it. <b>That one difference decides whether
-  a battery saves the factory anything at all.</b></p>
+  every hour of the year, and a battery has no way around it. <b>That one difference is the
+  largest single lever on what a battery is worth.</b></p>
   <ol class="toc">
     <li><b>Flip a switch</b> and watch a thermal battery change how it buys, on one real week of prices.</li>
     <li><b>Check it holds</b> across nine years and three electricity markets.</li>
@@ -366,8 +366,9 @@ rect,path,line{transition:none}
     <h3>What this does and does not do</h3>
     <p>It models the two structural choices the study is about: <b>how much of your bill rides
     on peak demand, and whether that peak is time-aware</b>. Treat it as a first screen rather
-    than a bill. Real schedules carry bands, ratchets, riders and seasonal detail this flattens,
-    and Spain's six-band structure in particular cannot be expressed in two dials.</p>
+    than a bill. Real schedules carry ratchets, riders and seasonal detail this flattens. Spain's six
+    time bands are modelled in full, from its four published classes, but most tariffs will
+    have to be approximated by the two dials.</p>
     <p>It assumes one factory: 10 MW of heat continuously, a thermal battery holding 12 hours,
     1%/day standby loss,
     each market's real forecast horizon. It prices <b>arbitrage only</b>, with no firmness, no
@@ -387,7 +388,7 @@ rect,path,line{transition:none}
   Prices: OMIE (Spain), AEMO (NEM), MISO market reports and monthly archives.<br>
   Tariffs: CNMC and BOE, SA Power Networks, ElectraNet Prescribed Transmission Service<br>
   Price Schedule 2025-26 (ex GST), Otter Tail Power. Every rate cited inline in tariff.py.<br>
-  25 market-years · 44 logged decisions · 16 corrections on the record.
+  25 market-years · 44 logged decisions · 19 corrections on the record.
 </footer>
 </div>
 

@@ -174,9 +174,9 @@ nine consecutive years.</p>
 
 <p>The price of electricity mattered far less. Spain's average wholesale price ranged
 five-fold, from &euro;34 per MWh in 2020 to &euro;168 in 2022, and the saving in those two
-years barely moved: 17.1% and 16.8%. Across the same eight years it climbed steadily from
-<b>12.5% to 37.9%</b>, driven by how often power went cheap rather than by how expensive it
-was on average.</p>
+years barely moved: 17.1% and 16.8%. Across the same eight years it rose from <b>12.5% to
+37.9%</b>, with one dip in 2021, driven by how often power went cheap rather than by how
+expensive it was on average.</p>
 
 <h2>Background and method</h2>
 
@@ -335,8 +335,8 @@ combinations on the same year separates what each is worth on its own.</p>
 <text x="16" y="49" class="lab2">both together</text>
 </svg>
 <figcaption><b>Figure 2.</b> What each move earns alone, and what the two earn together. In
-Spain the grey bar is taller than the blue and orange added together, because neither move is
-worth much without the other. In Minnesota every bar is below the line.</figcaption></figure>
+Spain the grey bar is taller than the blue and orange added together, because the clock earns
+nothing on its own and only pays alongside cheap-power hunting. In Minnesota every bar is below the line.</figcaption></figure>
 
 <p>Three different designs show up.</p>
 
@@ -480,16 +480,22 @@ is really decided,</b> which is itself the useful point for anyone negotiating o
 figures should be read as the top of a range, not as a headline.</p>
 
 <div class="method">Produced by <code>analyse_robustness.py</code>,
-<code>analyse_forecast_skill.py</code> and <code>analyse_nodes.py</code>. Every figure in
+<code>analyse_forecast_skill.py</code>, <code>analyse_tmep_baseline.py</code> and
+<code>analyse_nodes.py</code>. Every figure in
 this memo regenerates from published data by running the scripts in the repository.</div>
 
 <h2>Recommendation</h2>
 
 <h3>A screening test that costs nothing</h3>
 
-<p>Before modelling a new market, read how its network measures peak demand. Across three
-countries and 25 years, that alone predicted the sign of the answer every time, before any
-price data was touched.</p>
+<p>Before modelling a new market, read how its network measures peak demand. It is the
+single largest lever on the answer, and it is free to check.</p>
+
+<p>Be careful how far that is pushed. It does not on its own decide whether a flexible load
+wins: ElectraNet measures at any moment and still pays from 2022 onward, in the years when
+prices swing hardest. What the reading reliably tells you is <b>how much of the saving
+survives the delivery bill</b>, and on identical prices that is worth 19 to 44 percentage
+points.</p>
 
 <p>Where prices do matter, what matters is not their level but how far the cheapest hours
 sit below the daily average as a share of it. Tested across five Australian regions, that
@@ -540,7 +546,7 @@ Australia's Safeguard prescribed unit price.<br><br>
 <b>Model.</b> Every tariff here is also available as a working model, which takes a rate
 schedule and returns whether a flexible load wins or loses on it, and which part of the bill
 decided.<br><br>
-<b>44 decisions logged, 18 of them judgment calls. 16 claims made during the work and later
+<b>44 decisions logged, 18 of them judgment calls. 19 claims made during the work and later
 overturned, kept on the record.</b>
 </footer>
 

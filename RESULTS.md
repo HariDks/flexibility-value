@@ -272,6 +272,14 @@ publishes forecasts but no committable price at any horizon.
 16. *"2022 would favour the battery."* Wrong, and backwards. Gas more than
     doubled, but so did the electricity the battery buys — Spain runs
     **−31.2%** against gas in 2022 versus **+13.5%** in 2025.
+17. *"Reading the demand charge predicts the sign of the answer."* Overreach, and
+    contradicted by this study's own §3 table: ElectraNet measures at any moment
+    and still pays in **21 of 36** year-and-location cells. What the reading
+    predicts reliably is the **size** of the effect, 19–44 points, not the sign.
+18. *"Spain's saving climbed steadily."* It dips in 2021, from 17.1% to 14.7%.
+19. *"Neither move is worth much without the other."* Wrong for Spain: chasing
+    cheap power alone is worth **+33.9%**. It is the clock that earns nothing
+    alone, not both.
 14. *"South Australia's saving is a market result."* Partly a South Australian
     one. Holding the SAPN tariff fixed and swapping regions gives 22.6%
     (Tasmania) to 49.9% (South Australia). The mechanism holds everywhere;
