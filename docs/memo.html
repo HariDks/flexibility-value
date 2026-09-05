@@ -108,15 +108,15 @@ footer b{color:var(--ink2);font-weight:500}
     --good:#15604A; --bad:#93301F;
   }
   @page{margin:15mm 14mm}
-  body{background:#fff;color:#111;font-size:8.9pt;line-height:1.4}
+  body{background:#fff;color:#111;font-size:8.7pt;line-height:1.36}
   .page{max-width:none;padding:0}
-  p{margin:0 0 .55rem}
+  p{margin:0 0 .46rem}
   .head{margin-bottom:1rem;padding-bottom:.7rem}
   h2{margin:1rem 0 .45rem;padding-top:.45rem;font-size:1.02rem;
      page-break-after:avoid}
   h3{margin:.7rem 0 .3rem;font-size:.92rem;page-break-after:avoid}
   .figbox{margin:.7rem 0 .8rem;page-break-inside:avoid}
-  svg.fig{max-height:43mm}
+  svg.fig{max-height:39mm}
   figcaption{font-size:.67rem;margin-top:.3rem}
   .tw{margin:.55rem 0 .7rem;page-break-inside:avoid}
   table{font-size:.7rem} th,td{padding:.22rem .5rem .22rem 0}
@@ -172,11 +172,14 @@ network companies bill the same factory two different ways, the one watching a f
 evening window beat the one watching all year by 19 to 44 percentage points, in each of
 nine consecutive years.</p>
 
-<p>The price of electricity mattered far less. Spain's average wholesale price ranged
-five-fold, from &euro;34 per MWh in 2020 to &euro;168 in 2022, and the saving in those two
-years barely moved: 17.1% and 16.8%. Across the same eight years it rose from <b>12.5% to
-37.9%</b>, with one dip in 2021, driven by how often power went cheap rather than by how
-expensive it was on average.</p>
+<p>The price of electricity mattered far less than the billing rule. In 2020 Spanish power
+averaged &euro;34 per MWh. In 2022 it averaged &euro;168, five times as much. The battery's
+saving in those two years was <b>17.1% and 16.8%</b>, almost identical.</p>
+
+<p>Something else did move it. Over the eight years the saving climbed from 12.5% to 37.9%,
+dipping once in 2021. That rise tracks how <em>often</em> Spanish power went cheap, not how
+expensive it was on average. <b>A battery does not care what the average price is. It cares
+how many hours sit well below it.</b></p>
 
 <h2>Background and method</h2>
 
@@ -368,10 +371,13 @@ first year it is clearly won.</h3>
 <p>A factory choosing today is choosing against a gas boiler, not an electric heater. Gas
 is cheap, so the comparison turns on what the factory pays for the carbon it emits.</p>
 
-<p>Rather than argue about the right carbon price, the analysis works out the price at
-which the two come out equal. In Spain that number has collapsed.</p>
+<p>Rather than argue about what the right carbon price is, the analysis solves for the price
+at which gas heat and battery heat cost exactly the same. <b>If that break-even price is
+below what carbon actually costs, the battery is already cheaper.</b> In Spain the break-even
+has collapsed.</p>
 
 <figure class="figbox"><svg viewBox="0 0 640 230" class="fig" role="img" aria-label="Break-even carbon price in Spain, 2018 to 2025">
+<text x="6" y="14" class="ax" fill="var(--muted)" font-family="DM Mono, monospace">EUR / tonne</text>
 <rect x="280.6" y="18" width="110.9" height="182" fill="var(--warn)" opacity=".10"/>
 <text x="336.0" y="29" text-anchor="middle" class="lab" fill="var(--warn)">energy crisis</text>
 <line x1="46" y1="200.0" x2="626" y2="200.0" stroke="var(--rule)" stroke-width="0.5"/>
@@ -416,8 +422,8 @@ price Europe actually charges.</figcaption></figure>
 beat gas. By 2025 the battery wins even if carbon costs nothing at all. Europe actually
 charges &euro;75.</p>
 
-<p>The two spikes are the European energy crisis, and they are worth understanding
-instead of removing. Gas more than doubled in 2022, which should have favoured the battery. It did
+<p>The spike across 2021 and 2022 is the European energy crisis, and it is worth
+understanding instead of removing. Gas more than doubled in 2022, which should have favoured the battery. It did
 the opposite, because the wholesale electricity the battery buys more than doubled too.
 Spain's average price ran &euro;168 per MWh that year against &euro;65 in 2025. <b>An energy
 crisis is not a one-way bet on storage, because both fuels are in it.</b></p>
@@ -461,9 +467,13 @@ say what that number is. Ten megawatts was assumed, the factory's steady load.</
 <td class="lose"><b>&minus;6.0%</b></td><td class="lose">&minus;59.3%</td></tr>
 </tbody></table></div>
 
-<p>Forty megawatts is the factory's actual metered peak, which is what it pays with no
-agreement at all. <b>The mechanism is the finding; the agreed number is where the value
-is really decided,</b> which is itself the useful point for anyone negotiating one.</p>
+<p>Forty megawatts is what the meter actually records, which is what the factory pays if no
+figure is agreed at all.</p>
+
+<p>So the tariff decides the mechanism and the contract decides the money. Otter Tail has
+already written the rule that lets a flexible load pay. <b>What it is worth depends on a
+number that sits in a service agreement rather than in the rate schedule</b>, and for anyone
+negotiating one, that is where the effort belongs.</p>
 
 <h3>South Australia is the best of the five Australian regions</h3>
 
@@ -488,26 +498,35 @@ this memo regenerates from published data by running the scripts in the reposito
 
 <h3>A screening test that costs nothing</h3>
 
-<p>Before modelling a new market, read how its network measures peak demand. It is the
-single largest lever on the answer, and it is free to check.</p>
+<p>Before modelling a new market, read how its network measures peak demand. Nothing else
+in this study moved the answer as much, and it takes minutes.</p>
 
-<p>Be careful how far that is pushed. It does not on its own decide whether a flexible load
-wins: ElectraNet measures at any moment and still pays from 2022 onward, in the years when
-prices swing hardest. What the reading reliably tells you is <b>how much of the saving
-survives the delivery bill</b>, and on identical prices that is worth 19 to 44 percentage
-points.</p>
+<p>But do not push it too far. Measuring at any moment does not automatically mean a flexible
+load loses: ElectraNet does exactly that and still pays from 2022 onward, in the years when
+prices swing hardest. What reading the tariff reliably tells you is <b>how much of the saving
+the delivery bill takes back</b>. On identical prices, a network that watches a window leaves
+19 to 44 percentage points more with the factory than one that watches always.</p>
 
-<p>Where prices do matter, what matters is not their level but how far the cheapest hours
-sit below the daily average as a share of it. Tested across five Australian regions, that
-ranked them correctly where the more obvious measure, the gap between the day's highest
-and lowest price, ranked them wrong.</p>
+<p>Where prices do matter, it is not the level that counts but the shape of the day. What
+predicts the saving is <b>how far the cheapest hours fall below that day's average</b>,
+measured against the average itself.</p>
 
-<p>One thing to check alongside it. A charge on peak demand is a fixed cost, so it falls
-hardest on plants that do not run flat out. Tested against a two-week maintenance shutdown,
-a five-day week and a day-shift pattern, the saving held everywhere, but <b>at 48%
-utilisation the same capacity charge costs 2.1 times more per unit of heat</b>, in all three
-markets. Any load that runs intermittently is being taxed for reasons unrelated to what it
-costs the network to serve.</p>
+<p>South Australia's cheapest hours sit a long way below its daily average, because prices
+there go negative almost a third of the time. Tasmania's barely dip. That ranked all five
+Australian regions correctly. The more obvious measure, the gap between the day's highest and
+lowest price, ranked them wrong: New South Wales has the widest gap of any region and only
+the third-best saving, because that gap is made by evening spikes and <b>a battery never
+buys spikes.</b></p>
+
+<p>One thing to check alongside it. A charge on peak demand is a fixed amount: the network
+bills the same whether the factory runs every hour of the year or half of them. So a plant
+that runs less spreads the same charge over less heat.</p>
+
+<p>Tested against a two-week maintenance shutdown, a five-day week and a day shift, the
+saving itself held up everywhere. But a plant running <b>48% of the time paid 2.1 times as
+much capacity charge per unit of heat</b>, in all three markets. That figure is simply 100
+divided by 48. <b>A load that runs intermittently is taxed for reasons that have nothing to
+do with what it costs the network to serve it.</b></p>
 
 <h3>Treat TMEP as a template</h3>
 
