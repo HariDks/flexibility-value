@@ -8,18 +8,17 @@ Working document. If a decision changes, change it here first.
 
 ## 1. Why this exists
 
-This is a sample project to bring to a conversation with a policy analyst at
-**Antora Energy**. Antora builds thermal batteries: they turn cheap electricity
-into stored heat and deliver that heat to industrial customers around the clock.
+Thermal batteries turn cheap electricity into stored heat and deliver that heat
+to industrial customers around the clock. Whether that pays depends on being
+able to buy power when it is cheap, and nobody had published what that ability
+is actually worth.
 
-The goal is **not** to tell Antora something they don't know. They know their own
-economics far better than any public-data project could. The goal is to
-demonstrate that the analysis is something I can do independently, that my
-judgment lands in the same place theirs does, and to earn a specific,
-well-informed conversation.
+This measures it from public data alone, across three electricity markets:
+Spain, South Australia and the US Midwest.
 
-The contact is currently researching **Australia and Spain** as potential
-markets. That is why this study is international rather than US-only.
+It is deliberately international. The answer turns out to depend far more on how
+a network measures peak demand than on any market's prices, and that only
+becomes visible by comparing places that do it differently.
 
 ---
 
@@ -161,7 +160,7 @@ and — most importantly — **the questions this raised for their team.**
 - [ ] Results at five storage sizes, under two charging rules
 - [ ] A defensible fee number per market, each with a source and a confidence note
 - [ ] One chart that carries the argument without narration
-- [ ] Three pages, including a section of questions for Antora
+- [ ] Three pages, including the questions public data cannot settle
 - [ ] Every assumption stated plainly enough that someone could disagree with it
 
 ---

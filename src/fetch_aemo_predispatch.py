@@ -2,7 +2,7 @@
 
 South Australia's forecast horizon is the largest judgment in this study. AEMO
 publishes no day-ahead price, but it does publish **pre-dispatch forecasts** —
-half-hourly projections out to roughly 28 hours, refreshed every 30 minutes.
+half-hourly projections out to about 39 hours, refreshed every 30 minutes.
 
 This downloads those forecasts and pairs each one with the price that actually
 occurred, so forecast error can be measured against horizon rather than assumed.

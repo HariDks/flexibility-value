@@ -1,4 +1,6 @@
-# Conceptual questions — for someone who knows thermal storage
+# Open questions public data cannot settle
+
+For someone who knows thermal storage.
 
 Framed to be answerable from general knowledge of how these systems work.
 Nothing here needs internal, customer-specific or unpublished information; if a

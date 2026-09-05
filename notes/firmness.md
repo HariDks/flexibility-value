@@ -156,7 +156,7 @@ its accreditation reforms; the point is that the *product* has not followed.
 **Not settled.** What firm heat is worth to an industrial customer. That is the
 missing term, it is the largest one, and no public source has it. It is a good
 question to ask Antora rather than to answer for them — see
-`notes/questions-for-antora.md`.
+`notes/open-questions.md`.
 
 **Boundary.** Everything here is about what markets *pay*. Whether Antora's
 hardware qualifies as a MISO Load Modifying Resource or a Spanish SRAD provider
