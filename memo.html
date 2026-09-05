@@ -53,6 +53,12 @@ figcaption{font-family:Archivo,sans-serif;font-size:.73rem;color:var(--muted);
   line-height:1.5;margin-top:.4rem}
 
 .pt{margin:0 0 .7rem;padding-left:.9rem;border-left:2px solid var(--rule)}
+.next{background:var(--key2);border-left:3px solid var(--key);padding:.7rem .9rem;
+  margin:1.1rem 0 0;font-family:Archivo,sans-serif;font-size:.83rem;color:var(--ink2);
+  line-height:1.55}
+.next b{color:var(--ink)}
+h2.sec{font-size:1.1rem;letter-spacing:-.005em;text-transform:none;color:var(--ink);
+  border-top:1px solid var(--rule);padding-top:.7rem;margin:1.8rem 0 .7rem}
 .pt b.h{display:block;font-family:Archivo,sans-serif;font-size:.92rem;
   color:var(--ink);margin-bottom:.1rem}
 .thin{font-size:.93rem;color:var(--ink2)}
@@ -89,9 +95,15 @@ footer b{color:var(--ink2);font-weight:600}
   h2{margin:.9rem 0 .4rem}
   .figbox{margin:.6rem 0 .7rem;page-break-inside:avoid}
   svg.fig{max-height:47mm}
+  .p1 svg.fig{max-height:33mm}
+  .p1 figcaption{font-size:.66rem;margin-top:.25rem}
+  .p1 .figbox{margin:.45rem 0 .55rem}
+  .p1 .next{padding:.5rem .75rem;font-size:.78rem;margin-top:.7rem}
+  .p1 .lead{font-size:1.02rem}
   .tw{page-break-inside:avoid;margin:.5rem 0 .6rem}
   table{font-size:.66rem} th,td{padding:.2rem .45rem .2rem 0}
-  h2.p2{page-break-before:always}
+  .p1{page-break-after:always}
+  h2.sec{page-break-before:always}
   .pt{page-break-inside:avoid}
   footer{page-break-inside:avoid}
 }
@@ -99,6 +111,7 @@ footer b{color:var(--ink2);font-weight:600}
 
 <div class="page">
 
+<div class="p1">
 <div class="head">
   <p class="meta">Memorandum</p>
   <h1>What decides whether a flexible industrial load saves money</h1>
@@ -115,9 +128,13 @@ One to the network for delivering it, and that second bill is usually set by the
 biggest burst of power the factory ever draws.</p>
 
 <p class="lead">A thermal battery wins the first bill by buying in short hard bursts, which
-is exactly what the second bill punishes. <b>Across three markets and 25 years of published
-prices, the second bill decided the answer every time.</b> What mattered was which hours the
-network is watching when it looks for your biggest burst.</p>
+is exactly what the second bill punishes. Across three markets and 25 years of published
+prices, <b>it was always the second bill that decided whether the battery saved money or
+lost it.</b></p>
+
+<p class="lead">And what decided that bill was which hours the network watches when it looks
+for your biggest burst. Some watch only certain hours, so a battery puts its bursts
+elsewhere. Others watch every hour of the year, and it cannot.</p>
 
 <div class="figbox"><svg viewBox="0 0 640 250" class="fig" role="img" aria-label="SA Power Networks against the ElectraNet range, 2017 to 2025">
 <line x1="42" y1="220.0" x2="626" y2="220.0" stroke="var(--rule)" stroke-width="0.5"/>
@@ -159,121 +176,51 @@ network is watching when it looks for your biggest burst.</p>
 <text x="115.0" y="81.3" class="lab" fill="var(--good)">SA Power Networks</text>
 <text x="334.0" y="190.1" class="lab" fill="var(--bad)">ElectraNet, range across its four sites</text>
 </svg>
-<figcaption><b>Figure 1.</b> One factory, one state, one set of prices. The green line is
+<figcaption><b>Figure 1.</b> One factory, one state, one set of prices, nine years. Green is
 SA Power Networks, which looks for your biggest burst only on summer evenings. The red band
-covers ElectraNet's four connection points, which look at any moment. Each value is what
-the battery saved against the same factory without one.</figcaption></div>
+covers ElectraNet's four connection points, which look at any moment. Each value is what the
+battery saved against the same factory without one.</figcaption></div>
 
-<h2>What the analysis found</h2>
+<p><b>South Australia proves it on its own</b>, because two network companies there bill the
+same factory two different ways. The one watching only summer evenings beat the one watching
+always by <b>19 to 44 percentage points, in every one of nine years</b>. Nothing else
+differs between them.</p>
 
-<p class="pt"><b class="h">South Australia settles the mechanism.</b>
-Two networks, one state, same prices, same battery, nine years. The one watching only summer
-evenings beat the one watching always by <b>19 to 44 percentage points, in every single
-year</b>. Connected to ElectraNet the battery loses money outright in 15 of 36 year and site
-combinations. Nothing differs between them but the billing rule.</p>
+<p><b>Minnesota confirms it, and already contains the fix.</b> On Otter Tail Power's standard
+tariff the battery loses money in <b>all 36</b> combinations of pricing point and year
+tested. Under its Thermal Market Energy Pricing tariff, which bills demand on a figure agreed
+in advance instead of the metered peak, the same battery wins in <b>all eight years</b>.
+That tariff is filed and approved.</p>
 
-<p class="pt"><b class="h">Minnesota confirms it, and already contains the fix.</b>
-On Otter Tail Power's standard tariff a battery loses money in <b>all 36</b> combinations of
-pricing point and year tested. Under its Thermal Market Energy Pricing tariff, which bills
-demand on a figure agreed in advance rather than the metered peak, the same battery wins in
-<b>all eight years</b>. Nothing changes but one sentence in the rate schedule. TMEP is filed
-and approved.</p>
+<p class="thin"><b>Where this is weakest.</b> Three assumptions could move these numbers, all
+measured rather than hedged. Australian price visibility is assumed at six hours; at
+twenty-four the saving runs 49.9% to 73.1%, so <b>23 points rest on it</b>. TMEP's agreed
+baseline is not written in the tariff: 10 MW gives +20.6%, 20 MW gives &minus;6.0%. And South
+Australia is the best of five Australian regions, 22.6% in Tasmania against 49.9% there, so
+read it as the top of a range.</p>
 
-<p class="pt"><b class="h">The price of power matters far less than the billing rule.</b>
-Spain's average wholesale price ranged five-fold, &euro;34 to &euro;168 per MWh, while the
-saving moved 17.1% to 16.8%. What matters is not the level but how far the cheapest hours
-sit below the daily average.</p>
+<p class="thin"><b>What I would ask you.</b> What it costs a customer when heat stops, the
+missing term in every firmness number here. What baseline demand is realistically achievable
+in a TMEP negotiation. And whether the right benchmark is a gas boiler or an inflexible
+electric one.</p>
 
-<p class="pt"><b class="h">Against gas, the case has improved fast.</b>
-A factory chooses against a gas boiler, not an electric heater, so the comparison turns on
-carbon. Rather than argue about the right carbon price, the analysis solves for the price at
-which the two are equal. In Spain that has fallen from <b>&euro;101 a tonne in 2018 to below
-zero in 2025</b>: the battery now wins even if carbon is free. Europe charges &euro;75. The
-qualification is that 2025 is the best year in the series, so the trend is the finding
-rather than the single year.</p>
+<p class="next"><b>That is the whole argument.</b> What follows is evidence, and none of it
+is required. <b>Page 2</b> South Australia year by year. <b>Page 3</b> why some tariffs
+reward a flexible load and others punish it. <b>Page 4</b> the comparison against gas.
+<b>Page 5</b> method, full ranges and sources. A working model of every tariff here, which
+you can point at a rate of your own, is linked separately.</p>
+</div>
 
-<div class="figbox"><svg viewBox="0 0 640 230" class="fig" role="img" aria-label="Break-even carbon price in Spain, 2018 to 2025">
-<rect x="280.6" y="18" width="110.9" height="182" fill="var(--warn)" opacity=".10"/>
-<text x="336.0" y="29" text-anchor="middle" class="lab" fill="var(--warn)">energy crisis</text>
-<line x1="46" y1="200.0" x2="626" y2="200.0" stroke="var(--rule)" stroke-width="0.5"/>
-<text x="40" y="203.0" text-anchor="end" class="ax">-50</text>
-<line x1="46" y1="173.2" x2="626" y2="173.2" stroke="var(--ink2)" stroke-width="1"/>
-<text x="40" y="176.2" text-anchor="end" class="ax">0</text>
-<line x1="46" y1="133.1" x2="626" y2="133.1" stroke="var(--rule)" stroke-width="0.5"/>
-<text x="40" y="136.1" text-anchor="end" class="ax">75</text>
-<line x1="46" y1="92.9" x2="626" y2="92.9" stroke="var(--rule)" stroke-width="0.5"/>
-<text x="40" y="95.9" text-anchor="end" class="ax">150</text>
-<line x1="46" y1="52.8" x2="626" y2="52.8" stroke="var(--rule)" stroke-width="0.5"/>
-<text x="40" y="55.8" text-anchor="end" class="ax">225</text>
-<line x1="46" y1="18.0" x2="626" y2="18.0" stroke="var(--rule)" stroke-width="0.5"/>
-<text x="40" y="21.0" text-anchor="end" class="ax">290</text>
-<line x1="46" y1="133.1" x2="626" y2="133.1" stroke="var(--good)" stroke-width="1" stroke-dasharray="4 3"/>
-<text x="624" y="128.1" text-anchor="end" class="lab" fill="var(--good)">what carbon actually costs, EUR 75</text>
-<path d="M46.0,119.0 L128.9,146.1 L211.7,157.1 L294.6,27.0 L377.4,96.1 L460.3,168.9 L543.1,177.4 L626.0,188.7" fill="none" stroke="var(--key)" stroke-width="2.2" stroke-linejoin="round"/>
-<circle cx="46.0" cy="119.0" r="2.6" fill="var(--key)"/>
-<circle cx="128.9" cy="146.1" r="2.6" fill="var(--key)"/>
-<circle cx="211.7" cy="157.1" r="2.6" fill="var(--key)"/>
-<circle cx="294.6" cy="27.0" r="2.6" fill="var(--key)"/>
-<circle cx="377.4" cy="96.1" r="2.6" fill="var(--key)"/>
-<circle cx="460.3" cy="168.9" r="2.6" fill="var(--key)"/>
-<circle cx="543.1" cy="177.4" r="2.6" fill="var(--key)"/>
-<circle cx="626.0" cy="188.7" r="2.6" fill="var(--key)"/>
-<text x="52.0" y="112.0" class="lab">EUR 101</text>
-<text x="622.0" y="180.7" text-anchor="end" class="lab">-EUR 29</text>
-<text x="46.0" y="220" text-anchor="middle" class="ax">2018</text>
-<text x="128.9" y="220" text-anchor="middle" class="ax">2019</text>
-<text x="211.7" y="220" text-anchor="middle" class="ax">2020</text>
-<text x="294.6" y="220" text-anchor="middle" class="ax">2021</text>
-<text x="377.4" y="220" text-anchor="middle" class="ax">2022</text>
-<text x="460.3" y="220" text-anchor="middle" class="ax">2023</text>
-<text x="543.1" y="220" text-anchor="middle" class="ax">2024</text>
-<text x="626.0" y="220" text-anchor="middle" class="ax">2025</text>
-</svg>
-<figcaption><b>Figure 2.</b> The carbon price at which heat from a battery costs the same as
-heat from gas, in Spain. Below the dashed line it is already cheaper at the price Europe
-actually charges. The two spikes are the energy crisis: gas more than doubled in 2022, and
-so did the wholesale electricity the battery buys.</figcaption></div>
+<h2 class="sec">Page 2. South Australia, year by year</h2>
 
-<h2>Where this is weakest</h2>
+<p>South Australia has two network companies, and a large factory could be billed by either.
+<b>SA Power Networks</b> looks for a factory's biggest burst only between 5pm and 9pm, and
+only from November to March. <b>ElectraNet</b> looks at any moment, all year round.</p>
 
-<p class="thin"><b>Australian visibility.</b> Six hours of useful price sight was assumed.
-At twenty-four the South Australian saving runs 49.9% to 73.1%, so <b>23 points rest on that
-one assumption</b>. Against the forecasts Australia actually published, the battery captured
-37% of perfect knowledge at six hours and 80% at twelve.</p>
-
-<p class="thin"><b>TMEP's agreed baseline is not in the tariff.</b> Ten megawatts was
-assumed. At fifteen the saving falls to 7.3%; at twenty it turns negative. The mechanism is
-the finding, but the negotiated number is where the value is decided.</p>
-
-<p class="thin"><b>South Australia is the best of five, not a typical one.</b> Holding the
-tariff fixed and swapping regions gives 22.6% in Tasmania against 49.9% in South Australia.
-Read it as the top of a range.</p>
-
-<h2>What I would ask you</h2>
-
-<p class="thin">What it costs a customer when heat stops, which is the missing term in every
-firmness number here. What baseline demand is realistically achievable in a TMEP-style
-negotiation. And whether the right benchmark is a gas boiler or an inflexible electric one,
-because this reports both and they answer different questions.</p>
-
-<footer>
-<b>Model.</b> One factory needing 10 MW of heat continuously, with a thermal battery holding
-12 hours which can be filled at four times its average draw, compared against the same
-factory with no battery buying power as it uses it. Tariffs held at 2025 values so only
-prices vary.<br>
-<b>Excluded.</b> What the battery costs to build, the value of heat when the grid fails, and
-any income beyond buying power at better times. This is not a payback calculation.<br>
-<b>Sources.</b> OMIE, AEMO, MISO market reports and archives. CNMC and the BOE, SA Power
-Networks, ElectraNet, Otter Tail Power. Eurostat, the AER and the EIA for gas.<br>
-<b>44 decisions logged, 18 of them judgment calls. 16 claims made during the work and later
-overturned, kept on the record.</b>
-</footer>
-
-<h2 class="p2">Supporting detail</h2>
-
-<p class="thin"><b>A1. South Australia, year by year.</b> What the battery saved against the
-same factory without one. The four middle columns are ElectraNet, at each of the four places
-a factory could physically connect. This is the table behind Figure 1.</p>
+<p>So run the same battery, on the same prices, in the same years, and change nothing except
+which company sends the bill. Each figure is what the battery saved against the same factory
+without one. The four middle columns are ElectraNet, at each of the four places in South
+Australia a factory could physically connect.</p>
 
 <div class="tw"><table>
 <thead><tr><th>Year</th><th>SA Power Networks<br>watches a window</th><th>Para<br>watches always</th>
@@ -290,9 +237,16 @@ a factory could physically connect. This is the table behind Figure 1.</p>
 <tr><td>2025</td><td class="win"><b>+49.9%</b></td><td>+20.7%</td><td>+13.9%</td><td>+8.0%</td><td>+5.2%</td><td>29.2</td></tr>
 </tbody></table></div>
 
-<p class="thin"><b>A2. Why some tariffs work and others do not.</b> A battery can do two
-things: chase cheap power, and stay out of the hours the network is watching. Running all
-four combinations separates what each is worth alone.</p>
+<p>Connected to ElectraNet, the battery <b>loses money outright in 15 of the 36</b> year and
+location combinations. Same country, same prices, same weather, same battery, same currency.
+This is the closest thing to a controlled experiment available anywhere in the study, which
+is why it carries the argument.</p>
+
+<h2 class="sec">Page 3. Why some tariffs reward a flexible load and others punish it</h2>
+
+<p>A battery can do two things. It can <b>chase cheap power</b>, buying when the wholesale
+price is low. And it can <b>stay out of the hours the network is watching</b>. Running all
+four combinations on the same year separates what each is worth on its own.</p>
 
 <div class="tw"><table>
 <thead><tr><th></th><th>Chasing cheap<br>power only</th><th>Staying out of<br>watched hours only</th>
@@ -333,15 +287,148 @@ four combinations separates what each is worth alone.</p>
 <rect x="4" y="42" width="8" height="8" fill="var(--ink2)"/>
 <text x="16" y="49" class="lab2">both together</text>
 </svg>
-<figcaption><b>Figure 3.</b> What each move earns alone, and what the two earn together. In
+<figcaption><b>Figure 2.</b> What each move earns alone, and what the two earn together. In
 Spain the grey bar is taller than the blue and orange added together. In Minnesota every bar
-is below the line.</figcaption></div>
+sits below the line.</figcaption></div>
 
-<p class="thin">Three designs. <b>South Australia pays you to stay out</b>: avoiding 5pm to
-9pm is worth 8.9% before a single cheap hour is chased. <b>Spain does not pay you to stay
-out, but stops you being punished</b>: staying in the cheap bands alone loses 4.9%, and its
-whole value is that it lets a big burst land where it is charged almost nothing, which is
-why doing both beats the two parts added together by 9.7 points. <b>Minnesota punishes both
-moves</b>, and there is no clock to play.</p>
+<p>Three different designs show up, and they are worth telling apart because the third one
+is not a weaker version of the first two.</p>
+
+<p class="pt"><b class="h">South Australia pays you to stay out.</b>
+Avoiding 5pm to 9pm is worth 8.9% before a single cheap hour is chased. A factory needs no
+forecasting skill at all to benefit, which makes this the easiest design to build a business
+on.</p>
+
+<p class="pt"><b class="h">Spain does not pay you to stay out, but it stops you being
+punished.</b> Staying in the cheap bands alone <em>loses</em> 4.9%. Its value is entirely in
+combination: chasing cheap power creates a big burst, and Spain's six time bands let you put
+that burst where it is charged almost nothing. That is why doing both is worth 9.7 points
+more than the two parts added together.</p>
+
+<p class="pt"><b class="h">Minnesota punishes both moves.</b>
+Chasing cheap power alone loses 59.1%, because the burst gets billed. There is no clock to
+play, so the second move earns almost nothing. Both together still lose.</p>
+
+<p>This is what makes Otter Tail's TMEP tariff the useful case rather than an exception. The
+same utility offers two tariffs, on the same grid, to the same factory, in the same years.
+One bills whatever the meter recorded as the highest moment that month. The other bills a
+figure agreed in advance. <b>Nothing changes but one sentence in the rate schedule</b>, and
+eight losing years become eight winning ones.</p>
+
+<h2 class="sec">Page 4. Against a gas boiler</h2>
+
+<p>A factory choosing today is choosing against a gas boiler, not an electric heater. Gas is
+cheap, so the comparison turns on what the factory pays for the carbon it emits.</p>
+
+<p>Rather than argue about the right carbon price, the analysis works out the price at which
+the two come out equal. If that number is below what carbon actually costs, the battery
+already wins.</p>
+
+<div class="figbox"><svg viewBox="0 0 640 230" class="fig" role="img" aria-label="Break-even carbon price in Spain, 2018 to 2025">
+<rect x="280.6" y="18" width="110.9" height="182" fill="var(--warn)" opacity=".10"/>
+<text x="336.0" y="29" text-anchor="middle" class="lab" fill="var(--warn)">energy crisis</text>
+<line x1="46" y1="200.0" x2="626" y2="200.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="203.0" text-anchor="end" class="ax">-50</text>
+<line x1="46" y1="173.2" x2="626" y2="173.2" stroke="var(--ink2)" stroke-width="1"/>
+<text x="40" y="176.2" text-anchor="end" class="ax">0</text>
+<line x1="46" y1="133.1" x2="626" y2="133.1" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="136.1" text-anchor="end" class="ax">75</text>
+<line x1="46" y1="92.9" x2="626" y2="92.9" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="95.9" text-anchor="end" class="ax">150</text>
+<line x1="46" y1="52.8" x2="626" y2="52.8" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="55.8" text-anchor="end" class="ax">225</text>
+<line x1="46" y1="18.0" x2="626" y2="18.0" stroke="var(--rule)" stroke-width="0.5"/>
+<text x="40" y="21.0" text-anchor="end" class="ax">290</text>
+<line x1="46" y1="133.1" x2="626" y2="133.1" stroke="var(--good)" stroke-width="1" stroke-dasharray="4 3"/>
+<text x="624" y="128.1" text-anchor="end" class="lab" fill="var(--good)">what carbon actually costs, EUR 75</text>
+<path d="M46.0,119.0 L128.9,146.1 L211.7,157.1 L294.6,27.0 L377.4,96.1 L460.3,168.9 L543.1,177.4 L626.0,188.7" fill="none" stroke="var(--key)" stroke-width="2.2" stroke-linejoin="round"/>
+<circle cx="46.0" cy="119.0" r="2.6" fill="var(--key)"/>
+<circle cx="128.9" cy="146.1" r="2.6" fill="var(--key)"/>
+<circle cx="211.7" cy="157.1" r="2.6" fill="var(--key)"/>
+<circle cx="294.6" cy="27.0" r="2.6" fill="var(--key)"/>
+<circle cx="377.4" cy="96.1" r="2.6" fill="var(--key)"/>
+<circle cx="460.3" cy="168.9" r="2.6" fill="var(--key)"/>
+<circle cx="543.1" cy="177.4" r="2.6" fill="var(--key)"/>
+<circle cx="626.0" cy="188.7" r="2.6" fill="var(--key)"/>
+<text x="52.0" y="112.0" class="lab">EUR 101</text>
+<text x="622.0" y="180.7" text-anchor="end" class="lab">-EUR 29</text>
+<text x="46.0" y="220" text-anchor="middle" class="ax">2018</text>
+<text x="128.9" y="220" text-anchor="middle" class="ax">2019</text>
+<text x="211.7" y="220" text-anchor="middle" class="ax">2020</text>
+<text x="294.6" y="220" text-anchor="middle" class="ax">2021</text>
+<text x="377.4" y="220" text-anchor="middle" class="ax">2022</text>
+<text x="460.3" y="220" text-anchor="middle" class="ax">2023</text>
+<text x="543.1" y="220" text-anchor="middle" class="ax">2024</text>
+<text x="626.0" y="220" text-anchor="middle" class="ax">2025</text>
+</svg>
+<figcaption><b>Figure 3.</b> The carbon price at which heat from a battery costs the same as
+heat from gas, in Spain. Below the dashed line the battery is already cheaper at the price
+Europe actually charges.</figcaption></div>
+
+<p>In 2018, carbon would have had to cost <b>&euro;101 a tonne</b> before the battery beat
+gas. By 2025 the figure is <b>below zero</b>, meaning the battery wins even if carbon is
+free. Europe charges &euro;75.</p>
+
+<p>The two spikes are the European energy crisis, and they are worth understanding rather
+than removing. Gas more than doubled in 2022, which should have favoured the battery. It did
+the opposite, because the wholesale electricity the battery buys more than doubled too.
+Spain's average price ran &euro;168 per MWh that year against &euro;65 in 2025. <b>An energy
+crisis is not a one-way bet on storage, because both fuels are in it.</b></p>
+
+<p>The honest qualification is that <b>2025 is the best year in the series</b>. Ignoring
+carbon and comparing fuel cost alone, the battery beat gas in only two of the eight Spanish
+years. The trend is the finding, not the single year.</p>
+
+<h2 class="sec">Page 5. Method, ranges and sources</h2>
+
+<p>Everything here models one factory. It needs 10 MW of heat every hour of the year, and it
+has a thermal battery holding 12 hours of heat, which can be filled at up to four times its
+average draw. Every figure compares that factory against an identical one with no battery,
+buying power as it uses it. Network tariffs are held at their 2025 values across every price
+year, so that only prices vary.</p>
+
+<p><b>Three things are deliberately left out:</b> what the battery costs to build, what it is
+worth to have heat available when the grid fails, and any income beyond buying power at
+better times. So this measures what a battery saves on the electricity bill and nothing
+else. It does not say whether building one pays for itself.</p>
+
+<p>Each of the three assumptions on page 1 was tested by re-running the whole model across a
+range of values and recording how far the answer travels. These are measured spreads, not
+estimates of uncertainty.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Hours of price visibility assumed, South Australia</th><th>3</th><th>6</th><th>8</th><th>12</th><th>24</th></tr></thead>
+<tbody><tr><td>Saving</td><td class="lose">not workable</td><td><b>49.9%</b></td><td>58.0%</td><td>69.7%</td><td><b>73.1%</b></td></tr>
+</tbody></table></div>
+
+<p class="thin">Against the forecasts Australia actually published, rather than an assumed
+number, the battery captured 37% of what perfect knowledge would give at six hours, and 80%
+at twelve.</p>
+
+<div class="tw"><table>
+<thead><tr><th>TMEP baseline agreed with Otter Tail</th><th>10 MW</th><th>15 MW</th><th>20 MW</th><th>40 MW</th></tr></thead>
+<tbody><tr><td>Saving</td><td class="win"><b>+20.6%</b></td><td>+7.3%</td><td class="lose"><b>&minus;6.0%</b></td><td class="lose">&minus;59.3%</td></tr>
+</tbody></table></div>
+
+<p class="thin">Forty megawatts is the factory's actual metered peak, which is what it pays
+with no agreement at all.</p>
+
+<div class="tw"><table>
+<thead><tr><th>Same tariff, each Australian region's prices</th><th>South<br>Australia</th><th>Victoria</th>
+<th>New South<br>Wales</th><th>Queensland</th><th>Tasmania</th></tr></thead>
+<tbody><tr><td>Saving</td><td class="win"><b>49.9%</b></td><td>43.7%</td><td>42.5%</td><td>40.8%</td><td><b>22.6%</b></td></tr>
+</tbody></table></div>
+
+<footer>
+<b>Prices.</b> OMIE for Spain, AEMO for the Australian regions, MISO market reports and
+monthly archives for Minnesota. Hourly throughout, 2017 to 2025.<br>
+<b>Tariffs.</b> CNMC and the BOE for Spain, SA Power Networks and ElectraNet price schedules,
+Otter Tail Power's Minnesota rate summary and riders. Every rate cited inline in the code.<br>
+<b>Gas and carbon.</b> Eurostat, the AER's STTM register and the EIA. EU ETS, and Australia's
+Safeguard prescribed unit price.<br><br>
+<b>44 decisions logged, 18 of them judgment calls. 16 claims made during the work and later
+overturned, kept on the record. Every figure regenerates from published data by running the
+scripts.</b>
+</footer>
 
 </div>
