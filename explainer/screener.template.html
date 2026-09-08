@@ -657,7 +657,8 @@ function score(){
       ${PRESETS[loaded].cur}.`;
   } else if (loaded && PRESETS[loaded].mkt !== cfg.mkt){
     combo.className = "combo";
-    combo.innerHTML = `Right now: <b>${loaded}'s tariff</b>, applied to
+    const poss = loaded.endsWith("s") ? loaded + "'" : loaded + "'s";
+    combo.innerHTML = `Right now: <b>${poss} tariff</b>, applied to
       <b>${mname}</b> prices. Holding the tariff still and changing the market
       is how you find out whether a result comes from the tariff or from the
       market.`;
@@ -666,7 +667,9 @@ function score(){
     combo.innerHTML = `Right now: <b>${loaded}</b>, on its own market.`;
   } else {
     combo.className = "combo";
-    combo.innerHTML = `Right now: <b>your own numbers</b>, on <b>${mname}</b> prices.`;
+    combo.innerHTML = `Right now: <b>your own numbers, read as ${cur}</b>, on
+      <b>${mname}</b> prices. If they came from another market's preset, they are not
+      that market's rates.`;
   }
 
   // Which part of the bill did the damage?
